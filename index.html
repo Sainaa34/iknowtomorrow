@@ -19,7 +19,6 @@
             <button class="menu-btn" id="nav-chats" onclick="switchPage('chats')">💬 Chats</button>
             <button class="menu-btn" id="nav-profile" onclick="switchPage('profile')">👤 Profile Settings</button>
         </div>
-        
         <div class="sidebar-user">
             <img id="sidebarAvatar" class="mini-avatar" src="https://placeholder.com" alt="avatar">
             <div class="user-info">
@@ -36,19 +35,31 @@
     <!-- MAIN CONTENT AREA -->
     <div class="content-area">
         <header>
-            <div id="searchTagDisplay"></div>
+            <!-- 🔍 ЖИНХЭНЭ УХААЛАГ ГЛОБАЛ ХАЙЛТЫН ТАЛБАР -->
+            <div class="search-bar-container">
+                <input type="text" id="globalSearchInput" placeholder="🔍 Хайх (Үг, таг эсвэл нэр...)" oninput="handleGlobalSearch()">
+            </div>
             <button id="langBtn" onclick="toggleLanguage()">English</button>
         </header>
 
         <div class="main-container">
-            <!-- 1. FEED PAGE -->
+            <!-- 1. FEED PAGE (ЗӨВХӨН УНШИХ ХЭСЭГ - БИЧИХ ХАЙРЦАГ БАЙХГҮЙ) -->
             <div id="page-feed" class="page active">
+                <div id="feedAlgorithmStatus" class="algorithm-badge">⚡ Алгоритм: Бүх нийтийн урсгал</div>
+                <div id="postsContainer"></div>
+            </div>
+
+            <!-- 2. MY POSTS PAGE (ЭНД ПОСТ БИЧИХ ХАЙРЦАГ ИРЛЭЭ) -->
+            <div id="page-myposts" class="page">
                 <div class="feed-box">
-                    <div class="feed-box-header">
-                        <span id="currentUserLabel" style="font-weight:bold; color:var(--accent-pink);">👤 Sainaa</span>
-                    </div>
-                    <textarea id="postInput" onkeydown="handlePostSubmit(event)"></textarea>
+                    <textarea id="postInput" onkeydown="handlePostSubmit(event)" oninput="handleTagSuggestions(event)"></textarea>
                     
+                    <!-- УХААЛАГ АВТОМАТ ТАГ ГҮЙЦЭЭГЧ ЦОНХ -->
+                    <div id="tagSuggestBox" class="tag-suggest-popup" style="display:none;"></div>
+                    
+                    <!-- ТАГ БИЧИХ ЗААВАР МЭДЭЭЛЭЛ -->
+                    <div class="tag-hint-text">💡 Заавар: #ai #future #alien эсвэл ?alien гэж бичиж таг үүсгээрэй.</div>
+
                     <div class="post-footer-actions">
                         <div class="media-buttons">
                             <label for="postImageInput" class="icon-media-btn">📷 Image</label>
@@ -59,26 +70,12 @@
                         </div>
                         <button id="submitBtn" class="main-post-btn" onclick="createPost()">Post</button>
                     </div>
-                    
                     <div id="mediaPreviewBox" class="preview-box-container" style="display:none;">
                         <button class="preview-close-btn" onclick="clearSelectedMedia()">✕</button>
                         <div id="mediaPreviewContent"></div>
                     </div>
                 </div>
-
-                <div class="tag-filter-bar">
-                    <button class="tag-filter-btn" onclick="filterByTag('')">🔄 All Posts</button>
-                    <button class="tag-filter-btn" onclick="filterByTag('ai')">#ai</button>
-                    <button class="tag-filter-btn" onclick="filterByTag('aliens')">#aliens</button>
-                    <button class="tag-filter-btn" onclick="filterByTag('dreams')">#dreams</button>
-                    <button class="tag-filter-btn" onclick="filterByTag('future')">#future</button>
-                </div>
-                <div id="postsContainer"></div>
-            </div>
-
-            <!-- 2. MY POSTS PAGE -->
-            <div id="page-myposts" class="page">
-                <h3 id="myPostsTitle" style="color:var(--accent); margin-bottom:20px;">📌 Миний зөгнөлүүд</h3>
+                <h3 id="myPostsTitle" style="color:var(--accent); margin-bottom:20px;">📌 Миний оруулсан зөгнөлүүд</h3>
                 <div id="myPostsContainer"></div>
             </div>
 
@@ -104,44 +101,43 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="chat-side-panel">
                         <div class="side-panel-header">🤖 ERR_ID_2040 Core Log</div>
                         <div id="robotSyncPanel" class="sync-glow-card">
                             <div id="robotSyncText">🔮 Ой санамж: 0%</div>
                             <div class="sync-progress-bar"><div id="syncProgressBarFill" class="sync-progress-fill" style="width:0%;"></div></div>
                         </div>
-                        <!-- ХҮМҮҮСТ ХАРАГДАХ СЭЖҮҮРИЙН КАРТЫГ БҮРМӨСӨН УСТГАВ 🤫 -->
                     </div>
                 </div>
             </div>
 
-            <!-- 5. PROFILE SETTINGS (DOTA 2 THEME SELECTION) -->
+            <!-- 5. PROFILE SETTINGS PAGE -->
             <div id="page-profile" class="page">
                 <div class="profile-card">
                     <div class="profile-cover-wrapper">
                         <img id="profileCoverImg" class="profile-cover" src="https://placeholder.com" alt="cover">
-                        <label for="coverInput" class="cover-edit-btn">📷 Change Cover Theme</label>
-                        <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="changeCoverTheme()">
                     </div>
-                    
                     <div class="avatar-container" onclick="triggerAvatarInput()">
                         <img id="profileAvatar" class="avatar" src="https://placeholder.com" alt="avatar">
                         <div class="avatar-overlay">📷</div>
                         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="changeProfileAvatar()">
                     </div>
+                    <h2 id="profileName">Sainaa</h2>
+                    <p id="profileTitleText" style="color: var(--text-sub);">🔮 Ирээдүйг Зөгнөгч Магистр</p>
                     
-                    <h2 id="profileName" style="margin-top:10px;">Sainaa</h2>
-                    <p id="profileTitleText" style="color: var(--text-sub); margin:5px 0 15px 0;">🔮 Ирээдүйг Зөгнөгч Магистр</p>
-
-                    <!-- DOTA 2 СТИЛИЙН БҮРЭН ЭРХ ЧӨЛӨӨТЭЙ ТЕМА СОЛИГЧ -->
-                    <div style="border-top:1px solid #242b35; padding-top:15px; text-align:left;">
-                        <h4 style="color:var(--accent); margin:0 0 10px 0;">⚔️ Dota 2 Сэдэв Сонгох / Select UI Theme</h4>
-                        <div style="display:flex; gap:8px;">
-                            <button class="tag-filter-btn" onclick="applyDotaTheme('#12161a', '#1a1f26', '#ffb703')">🟨 Cyber Yellow</button>
-                            <button class="tag-filter-btn" onclick="applyDotaTheme('#150c0c', '#251515', '#ff4b4b')">🟥 Dread Red</button>
-                            <button class="tag-filter-btn" onclick="applyDotaTheme('#0a1118', '#101c26', '#00f2fe')">🟦 Mana Blue</button>
-                            <button class="tag-filter-btn" onclick="applyDotaTheme('#0c140e', '#132217', '#00ff88')">🟩 Radiant Green</button>
+                    <!-- ⚙️ НЭГ ДОР ЦЭГЦТЭЙ НУУСАН ПРОФАЙЛ ЗАСАХ ХЭСЭГ -->
+                    <button class="edit-profile-trigger-btn" onclick="toggleEditOptions()">⚙️ Профайл Тохиргоог Засах</button>
+                    <div id="editOptionsPanel" class="edit-profile-panel" style="display:none;">
+                        <label for="coverInput" class="icon-media-btn" style="margin-top:10px; display:inline-block; cursor:pointer;">📷 Ковер Сэдэв Зургаа Солих</label>
+                        <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="changeCoverTheme()">
+                        
+                        <div style="margin-top:15px;">
+                            <label style="font-size:0.85rem; font-weight:bold; color:var(--accent);">🎨 Сайтын үндсэн өнгө: </label>
+                            <select id="siteThemeSelect" onchange="applySiteCustomTheme()" style="background:#12161a; color:white; border:1px solid var(--accent); padding:5px; border-radius:6px;">
+                                <option value="default">Саарал ба Шар неон</option>
+                                <option value="dark-purple">Гүн Нил Ягаан</option>
+                                <option value="cyber-blue">Кибер Цэнхэр</option>
+                            </select>
                         </div>
                     </div>
                 </div>
