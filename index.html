@@ -29,18 +29,12 @@
     <!-- MAIN CONTENT AREA -->
     <div class="content-area">
         <header>
-            <div class="memory-progress-container">
-                <span style="color:#ffb703; font-weight:bold; font-size:0.85rem;">MEMORY SYNC:</span>
-                <div class="progress-bar-bg">
-                    <div id="globalProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
-                </div>
-                <span id="progressText" style="color:#ffb703; font-weight:bold; font-size:0.85rem;">0%</span>
-            </div>
+            <div id="searchTagDisplay" style="color:var(--accent); font-weight:bold;"></div>
             <button id="langBtn" onclick="toggleLanguage()">English</button>
         </header>
 
         <div class="main-container">
-            <!-- FEED PAGE -->
+            <!-- 1. FEED PAGE -->
             <div id="page-feed" class="page active">
                 <div class="feed-box">
                     <select id="userSelect" onchange="updateProfileName()">
@@ -49,17 +43,31 @@
                     </select>
                     <select id="categorySelect"></select>
                     <textarea id="postInput"></textarea>
-                    <div class="file-upload-group">
-                        <label for="postImageInput" class="file-label">📷 Зураг нэмэх</label>
-                        <input type="file" id="postImageInput" accept="image/*" onchange="previewPostImage()">
-                        <img id="postImgPreview" style="display:none; max-width:100px; margin-top:10px; border-radius:8px;">
+                    
+                    <!-- МЕДИА ХАВСАРГАХ (ЗУРАГ БА БИЧЛЕГ) -->
+                    <div class="file-upload-group" style="display:flex; gap:10px;">
+                        <label for="postImageInput" class="file-label">📷 Зураг</label>
+                        <input type="file" id="postImageInput" accept="image/*" onchange="previewPostMedia('image')">
+                        
+                        <label for="postVideoInput" class="file-label" style="background-color:#4facfe;">🎥 Бичлэг</label>
+                        <input type="file" id="postVideoInput" accept="video/*" onchange="previewPostMedia('video')">
                     </div>
+                    <div id="mediaPreviewContainer"></div>
+                    
                     <button id="submitBtn" onclick="createPost()"></button>
+                </div>
+                <!-- ТАГУУДААР ШҮҮХ ХЭСЭГ -->
+                <div style="margin-bottom:15px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="lang-btn" onclick="filterByTag('')">🔄 Бүх Пост</button>
+                    <button class="lang-btn" onclick="filterByTag('ai')">#ai</button>
+                    <button class="lang-btn" onclick="filterByTag('харьгариг')">#харьгариг</button>
+                    <button class="lang-btn" onclick="filterByTag('ирээдүй')">#ирээдүй</button>
+                    <button class="lang-btn" onclick="filterByTag('зүүд')">#зүүд</button>
                 </div>
                 <div id="postsContainer"></div>
             </div>
 
-            <!-- PROFILE PAGE -->
+            <!-- 2. PROFILE PAGE -->
             <div id="page-profile" class="page">
                 <div class="profile-card">
                     <div class="avatar-container">
@@ -74,27 +82,25 @@
                 <div id="myPostsContainer"></div>
             </div>
 
-            <!-- CHATS PAGE (ЗЭРЭГЦЭЭ 2 ЦОНХТОЙ БҮТЭЦ) -->
+            <!-- 3. CHATS PAGE -->
             <div id="page-chats" class="page">
-                <div class="dual-chat-container">
-                    <!-- ЗҮҮН ЦОНХ: РОБОТТОЙ ЧАТЛАХ -->
-                    <div class="chat-window-pane">
-                        <div class="pane-header">🤖 [ERR_ID_2040]</div>
-                        <div class="chat-box">
-                            <div class="chat-messages" id="chatMessages"></div>
-                            <div class="comment-input-group" style="padding: 10px; background: #1a1e24;">
-                                <input type="text" class="comment-input" id="chatInput" onkeypress="handleChatKey(event)">
-                                <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- БАРУУН ЦОНХ: ОЙ САНАМЖИЙН ХАВТАС -->
-                    <div class="chat-window-pane">
-                        <div class="pane-header">📂 MEMORY LOGS</div>
-                        <div class="log-box" id="memoryLogs">
-                            <div class="log-entry system">[SYSTEM_READY] Роботын системийг сэргээхийн тулд нууц үгнүүдийг чат дээр тааж бичнэ үү.</div>
-                            <div class="log-entry code-hint">Хөлөг онгоцны нууц код: ??2??6</div>
-                        </div>
+                <!-- 🤖 ЗӨВХӨН ЭНД ХАРАГДАХ МЕМОРИ СИНК -->
+                <div id="robotSyncPanel" style="background:#2f3b4c; padding:12px; border-radius:12px; margin-bottom:15px; border-left:4px solid var(--accent); display:none;">
+                    <span id="robotSyncText">🔮 Роботын ой санамж: 0%</span>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label id="chatWithLabel">Хэнтэй чатлах: </label>
+                    <select id="chatPartner" onchange="loadChats()">
+                        <option value="Future Bot 🤖">Future Bot 🤖</option>
+                        <option value="Amaraa (Найз ☄️)">Amaraa (Найз ☄️)</option>
+                    </select>
+                </div>
+                <div class="chat-box">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="comment-input-group" style="padding: 10px; background: #121824;">
+                        <input type="text" class="comment-input" id="chatInput">
+                        <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
                     </div>
                 </div>
             </div>
