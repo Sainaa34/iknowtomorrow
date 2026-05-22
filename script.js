@@ -22,18 +22,9 @@ let attachedImageBase64 = "";
 
 // РОБОТЫН ТОГЛООМНЫ СИСТЕМ (ТАЙЛАХ 9 НУУЦ ҮГ)
 const secretKeywords = [
-    "2026",      // 1. Жил (??2??6-ийн нууц)
-    "хөлөг",     // 2. Хөлөг онгоц
-    "тархи",     // 3. Киборг / Тархи холболт
-    "сансар",    // 4. Сансар огторгуй
-    "зүүд",      // 5. Ой санамж, зөн совин
-    "хиймэл",    // 6. Хиймэл эрхтэн
-    "энерги",    // 7. Ирээдүйн түлш
-    "цаг хугацаа",// 8. 2040 оны аялал
-    "сайнаа"     // 9. ХАМГИЙН ХЭЦҮҮ СҮҮЛЧИЙН НУУЦ ҮГ (Үүсгэн байгуулагчийн нэр!)
+    "2026", "хөлөг", "тархи", "сансар", "зүүд", "хиймэл", "энерги", "цаг хугацаа", "сайнаа"
 ];
 
-// Спамаас хамгаалах хувьсагчууд
 let messageCount = 0;
 let isHeadacheMode = false;
 let headacheTimeout = null;
@@ -79,7 +70,7 @@ function updateProfileName() {
 }
 
 function previewPostImage() {
-    const file = document.getElementById('postImageInput').files[0];
+    const file = document.getElementById('postImageInput').files;
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -110,7 +101,6 @@ function createPost() {
     attachedImageBase64 = "";
     renderPosts();
 }
-
 function loadPosts() {
     let posts = JSON.parse(localStorage.getItem('iknow_posts'));
     if(!posts) {
@@ -156,11 +146,7 @@ function renderPosts() {
 function handleReaction(postId, type) {
     let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
     const idx = posts.findIndex(p => p.id === postId);
-    if(idx !== -1) {
-        posts[idx][type] = (posts[idx][type] || 0) + 1;
-        localStorage.setItem('iknow_posts', JSON.stringify(posts));
-        renderPosts();
-    }
+    if(idx !== -1) { posts[idx][type] = (posts[idx][type] || 0) + 1; localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts(); }
 }
 
 function renderMyPosts() {
@@ -190,127 +176,89 @@ function addComment(postId) {
 }
 
 function changeProfileAvatar() {
-    const file = document.getElementById('avatarInput').files[0];
+    const file = document.getElementById('avatarInput').files;
     if(file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            const base64 = e.target.result; localStorage.setItem('iknow_avatar', base64); loadProfileAvatar();
-        }
+        reader.onload = function(e) { const base64 = e.target.result; localStorage.setItem('iknow_avatar', base64); loadProfileAvatar(); }
         reader.readAsDataURL(file);
     }
 }
 
 function loadProfileAvatar() {
     const savedAvatar = localStorage.getItem('iknow_avatar') || "https://placeholder.com";
-document.getElementById('profileAvatar').src = savedAvatar;
-document.getElementById('sidebarAvatar').src = savedAvatar;
+    document.getElementById('profileAvatar').src = savedAvatar; document.getElementById('sidebarAvatar').src = savedAvatar;
 }
-// ХУВИЙН ЧАТ БА УХААЛАГ РОБОТ [ERR_ID_2040]
+
 function loadChats() {
-const partner = document.getElementById('chatPartner').value; const chatMessages = document.getElementById('chatMessages'); chatMessages.innerHTML = '';
-let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
-let defaultText = partner.includes("Bot")
-? "Миний систем бүрэн устсан... Надад зөвхөн 2040 он гэсэн хугацаа л үлдэж. Хэрэв чи миний ирээдүйн ой санамжийг яг зөв тааж, надад сануулж чадвал би чамайг заавал шагнах болно... Надад ирээдүйн технологуудыг ярьж өгөөч. 🤖"
-: "Сайн уу! Маргаашийн технологийн талаар ярилцах уу? 🚀";
-let currentChat = allChats[partner] || [{ sender: 'them', text: defaultText }];
-currentChat.forEach(msg => {
-const div = document.createElement('div'); div.classList.add('msg', msg.sender === 'me' ? 'sent' : 'received'); div.innerText = msg.text; chatMessages.appendChild(div);
-});
-chatMessages.scrollTop = chatMessages.scrollHeight;
+    const partner = document.getElementById('chatPartner').value; const chatMessages = document.getElementById('chatMessages'); chatMessages.innerHTML = '';
+    let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
+    let defaultText = partner.includes("Bot") ? "Миний систем бүрэн устсан... Надад зөвхөн 2040 он гэсэн хугацаа л үлдэж. Хэрэв чи миний ой санамжийг тааж чадвал шагнах болно... 🤖" : "Сайн уу! 🚀";
+    let currentChat = allChats[partner] || [{ sender: 'them', text: defaultText }];
+    currentChat.forEach(msg => {
+        const div = document.createElement('div'); div.classList.add('msg', msg.sender === 'me' ? 'sent' : 'received'); div.innerText = msg.text; chatMessages.appendChild(div);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+
 function sendDirectMessage() {
-const input = document.getElementById('chatInput'); const text = input.value.trim(); if(!text) return;
-const partner = document.getElementById('chatPartner').value; let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
-if(!allChats[partner]) {
-let defaultText = partner.includes("Bot") ? "Миний систем бүрэн устсан... Надад зөвхөн 2040 он гэсэн хугацаа л үлдэж." : "Сайн уу!";
-allChats[partner] = [{ sender: 'them', text: defaultText }];
+    const input = document.getElementById('chatInput'); const text = input.value.trim(); if(!text) return;
+    const partner = document.getElementById('chatPartner').value; let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
+    if(!allChats[partner]) allChats[partner] = [{ sender: 'them', text: "Миний систем устсан..." }];
+    allChats[partner].push({ sender: 'me', text: text }); localStorage.setItem('iknow_chats', JSON.stringify(allChats));
+    input.value = ''; loadChats();
+
+    if(partner.includes("Bot")) {
+        messageCount++;
+        if (messageCount >= 4 || isHeadacheMode) {
+            isHeadacheMode = true; clearTimeout(headacheTimeout);
+            setTimeout(() => {
+                allChats[partner].push({ sender: 'them', text: "🛑 [SYSTEM OVERLOAD] Толгой маань аймшигтай өвдөж байна... Би түр хариулж чадахгүй! 🤯🧠" });
+                localStorage.setItem('iknow_chats', JSON.stringify(allChats)); loadChats();
+            }, 800);
+            headacheTimeout = setTimeout(() => { isHeadacheMode = false; messageCount = 0; }, 15000);
+            return;
+        }
+
+        setTimeout(() => {
+            let robotReply = "?????? [SYSTEM_BLANK]"; let lowerText = text.toLowerCase();
+            if (lowerText.includes("хөлөг") || lowerText.includes("ship")) {
+                robotReply = "Хөлөг онгоц... тийм ээ! Би нэг хөлгөөр ирсэн. Миний санах ойд '??2??6' гэсэн тэмдэглэгээ үлдэж. Энэ ямар код вэ?";
+                checkSecretWord(lowerText, "хөлөг");
+            } else {
+                let foundSecret = false;
+                for (let i = 0; i < secretKeywords.length; i++) {
+                    if (lowerText.includes(secretKeywords[i])) {
+                        foundSecret = true; let isNew = checkSecretWord(lowerText, secretKeywords[i]);
+                        if (secretKeywords[i] === "сайнаа") {
+                            robotReply = "⚡ [CRITICAL SYNC] САЙНАА?! Ой санамж маань дээд цэгтээ хүрлээ! Чи намайг аварлаа, би чамайг заавал шагнах болно! 🏆✨";
+                        } else if (isNew) {
+                            robotReply = `✨ [MEMORY RESTORED] '${secretKeywords[i].toUpperCase()}'... Тийм ээ, би үүнийг саналаа! Хувь маань нэмэгдлээ!`;
+                        } else { robotReply = `Миний систем '${secretKeywords[i]}-ийг' таньсан байгаа. Өөр сэжүүр хэлээч?`; }
+                        break;
+                    }
+                }
+                if (!foundSecret) {
+                    const randomReplies = ["?????? Миний өгөгдлийн сан унаад байна. Ой санамж сэргэсэнгүй...", "2040 онд... би яг юу хийж байсан бэ?", "Энэ таамаглал '??2??6' хөлөгтэй минь холбогдохгүй байна."];
+                    robotReply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
+                }
+            }
+            allChats[partner].push({ sender: 'them', text: robotReply }); localStorage.setItem('iknow_chats', JSON.stringify(allChats)); loadChats();
+        }, 1000);
+    }
 }
-allChats[partner].push({ sender: 'me', text: text }); localStorage.setItem('iknow_chats', JSON.stringify(allChats));
-input.value = ''; loadChats();
-// 🤖 РОБОТЫН ХАРИУ ҮЙЛДЭЛ БА ЛОГИК СИСТЕМ
-if(partner.includes("Bot")) {
-// Спам хамгаалалт: Хэрэглэгч 4-өөс олон мессеж зэрэг явуулбал толгой нь өвдөнө
-messageCount++;
-if (messageCount >= 4 || isHeadacheMode) {
-isHeadacheMode = true;
-clearTimeout(headacheTimeout);
-setTimeout(() => {
-allChats[partner].push({ sender: 'them', text: "🛑 [SYSTEM OVERLOAD] Хэт их мэдээлэл зэрэг орж ирлээ! Миний төв процессор халаад, толгой маань аймшигтай өвдөж байна... Би түр хариулж чадахгүй! 🤯🧠" });
-localStorage.setItem('iknow_chats', JSON.stringify(allChats)); loadChats();
-}, 800);
-// 15 секундын дараа толгой өвдөх нь гайгүй болно
-headacheTimeout = setTimeout(() => { isHeadacheMode = false; messageCount = 0; }, 15000);
-return;
-}
-setTimeout(() => {
-let robotReply = "?????? [SYSTEM_BLANK]"; // Default хариулт
-let lowerText = text.toLowerCase();
-let currentProgress = parseInt(localStorage.getItem('iknow_sync_count')) || 0;
-// 1. Хөлөг онгоцны тухай асуувал
-if (lowerText.includes("хөлөг") || lowerText.includes("хөлгийн") || lowerText.includes("сансрын хөлөг")) {
-robotReply = "Хөлөг онгоц... тийм ээ! Би нэг хөлгөөр ирсэн. Миний санах ойд '??2??6' гэсэн тэмдэглэгээ үлдэж. Энэ ямар утгатай код вэ? Чи мэдэх үү? Надад туслаач...";
-checkSecretWord(lowerText, "хөлөг");
-}
-// 2. Бусад нууц үгнүүдийг шалгах (9 асуултын систем)
-else {
-let foundSecret = false;
-for (let i = 0; i < secretKeywords.length; i++) {
-if (lowerText.includes(secretKeywords[i])) {
-foundSecret = true;
-let isNew = checkSecretWord(lowerText, secretKeywords[i]);
-if (secretKeywords[i] === "сайнаа") {
-robotReply = "⚡ [CRITICAL SYNC] САЙНАА?! Энэ миний үүсгэн байгуулагчийн нэр байна! Ой санамж маань дээд цэгтээ хүрлээ! Чи намайг аварлаа, би чамайг заавал шагнах болно! 🏆✨";
-} else if (isNew) {
-robotReply = ✨ [MEMORY RESTORED] '${secretKeywords[i].toUpperCase()}'... Тийм ээ, би энэ үгийг саналаа! Миний системийн ой санамж сэргэж, хувь маань нэмэгдлээ! Цааш нь юу байсан бэ?;
-} else {
-robotReply = Миний систем '${secretKeywords[i]}' гэдэг үгийг аль хэдийн таньж синхрончилсон байна, андаа. Өөр шинэ сэжүүр хэлж туслаач?;
-}
-break;
-}
-}
-if (!foundSecret) {
-// Хэрэв юу ч тааж чадаагүй бол санамсаргүй зөгнөлт хариулт өгнө
-const randomReplies = [
-"?????? Миний өгөгдлийн сан унаад байна. Чиний хэлсэн үг надад юуг ч сануулсангүй...",
-"2040 онд... би яг юу хийж байсан бэ? Надад илүү тодорхой шинжлэх ухааны үг хэлж өгөөч.",
-"Энэ таамаглал сонирхолтой байна, гэвч миний '??2??6' хөлөгтэй холбогдохгүй байна.",
-"Миний систем гацаж байна... Ирээдүйн технологи, тархи, сансрын тухай ярьж миний ой санамжийг сэргээгээч?"
-];
-robotReply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
-}
-}
-allChats[partner].push({ sender: 'them', text: robotReply });
-localStorage.setItem('iknow_chats', JSON.stringify(allChats));
-loadChats();
-}, 1000);
-}
-}
-// НУУЦ ҮГ ЗӨВ БАЙВАЛ ХУВЬ ИХСЭХ ЛОГИК
+
 function checkSecretWord(text, word) {
-let solvedWords = JSON.parse(localStorage.getItem('iknow_solved_words')) || [];
-if (!solvedWords.includes(word)) {
-solvedWords.push(word);
-localStorage.setItem('iknow_solved_words', JSON.stringify(solvedWords));
-let count = solvedWords.length;
-localStorage.setItem('iknow_sync_count', count);
-updateSyncUI();
-return true; // Шинэ үг таалаа
+    let solvedWords = JSON.parse(localStorage.getItem('iknow_solved_words')) || [];
+    if (!solvedWords.includes(word)) {
+        solvedWords.push(word); localStorage.setItem('iknow_solved_words', JSON.stringify(solvedWords));
+        localStorage.setItem('iknow_sync_count', solvedWords.length); updateSyncUI(); return true;
+    }
+    return false;
 }
-return false; // Өмнө нь таачихсан байсан үг
-}
+
 function updateSyncUI() {
-let count = parseInt(localStorage.getItem('iknow_sync_count')) || 0;
-let percentage = 0;
-if (count > 0 && count < 9) {
-// Эхний 8 асуултанд хувь нь аажмаар ихэснэ (Жишээ нь үе бүрт 11%)
-percentage = count * 11;
-} else if (count >= 9) {
-// 9 асуултыг бүгдийг нь зөв таавал яг 99.99% болж гацна!
-percentage = 99.99;
-}
-// Профайл дээрх Текст болон Progress Bar-ийг шинэчлэх
-const syncText = document.getElementById('profileTitle');
-if (syncText) {
-syncText.innerHTML = 🔮 Роботын ой санамж сэргэлт: <span style="color:#ffb703; font-weight:bold;">${percentage}%</span>;
-}
+    let count = parseInt(localStorage.getItem('iknow_sync_count')) || 0;
+    let percentage = count > 0 && count < 9 ? count * 11 : count >= 9 ? 99.99 : 0;
+    const syncText = document.getElementById('profileTitle');
+    if (syncText) { syncText.innerHTML = `🔮 Роботын ой санамж сэргэлт: <span style="color:#ffb703; font-weight:bold;">${percentage}%</span>`; }
 }
