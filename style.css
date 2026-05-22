@@ -13,7 +13,7 @@ body {
     display: flex; min-height: 100vh;
 }
 
-/* ЗҮҮН ТАЛЫН ЦЭС (SIDEBAR) - ФЕЙСБҮҮК ШИГ ТОГТВОРТОЙ */
+/* ЗҮҮН ТАЛЫН ЦЭС (SIDEBAR) - ТОГТВОРТОЙ СУУРЬ */
 .sidebar {
     width: 260px; background-color: #0d1115; height: 100vh; position: fixed; 
     top: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between; 
@@ -33,7 +33,6 @@ body {
     box-shadow: inset 4px 0 0 var(--accent);
 }
 
-/* ЦЭСНИЙ ДООР СУУРИЛСАН ПРОФАЙЛ БА ТӨЛӨВ */
 .sidebar-user {
     display: flex; align-items: center; gap: 12px; padding: 12px; 
     background-color: #161b22; border-radius: 12px; border: 1px solid #242b35;
@@ -46,38 +45,42 @@ body {
     font-weight: bold; cursor: pointer; padding: 0; outline: none; width: 100%;
 }
 
-/* БАРУУН ТАЛЫН ҮНДСЭН ХЭСЭГ */
-.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 5px; }
-header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 20px 15px; box-sizing: border-box; }
+/* БАРУУН ТАЛЫН ҮНДСЭН ХЭСЭГ & ХАЙЛТ */
+.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 35px; }
+header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 20px 15px; box-sizing: border-box; gap: 15px; }
+
+.search-bar-container { flex: 1; position: relative; }
+#globalSearchInput {
+    width: 100%; padding: 10px 15px; background: #0d1115; border: 1px solid #242b35;
+    border-radius: 20px; color: white; outline: none; font-size: 0.9rem; transition: 0.2s;
+}
+#globalSearchInput:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 183, 3, 0.15); }
+
 #langBtn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
 #langBtn:hover { background: var(--accent); color: #000; }
 .main-container { width: 92%; max-width: 600px; }
 .page { display: none; }
 .page.active { display: block; }
 
-/* ПОСТ ОРУУЛАХ ТАЛБАРЫН ЦЭГЦТЭЙ ДИЗАЙН */
-.feed-box { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 20px; border: 1px solid #242b35; }
-.feed-box-header { margin-bottom: 10px; }
-textarea { width: 100%; height: 85px; background-color: #12161a; border: 1px solid #242b35; border-radius: 10px; color: white; padding: 12px; box-sizing: border-box; resize: none; font-size: 1rem; margin-bottom: 12px; outline: none; }
-textarea:focus { border-color: var(--accent); }
+/* АЛГОРИТМ БА ТАГ ЗААВАР */
+.algorithm-badge {
+    background: rgba(255, 183, 3, 0.1); color: var(--accent); border: 1px dashed var(--accent);
+    padding: 10px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px;
+}
+.tag-hint-text { font-size: 0.8rem; color: #6c727e; margin-bottom: 12px; font-weight: 500; }
 
-/* ИКОН ТОВЧНУУД БА МЕДИА ХЭСЭГ */
+/* ПОСТ ОРУУЛАХ БОКС */
+.feed-box { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 20px; border: 1px solid #242b35; position: relative; }
+textarea { width: 100%; height: 85px; background-color: #12161a; border: 1px solid #242b35; border-radius: 10px; color: white; padding: 12px; box-sizing: border-box; resize: none; font-size: 1rem; outline: none; }
+textarea:focus { border-color: var(--accent); }
 .post-footer-actions { display: flex; justify-content: space-between; align-items: center; }
 .media-buttons { display: flex; gap: 8px; }
-.icon-media-btn { background-color: #242b35; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+.icon-media-btn { background-color: #242b35; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: inline-block; transition: 0.2s; }
+.icon-media-btn:hover { background: #323c49; }
 .feed-box input[type="file"] { display: none; }
-.main-post-btn { background: var(--accent); color: #000; border: none; padding: 9px 20px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 0 10px rgba(255, 183, 3, 0.2); }
+.main-post-btn { background: var(--accent); color: #000; border: none; padding: 9px 20px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
 
-/* МЕДИА УРДЧИЛЖ ХАРАХ ХАЙРЦАГ (PREVIEW) */
-.preview-box-container { position: relative; margin-top: 15px; padding: 10px; background: #12161a; border-radius: 10px; border: 1px dashed var(--accent); text-align: center; }
-.preview-close-btn { position: absolute; top: 5px; right: 5px; background: #ff0055; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; font-size: 0.75rem; }
-
-/* ТАГ ШҮҮЛТҮҮРИЙН СИСТЕМ */
-.tag-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
-.tag-filter-btn { background: #1c232c; color: var(--text-sub); border: 1px solid #242b35; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
-.tag-filter-btn:hover { border-color: var(--accent); color: #fff; }
-
-/* ФЭЙСБҮҮК ШИГ ПОСТНУУДЫН ДИЗАЙН */
+/* ПОСТ ХАРАГДАЦ */
 .post { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #242b35; position: relative; }
 .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .post-user { font-weight: bold; color: var(--accent-pink); }
@@ -85,51 +88,62 @@ textarea:focus { border-color: var(--accent); }
 .post-time { font-size: 0.8rem; color: #6c727e; margin-bottom: 12px; }
 .post-content { font-size: 1.05rem; line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
 .post-attached-img { width: 100%; max-height: 340px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid #242b35; }
+/* УХААЛАГ ТАГ ГҮЙЦЭЭГЧ ЦОНХ */
+.tag-suggest-popup {
+    position: absolute; background: #0d1115; border: 1px solid var(--accent);
+    border-radius: 8px; width: calc(100% - 32px); box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    z-index: 50; top: 110px; max-height: 120px; overflow-y: auto; padding: 5px 0;
+}
+.tag-suggest-item { padding: 8px 15px; color: var(--text-main); cursor: pointer; font-size: 0.9rem; font-weight: 500; }
+.tag-suggest-item:hover { background: var(--card-bg); color: var(--accent); }
 
-/* УХААЛАГ ЭМОЖИ ТОВЧНУУД */
+.preview-box-container { position: relative; margin-top: 15px; padding: 10px; background: #12161a; border-radius: 10px; border: 1px dashed var(--accent); text-align: center; }
+.preview-close-btn { position: absolute; top: 5px; right: 5px; background: #ff0055; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; }
+
+/* ЭМОЖИ & КОММЕНТ */
 .post-actions { display: flex; gap: 8px; margin-bottom: 12px; border-top: 1px solid #242b35; padding-top: 10px; }
-.like-btn { background: #242b35; border: 1px solid transparent; color: #fff; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 6px; transition: 0.1s; }
+.like-btn { background: #242b35; border: 1px solid transparent; color: #fff; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
 .like-btn:hover { border-color: var(--accent); }
 .like-btn.user-reacted { background: rgba(255, 183, 3, 0.15); border-color: var(--accent); color: var(--accent); }
 .delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #6c727e; cursor: pointer; font-size: 1.1rem; }
 .delete-btn:hover { color: #ff0055; }
 
-/* КОММЕНТ */
 .comment-section { border-top: 1px solid #242b35; padding-top: 10px; }
 .comment-item { background-color: #12161a; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; color: #e4e6eb; border: 1px solid #242b35; }
 .comment-input-group { display: flex; gap: 8px; margin-top: 8px; }
 .comment-input { flex: 1; background-color: #12161a; border: 1px solid #242b35; border-radius: 8px; color: white; padding: 8px 12px; outline: none; }
-.comment-input:focus { border-color: var(--accent); }
 .comment-btn { background-color: #242b35; color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-/* ПРОФАЙЛ ДЭЭРХ КОВЕР СЭДЭВ ЗУРАГ БА АВАТАР */
+/* ПРОФАЙЛ ЗАСАХ ХАВТАС */
 .profile-cover-wrapper { position: relative; width: 100%; height: 160px; border-radius: 12px; overflow: hidden; background: #0d1115; border: 1px solid #242b35; }
 .profile-cover { width: 100%; height: 100%; object-fit: cover; }
-.cover-edit-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border: 1px solid var(--accent); }
 .avatar-container { position: relative; width: 100px; height: 100px; margin: -50px auto 10px auto; cursor: pointer; z-index: 10; }
-.avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg); box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-.avatar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; color: #fff; font-size: 1.2rem; }
+.avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg); }
+.avatar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; color: #fff; font-size: 1.2rem; }
 .avatar-container:hover .avatar-overlay { opacity: 1; }
+.profile-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #242b35; margin-bottom: 20px; transition: background 0.3s; }
 
-/* ЧАТНЫ 2 ЦОНХНЫ СУПЕР ГРИД БҮТЭЦ */
+.edit-profile-trigger-btn { background: none; border: 1px dashed var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 0.85rem; }
+.edit-profile-panel { background: #12161a; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #242b35; text-align: left; }
+
+/* ЧАТНЫ 2 ЦОНХ */
 .multi-chat-wrapper { display: flex; gap: 15px; width: 100%; min-height: 420px; }
 .chat-main-window { flex: 1.3; display: flex; flex-direction: column; }
 .chat-side-panel { flex: 0.7; background: #0d1115; border-radius: 16px; border: 1px solid #242b35; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
 .side-panel-header { font-weight: bold; color: var(--accent); font-size: 0.9rem; border-bottom: 1px solid #242b35; padding-bottom: 8px; font-family: monospace; }
-
-/* РОБОТЫН СИНК ГЭРЭЛТЭХ КАРТ */
-.sync-glow-card { background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255, 183, 3, 0.1); }
-#robotSyncText { font-weight: bold; font-size: 0.95rem; margin-bottom: 8px; }
-.sync-progress-bar { width: 100%; height: 6px; background: #12161a; border-radius: 10px; overflow: hidden; }
+.sync-glow-card { background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--accent); }
+.sync-progress-bar { width: 100%; height: 6px; background: #12161a; border-radius: 10px; overflow: hidden; margin-top: 8px; }
 .sync-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; box-shadow: 0 0 8px var(--accent); }
-.hint-card { background: #161b22; padding: 10px; border-radius: 8px; border: 1px solid #242b35; }
 
-/* ЧАТНЫ МЕССЕЖҮҮД */
 .chat-box { background-color: var(--card-bg); border-radius: 16px; height: 350px; border: 1px solid #242b35; display: flex; flex-direction: column; overflow: hidden; }
 .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.msg { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; }
+.msg { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; }
 .msg.sent { background-color: var(--accent); color: #000; align-self: flex-end; font-weight: 600; border-bottom-right-radius: 2px; }
 .msg.received { background-color: #242b35; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
 
-/* НАЙЗЫН ЖАГСААЛТЫН КАРТ */
+/* НАЙЗЫН БОКС & UNFRIEND ТОВЧ */
 .friend-item-box { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid #242b35; padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; }
+.friend-info-left { display: flex; align-items: center; gap: 12px; }
+.friend-add-btn { background: var(--accent); color: #000; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+.friend-add-btn.is-friend { background: #3b2424; color: #ff4d4d; border: 1px solid #ff4d4d; }
+.friend-add-btn.is-friend:hover { background: #ff4d4d; color: #000; }
