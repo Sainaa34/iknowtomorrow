@@ -13,7 +13,7 @@ body {
     display: flex; min-height: 100vh;
 }
 
-/* SIDEBAR - ФЕЙСБҮҮК ШИГ ТОГТВОРТОЙ БҮТЭЦ */
+/* ЗҮҮН ТАЛЫН ЦЭС - ТОГТВОРТОЙ СУУРЬ */
 .sidebar {
     width: 260px; background-color: #0d1115; height: 100vh; position: fixed; 
     top: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between; 
@@ -32,7 +32,6 @@ body {
     background-color: var(--card-bg); color: var(--accent);
     box-shadow: inset 4px 0 0 var(--accent);
 }
-
 .sidebar-user {
     display: flex; align-items: center; gap: 12px; padding: 12px; 
     background-color: #161b22; border-radius: 12px; border: 1px solid #242b35;
@@ -45,39 +44,38 @@ body {
     font-weight: bold; cursor: pointer; padding: 0; outline: none; width: 100%;
 }
 
-/* БАРУУН ТАЛЫН ХАЙЛТ БА ХЭЛИЙГ БҮҮР БУЛАНД ГАРГАХ */
-.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 35px; }
-header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 20px 15px; box-sizing: border-box; gap: 15px; }
+/* ДЭЭД ТАЛЫН ХЭСЭГ БА СУНАДАГ УХААЛАГ ХАЙЛТ */
+.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 35px; position: relative; }
+header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 20px 15px; box-sizing: border-box; position: relative; }
 
-.search-bar-container { flex: 1; position: relative; }
+.search-bar-container { position: relative; width: 180px; transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 #globalSearchInput {
     width: 100%; padding: 10px 15px; background: #0d1115; border: 1px solid #242b35;
-    border-radius: 20px; color: white; outline: none; font-size: 0.9rem;
+    border-radius: 20px; color: white; outline: none; font-size: 0.9rem; transition: 0.3s;
 }
-#globalSearchInput:focus { border-color: var(--accent); }
+/* ХУЛГАНА ОЧИХ ЭСВЭЛ ДАРАХАД ГОЁ СУНАЖ ТОМОРНО */
+.search-bar-container:hover, .search-bar-container:focus-within { width: 320px; }
+#globalSearchInput:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 183, 3, 0.2); }
 
-/* ХЭЛИЙГ БУЛАНД ГАНЦААРАНГ НЬ ГАРГАВ */
+/* ХЭЛИЙГ БҮҮР БАРУУН ДЭЭД БУЛАНД ТУСД НЬ ГАРГАВ */
 .corner-lang-btn {
-    background: transparent; color: var(--accent); border: 1px solid var(--accent); 
-    padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap;
+    position: absolute; right: -80px; top: 20px; background: transparent; color: var(--accent); 
+    border: 1px solid var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; 
+    font-weight: bold; white-space: nowrap; z-index: 90; transition: 0.2s;
 }
+@media (max-width: 900px) { .corner-lang-btn { position: relative; right: 0; top: 0; } }
 .corner-lang-btn:hover { background: var(--accent); color: #000; }
 
 .main-container { width: 92%; max-width: 600px; }
 .page { display: none; }
 .page.active { display: block; }
-
-/* ПОСТ ОРУУЛАХ ТАЛБАР БА ТАГ ГҮЙЦЭЭГЧ */
+/* ПОСТ БИЧИХ БОКС БА ТАГ ГҮЙЦЭЭГЧ */
 .feed-box { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 20px; border: 1px solid #242b35; position: relative; }
 textarea { width: 100%; height: 85px; background-color: #12161a; border: 1px solid #242b35; border-radius: 10px; color: white; padding: 12px; box-sizing: border-box; resize: none; font-size: 1rem; outline: none; }
 textarea:focus { border-color: var(--accent); }
 .tag-hint-text { font-size: 0.8rem; color: #6c727e; margin-bottom: 12px; }
 
-.tag-suggest-popup {
-    position: absolute; background: #0d1115; border: 1px solid var(--accent);
-    border-radius: 8px; width: calc(100% - 32px); box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    z-index: 50; top: 110px; max-height: 120px; overflow-y: auto; padding: 5px 0;
-}
+.tag-suggest-popup { position: absolute; background: #0d1115; border: 1px solid var(--accent); border-radius: 8px; width: calc(100% - 32px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 50; top: 110px; max-height: 120px; overflow-y: auto; padding: 5px 0; }
 .tag-suggest-item { padding: 8px 15px; color: var(--text-main); cursor: pointer; font-size: 0.9rem; }
 .tag-suggest-item:hover { background: var(--card-bg); color: var(--accent); }
 
@@ -85,11 +83,11 @@ textarea:focus { border-color: var(--accent); }
 .media-buttons { display: flex; gap: 8px; }
 .icon-media-btn { background-color: #242b35; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
 .feed-box input[type="file"] { display: none; }
-.main-post-btn { background: var(--accent); color: #000; border: none; padding: 9px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
+.main-post-btn { background: var(--accent); color: #000; border: none; padding: 9px 20px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
 .preview-box-container { position: relative; margin-top: 15px; padding: 10px; background: #12161a; border-radius: 10px; border: 1px dashed var(--accent); text-align: center; }
 .preview-close-btn { position: absolute; top: 5px; right: 5px; background: #ff0055; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; }
-/* ПОСТНЫ ЕРӨНХИЙ ХАРАГДАЦ */
+
+/* ПОСТ ХАРАГДАЦ & ЭФФЕКТҮҮД */
 .post { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #242b35; position: relative; transition: 0.3s ease; }
 .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .post-user { font-weight: bold; color: var(--accent-pink); }
@@ -100,65 +98,41 @@ textarea:focus { border-color: var(--accent); }
 .delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #6c727e; cursor: pointer; font-size: 1.1rem; }
 .delete-btn:hover { color: #ff0055; }
 
-/* 🌟 УХААЛАГ ФЭЙСБҮҮК ШИГ РЕАКЦ ЦЭС (HOVER DRAWER) SYSTEM */
 .reaction-container-wrapper { position: relative; display: inline-block; margin-top: 10px; border-top: 1px solid #242b35; padding-top: 10px; width: 100%; }
-.reaction-trigger-main-btn { background: #242b35; border: 1px solid transparent; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: 0.2s; }
-.reaction-container-wrapper:hover .reaction-trigger-main-btn { border-color: var(--accent); }
-
-/* ДЭЭШЭЭ ХӨВЖ ГАРЧ ИРДЭГ ЦЭС */
-.reaction-hover-drawer {
-    position: absolute; bottom: 45px; left: 0; background: #0d1115; 
-    border: 1px solid var(--accent); border-radius: 30px; padding: 6px 14px; 
-    display: flex; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-    opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 80;
-}
-/* ХУЛГАНА АВААЧИХ ЭСВЭЛ УДААН ДАРАХАД ИЛ ГАРНА */
+.reaction-trigger-main-btn { background: #242b35; border: 1px solid transparent; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+.reaction-hover-drawer { position: absolute; bottom: 45px; left: 0; background: #0d1115; border: 1px solid var(--accent); border-radius: 30px; padding: 6px 14px; display: flex; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 80; }
 .reaction-container-wrapper:hover .reaction-hover-drawer { opacity: 1; visibility: visible; transform: translateY(0); }
-
 .reaction-sub-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s; color: var(--text-sub); }
 .reaction-sub-btn:hover { transform: scale(1.3); color: var(--accent); }
 .reaction-sub-btn small { font-size: 0.65rem; font-weight: bold; margin-top: 2px; white-space: nowrap; }
 
-/* ЭФФЕКТИЙН БАРУУН ТАЛЫН ДҮРСҮҮД */
-.post-effect-icon-slot { position: absolute; top: 16px; right: 45px; font-size: 1.3rem; transition: 0.3s; }
-
-/* 🌟 ЭФФЕКТҮҮДИЙН ШАТАЛСАН АНИМАЦИУД (CSS EFFECTS) */
-/* 2-р шат (Хүрээ гэрэлтэх) */
+.post-effect-icon-slot { position: absolute; top: 16px; right: 45px; font-size: 1.3rem; }
 .effect-glow-medium { border-color: var(--accent) !important; box-shadow: 0 0 12px rgba(255, 183, 3, 0.3); }
-/* 3-р шат (Хүчтэй неон) */
 .effect-glow-high { border-color: #ff0055 !important; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); }
-/* 4-р шат (Домогт импульс гал/цахилгаан) */
 .effect-glow-legendary { border-color: #00f2fe !important; animation: legendaryPulse 1.5s infinite alternate; }
-
-@keyframes legendaryPulse {
-    from { box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
-    to { box-shadow: 0 0 25px rgba(0, 242, 254, 0.9), inset 0 0 10px rgba(0, 242, 254, 0.3); }
-}
-
-/* 👁️ НҮДНИЙ ОПАЦИТИ АНИВАЧИХ ЭФФЕКТ */
+@keyframes legendaryPulse { from { box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); } to { box-shadow: 0 0 25px rgba(0, 242, 254, 0.9); } }
 .eye-pulse-anim { animation: eyeBlinkEffect 2s infinite ease-in-out; }
-@keyframes eyeBlinkEffect {
-    0%, 100% { opacity: 0.2; transform: scale(0.9); }
-    50% { opacity: 1; transform: scale(1.1); }
-}
+@keyframes eyeBlinkEffect { 0%, 100% { opacity: 0.2; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
 
-/* КОММЕНТ БА БУСАД */
 .comment-section { border-top: 1px solid #242b35; padding-top: 10px; margin-top: 12px; }
 .comment-item { background-color: #12161a; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; color: #e4e6eb; border: 1px solid #242b35; }
 .comment-input-group { display: flex; gap: 8px; margin-top: 8px; }
 .comment-input { flex: 1; background-color: #12161a; border: 1px solid #242b35; border-radius: 8px; color: white; padding: 8px 12px; outline: none; }
 .comment-btn { background-color: #242b35; color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
+/* 👤 ПРОФАЙЛ ЗАСАХ ПАНЕЛИЙГ ТӨГС БАЙРШУУЛАХ */
+.profile-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #242b35; margin-bottom: 20px; position: relative; }
 .profile-cover-wrapper { position: relative; width: 100%; height: 160px; border-radius: 12px; overflow: hidden; background: #0d1115; border: 1px solid #242b35; }
 .profile-cover { width: 100%; height: 100%; object-fit: cover; }
 .avatar-container { position: relative; width: 100px; height: 100px; margin: -50px auto 10px auto; cursor: pointer; z-index: 10; }
 .avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg); }
 .avatar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; color: #fff; font-size: 1.2rem; }
 .avatar-container:hover .avatar-overlay { opacity: 1; }
-.profile-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #242b35; margin-bottom: 20px; }
-.edit-profile-trigger-btn { background: none; border: 1px dashed var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 0.85rem; }
-.edit-profile-panel { background: #12161a; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #242b35; text-align: left; }
 
+.edit-profile-trigger-btn { background: none; border: 1px dashed var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 0.85rem; }
+.edit-profile-panel { background: #12161a; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #242b35; text-align: left; position: relative; z-index: 20; }
+
+/* ЧАТНЫ КАНАЛУУД */
 .multi-chat-wrapper { display: flex; gap: 15px; width: 100%; min-height: 420px; }
 .chat-main-window { flex: 1.3; display: flex; flex-direction: column; }
 .chat-box { background-color: var(--card-bg); border-radius: 16px; height: 350px; border: 1px solid #242b35; display: flex; flex-direction: column; overflow: hidden; }
