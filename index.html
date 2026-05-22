@@ -3,296 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>i know tomorrow - Ирээдүйн Сошиал Платформ</title>
+    <title>i know tomorrow</title>
     <link href="https://googleapis.com" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0b0c10; --card-bg: #1f2833; --text-main: #ffffff;
-            --text-sub: #c5a1ff; --accent: #00f2fe; --accent-pink: #4facfe;
-        }
-        body {
-            background-color: var(--bg-color); color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center; padding-bottom: 80px;
-        }
-        header {
-            width: 100%; max-width: 550px; display: flex; justify-content: space-between;
-            align-items: center; padding: 20px 15px; box-sizing: border-box;
-        }
-        header h1 {
-            font-family: 'Fredoka', cursive;
-            background: linear-gradient(45deg, var(--accent), var(--accent-pink));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 1.8rem;
-        }
-        .lang-btn {
-            background: transparent; color: var(--accent); border: 1px solid var(--accent);
-            padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold;
-        }
-        .main-container { width: 90%; max-width: 550px; }
-        .page { display: none; }
-        .page.active { display: block; }
-        .feed-box {
-            background-color: var(--card-bg); border-radius: 16px; padding: 16px;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); margin-bottom: 20px; border: 1px solid #2f3b4c;
-        }
-        .category-select, .user-select {
-            width: 100%; padding: 10px; border-radius: 8px; background-color: #0b0c10;
-            color: white; border: 1px solid var(--accent); margin-bottom: 12px; font-size: 0.95rem;
-        }
-        textarea {
-            width: 100%; height: 90px; background-color: #121824; border: 1px solid #2f3b4c;
-            border-radius: 8px; color: white; padding: 12px; box-sizing: border-box; resize: none; margin-bottom: 12px;
-        }
-        .submit-btn {
-            width: 100%; background: linear-gradient(45deg, #00f2fe, #4facfe); color: #000;
-            border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-        .post {
-            background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px;
-            border: 1px solid #2f3b4c; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .post-user { font-weight: bold; color: var(--accent-pink); }
-        .badge { background-color: #ff007f; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
-        .post-time { font-size: 0.8rem; color: #8a8d91; margin-bottom: 10px; }
-        .post-content { font-size: 1.05rem; line-height: 1.5; white-wrap: pre-wrap; margin-bottom: 15px; }
-        .post-actions { display: flex; gap: 15px; margin-bottom: 10px; }
-        .like-btn { background: none; border: none; color: #ff007f; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .delete-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #8a8d91; cursor: pointer; font-size: 1.1rem; }
-        .delete-btn:hover { color: #ff007f; }
-        .comment-section { border-top: 1px solid #2f3b4c; padding-top: 10px; }
-        .comment-item { background-color: #121824; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; }
-        .comment-input-group { display: flex; gap: 8px; }
-        .comment-input { flex: 1; background-color: #121824; border: 1px solid #2f3b4c; border-radius: 6px; color: white; padding: 6px 10px; }
-        .comment-btn { background-color: #3a3b3c; color: white; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; }
-        .profile-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #2f3b4c; margin-bottom: 20px; }
-        .avatar { width: 80px; height: 80px; background: linear-gradient(45deg, #00f2fe, #ff007f); border-radius: 50%; margin: 0 auto 10px; }
-        .chat-box { background-color: var(--card-bg); border-radius: 16px; height: 350px; border: 1px solid #2f3b4c; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 75%; padding: 10px; border-radius: 12px; font-size: 0.95rem; }
-        .msg.sent { background-color: #00f2fe; color: #000; align-self: flex-end; }
-        .msg.received { background-color: #3a3b3c; color: #fff; align-self: flex-start; }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 550px; background-color: #121824; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2f3b4c; box-sizing: border-box; }
-        .nav-item { background: none; border: none; color: #8a8d91; font-size: 0.95rem; font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: var(--accent); }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>iknowtomorrow</h1>
-        <button id="langBtn" class="lang-btn" onclick="toggleLanguage()">English</button>
-    </header>
-    <div class="main-container">
-        <!-- 1. FEED -->
-        <div id="page-feed" class="page active">
-            <div class="feed-box">
-                <select id="userSelect" class="user-select" onchange="updateProfileName()">
-                    <option value="Sainaa">Sainaa (Үндсэн Хэрэглэгч)</option>
-                    <option value="Anonymous Alien">Anonymous Alien</option>
-                </select>
-                <select id="categorySelect" class="category-select"></select>
-                <textarea id="postInput"></textarea>
-                <button id="submitBtn" class="submit-btn" onclick="createPost()"></button>
-            </div>
-            <div id="postsContainer"></div>
+
+    <!-- ФЭЙСБҮҮК ШИГ ЗҮҮН ТАЛЫН ЦЭС (SIDEBAR) -->
+    <div class="sidebar">
+        <h1 class="logo">iknowtomorrow</h1>
+        
+        <div class="menu-links">
+            <button class="menu-btn active" id="nav-feed" onclick="switchPage('feed')">🏠 Feed</button>
+            <button class="menu-btn" id="nav-profile" onclick="switchPage('profile')">👤 Profile</button>
+            <button class="menu-btn" id="nav-chats" onclick="switchPage('chats')">💬 Chats</button>
         </div>
-        <!-- 2. PROFILE -->
-        <div id="page-profile" class="page">
-            <div class="profile-card">
-                <div class="avatar"></div>
-                <h2 id="profileName">Sainaa</h2>
-                <p id="profileTitle" style="color: var(--text-sub)">🔮 Ирээдүйг Зөгнөгч Магистр</p>
+
+        <!-- ЦЭСНИЙ ДООР ХАРАГДАХ ПРОФАЙЛ ХЭСЭГ -->
+        <div class="sidebar-user" onclick="switchPage('profile')">
+            <div class="mini-avatar"></div>
+            <div class="user-info">
+                <span id="sidebarName">Sainaa</span>
+                <small>🔮 Active Now</small>
             </div>
-            <h3 id="myPostsTitle">Миний Зөгнөлүүд</h3>
-            <div id="myPostsContainer"></div>
         </div>
-        <!-- 3. CHATS -->
-        <div id="page-chats" class="page">
-            <div style="margin-bottom: 10px;">
-                <label id="chatWithLabel">Хэнтэй чатлах: </label>
-                <select id="chatPartner" class="category-select" style="width: auto; display: inline-block;" onchange="loadChats()">
-                    <option value="Future Bot 🤖">Future Bot 🤖</option>
-                    <option value="Amaraa (Найз ☄️)">Amaraa (Найз ☄️)</option>
-                </select>
+    </div>
+
+    <!-- ҮНДСЭН КОНТЕНТ ХАРАГДАХ ХЭСЭГ -->
+    <div class="content-area">
+        <header>
+            <div></div> <!-- Тэнцвэржүүлэгч -->
+            <button id="langBtn" onclick="toggleLanguage()">English</button>
+        </header>
+
+        <div class="main-container">
+            <!-- FEED PAGE -->
+            <div id="page-feed" class="page active">
+                <div class="feed-box">
+                    <select id="userSelect" onchange="updateProfileName()">
+                        <option value="Sainaa">Sainaa (Үндсэн Хэрэглэгч)</option>
+                        <option value="Anonymous Alien">Anonymous Alien</option>
+                    </select>
+                    <select id="categorySelect"></select>
+                    <textarea id="postInput"></textarea>
+                    <button id="submitBtn" onclick="createPost()"></button>
+                </div>
+                <div id="postsContainer"></div>
             </div>
-            <div class="chat-box">
-                <div class="chat-messages" id="chatMessages"></div>
-                <div class="comment-input-group" style="padding: 10px; background: #121824;">
-                    <input type="text" class="comment-input" id="chatInput">
-                    <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
+
+            <!-- PROFILE PAGE -->
+            <div id="page-profile" class="page">
+                <div class="profile-card">
+                    <div class="avatar"></div>
+                    <h2 id="profileName">Sainaa</h2>
+                    <p id="profileTitle" style="color: var(--text-sub)">🔮 Ирээдүйг Зөгнөгч Магистр</p>
+                </div>
+                <h3 id="myPostsTitle">Миний Зөгнөлүүд</h3>
+                <div id="myPostsContainer"></div>
+            </div>
+
+            <!-- CHATS PAGE -->
+            <div id="page-chats" class="page">
+                <div style="margin-bottom: 10px;">
+                    <label id="chatWithLabel">Хэнтэй чатлах: </label>
+                    <select id="chatPartner" onchange="loadChats()">
+                        <option value="Future Bot 🤖">Future Bot 🤖</option>
+                        <option value="Amaraa (Найз ☄️)">Amaraa (Найз ☄️)</option>
+                    </select>
+                </div>
+                <div class="chat-box">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="comment-input-group" style="padding: 10px; background: #121824;">
+                        <input type="text" class="comment-input" id="chatInput">
+                        <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="nav-bar">
-        <button class="nav-item active" id="nav-feed" onclick="switchPage('feed')">🏠 Feed</button>
-        <button class="nav-item" id="nav-profile" onclick="switchPage('profile')">👤 Profile</button>
-        <button class="nav-item" id="nav-chats" onclick="switchPage('chats')">💬 Chats</button>
-    </div>
-    <script>
-        const translations = {
-            mn: {
-                placeholder: "Ирээдүйд юу болох бол? Энд хуваалц...",
-                submit: "Нийтлэх", commentPlaceholder: "Сэтгэгдэл бичих...",
-                send: "Илгээх", alert: "Зөгнөлөө бичнэ үү, андаа!",
-                myPosts: "📌 Миний оруулсан зөгнөлүүд", chatWith: "Хэнтэй чатлах: ",
-                chatPlaceholder: "Мессеж бичих...",
-                categories: ["🤖 Хиймэл оюун ухаан (AI)", "🚀 Ирээдүйн Технологи", "🔮 Зүүд ба Зөн совин", "👽 Харийн гариг", "🦾 Хиймэл эрхтэн / Киборг"]
-            },
-            en: {
-                placeholder: "What will happen in the future? Share here...",
-                submit: "Post", commentPlaceholder: "Write a comment...",
-                send: "Send", alert: "Please write your prediction first!",
-                myPosts: "📌 My Predictions", chatWith: "Chat with: ",
-                chatPlaceholder: "Type a message...",
-                categories: ["🤖 Artificial Intelligence (AI)", "🚀 Future Technology", "🔮 Dreams & Intuition", "👽 Aliens & Outer Space", "🦾 Artificial Organs / Cyborg"]
-            }
-        };
 
-        let currentLang = localStorage.getItem('iknow_lang') || 'mn';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateLanguageUI(); loadPosts(); loadChats();
-        });
-
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`page-${pageId}`).classList.add('active');
-            document.getElementById(`nav-${pageId}`).classList.add('active');
-            if(pageId === 'profile') renderMyPosts();
-        }
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'mn' ? 'en' : 'mn';
-            localStorage.setItem('iknow_lang', currentLang);
-            updateLanguageUI(); renderPosts();
-            if(document.getElementById('page-profile').classList.contains('active')) renderMyPosts();
-        }
-
-        function updateLanguageUI() {
-            const t = translations[currentLang];
-            document.getElementById('langBtn').innerText = currentLang === 'mn' ? 'English' : 'Монгол';
-            document.getElementById('postInput').placeholder = t.placeholder;
-            document.getElementById('submitBtn').innerText = t.submit;
-            document.getElementById('myPostsTitle').innerText = t.myPosts;
-            document.getElementById('chatWithLabel').innerText = t.chatWith;
-            document.getElementById('chatInput').placeholder = t.chatPlaceholder;
-            document.getElementById('chatSendBtn').innerText = t.send;
-
-            const select = document.getElementById('categorySelect');
-            select.innerHTML = '';
-            t.categories.forEach(cat => {
-                const opt = document.createElement('option'); opt.value = cat; opt.innerText = cat; select.appendChild(opt);
-            });
-        }
-
-        function updateProfileName() {
-            document.getElementById('profileName').innerText = document.getElementById('userSelect').value;
-        }
-
-        function createPost() {
-            const content = document.getElementById('postInput').value.trim();
-            const category = document.getElementById('categorySelect').value;
-            const user = document.getElementById('userSelect').value;
-            if(!content) { alert(translations[currentLang].alert); return; }
-
-            const now = new Date();
-            const formattedDate = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-            const newPost = { id: Date.now(), user: user, category: category, content: content, time: formattedDate, likes: 0, comments: [] };
-            let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            posts.unshift(newPost); localStorage.setItem('iknow_posts', JSON.stringify(posts));
-            document.getElementById('postInput').value = ''; renderPosts();
-        }
-
-        function loadPosts() {
-            let posts = JSON.parse(localStorage.getItem('iknow_posts'));
-            if(!posts) {
-                posts = [{ id: 1, user: "Sainaa", category: "🤖 Хиймэл оюун ухаан (AI)", content: "2030 он гэхэд энэ сошиал сайт дээр хүмүүс тархиараа холбогдож пост оруулдаг болох байх даа!", time: "2026/05/22 19:45", likes: 5, comments: ["Үнэхээр гайхалтай зөгнөл байна! 🔥"] }];
-                localStorage.setItem('iknow_posts', JSON.stringify(posts));
-            }
-            renderPosts();
-        }
-
-        function renderPosts() {
-            const container = document.getElementById('postsContainer');
-            const posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            const t = translations[currentLang]; container.innerHTML = '';
-
-            posts.forEach(post => {
-                let commentHTML = '';
-                post.comments.forEach(c => commentHTML += `<div class="comment-item">${c}</div>`);
-                container.innerHTML += `
-                    <div class="post">
-                        <button class="delete-btn" onclick="deletePost(${post.id})">✕</button>
-                        <div class="post-header"><span class="post-user">👤 ${post.user}</span><span class="badge">${post.category}</span></div>
-                        <div class="post-time">📅 ${post.time}</div>
-                        <div class="post-content">${post.content}</div>
-                        <div class="post-actions">
-                            <button class="like-btn" onclick="likePost(${post.id})">❤️ <span>${post.likes || 0}</span></button>
-                        </div>
-                        <div class="comment-section">
-                            <div class="comment-list">${commentHTML}</div>
-                            <div class="comment-input-group">
-                                <input type="text" class="comment-input" id="input-${post.id}" placeholder="${t.commentPlaceholder}">
-                                <button class="comment-btn" onclick="addComment(${post.id})">${t.send}</button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function renderMyPosts() {
-            const container = document.getElementById('myPostsContainer');
-            const posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            const currentUser = document.getElementById('userSelect').value;
-            const myPosts = posts.filter(p => p.user === currentUser); container.innerHTML = '';
-            if(myPosts.length === 0) { container.innerHTML = `<p style="color:#8a8d91; text-align:center;">Одоогоор нийтлэл байхгүй байна.</p>`; return; }
-            myPosts.forEach(post => {
-                container.innerHTML += `<div class="post"><div class="post-header"><span class="badge">${post.category}</span></div><div class="post-time">📅 ${post.time}</div><div class="post-content">${post.content}</div></div>`;
-            });
-        }
-
-        function likePost(postId) {
-            let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            const idx = posts.findIndex(p => p.id === postId);
-            if(idx !== -1) { posts[idx].likes = (posts[idx].likes || 0) + 1; localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts(); }
-        }
-
-        function deletePost(postId) {
-            if(!confirm("Энэ зөгнөлийг устгах уу, андаа?")) return;
-            let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            posts = posts.filter(p => p.id !== postId); localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts();
-        }
-
-        function addComment(postId) {
-            const inputField = document.getElementById(`input-${postId}`); const text = inputField.value.trim(); if(!text) return;
-            let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            const idx = posts.findIndex(p => p.id === postId);
-            if(idx !== -1) { posts[idx].comments.push(text); localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts(); }
-        }
-
-        function loadChats() {
-            const partner = document.getElementById('chatPartner').value; const chatMessages = document.getElementById('chatMessages'); chatMessages.innerHTML = '';
-            let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
-            let currentChat = allChats[partner] || [{ sender: 'them', text: "Сайн уу! Маргаашийн технологийн талаар ярилцах уу? 🚀" }];
-            currentChat.forEach(msg => {
-                const div = document.createElement('div'); div.classList.add('msg', msg.sender === 'me' ? 'sent' : 'received'); div.innerText = msg.text; chatMessages.appendChild(div);
-            });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function sendDirectMessage() {
-            const input = document.getElementById('chatInput'); const text = input.value.trim(); if(!text) return;
-            const partner = document.getElementById('chatPartner').value; let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
-            if(!allChats[partner]) allChats[partner] = [{ sender: 'them', text: "Сайн уу! Маргаашийн технологийн талаар ярилцах уу? 🚀" }];
-            allChats[partner].push({ sender: 'me', text: text }); localStorage.setItem('iknow_chats', JSON.stringify(allChats));
-            input.value = ''; loadChats();
-            if(partner.includes("Bot")) {
-                setTimeout(() => {
-                    allChats[partner].push({ sender: 'them', text: "Ирээдүйг зөгнөсөн гайхалтай мессеж байна! Би үүнийг датабаздаа хадгаллаа. 🤖✨" });
-localStorage.setItem('iknow_chats', JSON.stringify(allChats)); loadChats();
-}, 1000);
-}
-}
+    <script src="script.js"></script>
+</body>
+</html>
