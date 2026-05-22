@@ -9,27 +9,35 @@
 </head>
 <body>
 
-    <!-- SIDEBAR MENU -->
+    <!-- ФЭЙСБҮҮК ШИГ ЗҮҮН ТАЛЫН ЦЭС (SIDEBAR) -->
     <div class="sidebar">
         <h1 class="logo">iknowtomorrow</h1>
         <div class="menu-links">
             <button class="menu-btn active" id="nav-feed" onclick="switchPage('feed')">🏠 Feed</button>
-            <button class="menu-btn" id="nav-profile" onclick="switchPage('profile')">👤 Profile</button>
+            <button class="menu-btn" id="nav-myposts" onclick="switchPage('myposts')">📌 My Posts</button>
+            <button class="menu-btn" id="nav-friends" onclick="switchPage('friends')">👥 Friends</button>
             <button class="menu-btn" id="nav-chats" onclick="switchPage('chats')">💬 Chats</button>
+            <button class="menu-btn" id="nav-profile" onclick="switchPage('profile')">👤 Profile Settings</button>
         </div>
-        <div class="sidebar-user" onclick="switchPage('profile')">
+        
+        <!-- ЦЭСНИЙ ДООР СУУРИЛСАН ПРОФАЙЛ БА ОНЛАЙН ТӨЛӨВ СОЛИГЧ -->
+        <div class="sidebar-user">
             <img id="sidebarAvatar" class="mini-avatar" src="https://placeholder.com" alt="avatar">
             <div class="user-info">
                 <span id="sidebarName">Sainaa</span>
-                <small>🔮 Active Now</small>
+                <select id="statusSelect" onchange="changeOnlineStatus()">
+                    <option value="Active Now">🟢 Active Now</option>
+                    <option value="Sleeping">🌙 Sleeping</option>
+                    <option value="Offline">🔴 Offline</option>
+                </select>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT AREA -->
+    <!-- БАРУУН ТАЛЫН ҮНДСЭН ХЭСЭГ -->
     <div class="content-area">
         <header>
-            <div id="searchTagDisplay" style="color:var(--accent); font-weight:bold;"></div>
+            <div id="searchTagDisplay"></div>
             <button id="langBtn" onclick="toggleLanguage()">English</button>
         </header>
 
@@ -37,71 +45,106 @@
             <!-- 1. FEED PAGE -->
             <div id="page-feed" class="page active">
                 <div class="feed-box">
-                    <select id="userSelect" onchange="updateProfileName()">
-                        <option value="Sainaa">Sainaa (Үндсэн Хэрэглэгч)</option>
-                        <option value="Anonymous Alien">Anonymous Alien</option>
-                    </select>
-                    <select id="categorySelect"></select>
-                    <textarea id="postInput"></textarea>
-                    
-                    <!-- МЕДИА ХАВСАРГАХ (ЗУРАГ БА БИЧЛЕГ) -->
-                    <div class="file-upload-group" style="display:flex; gap:10px;">
-                        <label for="postImageInput" class="file-label">📷 Зураг</label>
-                        <input type="file" id="postImageInput" accept="image/*" onchange="previewPostMedia('image')">
-                        
-                        <label for="postVideoInput" class="file-label" style="background-color:#4facfe;">🎥 Бичлэг</label>
-                        <input type="file" id="postVideoInput" accept="video/*" onchange="previewPostMedia('video')">
+                    <div class="feed-box-header">
+                        <span id="currentUserLabel" style="font-weight:bold; color:var(--accent-pink);">👤 Sainaa</span>
                     </div>
-                    <div id="mediaPreviewContainer"></div>
+                    <!-- ПОСТ ОРУУЛАХ ТАЛБАР -->
+                    <textarea id="postInput" onkeydown="handlePostSubmit(event)"></textarea>
                     
-                    <button id="submitBtn" onclick="createPost()"></button>
+                    <!-- МЕДИА ОРУУЛАХ ЦЭВЭРХЭН ИКОН ТОВЧНУУД -->
+                    <div class="post-footer-actions">
+                        <div class="media-buttons">
+                            <label for="postImageInput" class="icon-media-btn">📷 Image</label>
+                            <input type="file" id="postImageInput" accept="image/*" onchange="previewMedia('image')">
+                            
+                            <label for="postVideoInput" class="icon-media-btn" style="background:#4facfe;">🎥 Video</label>
+                            <input type="file" id="postVideoInput" accept="video/*" onchange="previewMedia('video')">
+                        </div>
+                        <button id="submitBtn" class="main-post-btn" onclick="createPost()">Post</button>
+                    </div>
+                    
+                    <!-- МЕДИА УРДЧИЛЖ ХАРАХ БА УСТГАХ ХАЙРЦАГ -->
+                    <div id="mediaPreviewBox" class="preview-box-container" style="display:none;">
+                        <button class="preview-close-btn" onclick="clearSelectedMedia()">✕</button>
+                        <div id="mediaPreviewContent"></div>
+                    </div>
                 </div>
-                <!-- ТАГУУДААР ШҮҮХ ХЭСЭГ -->
-                <div style="margin-bottom:15px; display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="lang-btn" onclick="filterByTag('')">🔄 Бүх Пост</button>
-                    <button class="lang-btn" onclick="filterByTag('ai')">#ai</button>
-                    <button class="lang-btn" onclick="filterByTag('харьгариг')">#харьгариг</button>
-                    <button class="lang-btn" onclick="filterByTag('ирээдүй')">#ирээдүй</button>
-                    <button class="lang-btn" onclick="filterByTag('зүүд')">#зүүд</button>
+
+                <!-- ТАГУУДААР ШҮҮХ ТОВЧНУУД -->
+                <div class="tag-filter-bar">
+                    <button class="tag-filter-btn" onclick="filterByTag('')">🔄 All Posts</button>
+                    <button class="tag-filter-btn" onclick="filterByTag('ai')">#ai</button>
+                    <button class="tag-filter-btn" onclick="filterByTag('aliens')">#aliens</button>
+                    <button class="tag-filter-btn" onclick="filterByTag('dreams')">#dreams</button>
+                    <button class="tag-filter-btn" onclick="filterByTag('future')">#future</button>
                 </div>
                 <div id="postsContainer"></div>
             </div>
 
-            <!-- 2. PROFILE PAGE -->
-            <div id="page-profile" class="page">
-                <div class="profile-card">
-                    <div class="avatar-container">
-                        <img id="profileAvatar" class="avatar" src="https://placeholder.com" alt="avatar">
-                        <label for="avatarInput" class="avatar-edit-label">Change</label>
-                        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="changeProfileAvatar()">
-                    </div>
-                    <h2 id="profileName">Sainaa</h2>
-                    <p id="profileTitle" style="color: var(--text-sub)">🔮 Ирээдүйг Зөгнөгч Магистр</p>
-                </div>
-                <h3 id="myPostsTitle">Миний Зөгнөлүүд</h3>
+            <!-- 2. MY POSTS PAGE -->
+            <div id="page-myposts" class="page">
+                <h3 id="myPostsTitle" style="color:var(--accent); margin-bottom:20px;">📌 Миний оруулсан зөгнөлүүд</h3>
                 <div id="myPostsContainer"></div>
             </div>
 
-            <!-- 3. CHATS PAGE -->
-            <div id="page-chats" class="page">
-                <!-- 🤖 ЗӨВХӨН ЭНД ХАРАГДАХ МЕМОРИ СИНК -->
-                <div id="robotSyncPanel" style="background:#2f3b4c; padding:12px; border-radius:12px; margin-bottom:15px; border-left:4px solid var(--accent); display:none;">
-                    <span id="robotSyncText">🔮 Роботын ой санамж: 0%</span>
-                </div>
+            <!-- 3. FRIENDS PAGE -->
+            <div id="page-friends" class="page">
+                <h3 style="color:var(--accent); margin-bottom:20px;">👥 Ирээдүйн Хамтрагчид / Friends</h3>
+                <div id="friendsListContainer"></div>
+            </div>
 
-                <div style="margin-bottom: 10px;">
-                    <label id="chatWithLabel">Хэнтэй чатлах: </label>
-                    <select id="chatPartner" onchange="loadChats()">
-                        <option value="Future Bot 🤖">Future Bot 🤖</option>
-                        <option value="Amaraa (Найз ☄️)">Amaraa (Найз ☄️)</option>
-                    </select>
-                </div>
-                <div class="chat-box">
-                    <div class="chat-messages" id="chatMessages"></div>
-                    <div class="comment-input-group" style="padding: 10px; background: #121824;">
-                        <input type="text" class="comment-input" id="chatInput">
-                        <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
+            <!-- 4. CHATS PAGE (2 ЦОНХ ЗЭРЭГЦЭЖ ХАРАГДАХ СУПЕР БҮТЭЦ) -->
+            <div id="page-chats" class="page">
+                <div class="multi-chat-wrapper">
+                    <!-- ЗҮҮН ЦОНХ: СОНГОСОН ХҮНТЭЙ ЧАТЛАХ -->
+                    <div class="chat-main-window">
+                        <div style="margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <label id="chatWithLabel" style="font-weight:bold;"></label>
+                            <select id="chatPartner" onchange="loadChats()" style="width:auto; margin:0; padding:5px;"></select>
+                        </div>
+                        <div class="chat-box">
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="comment-input-group" style="padding: 10px; background: #121824;">
+                                <input type="text" class="comment-input" id="chatInput" onkeydown="handleChatSubmit(event)">
+                                <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <!-- БАРУУН ЦОНХ: РОБОТЫН СИНК БА ДАТА ЛОГ -->
+                    <div class="chat-side-panel">
+                        <div class="side-panel-header">🤖 ERR_ID_2040 Core Log</div>
+                        <div id="robotSyncPanel" class="sync-glow-card">
+                            <div id="robotSyncText">🔮 Ой санамж: 0%</div>
+                            <div class="sync-progress-bar"><div id="syncProgressBarFill" class="sync-progress-fill" style="width:0%;"></div></div>
+                        </div>
+                        <div class="hint-card">
+                            <small style="color:#8a8d91;">Сэжүүрүүд:</small>
+                            <p style="margin:5px 0 0 0; font-size:0.85rem; color:var(--text-sub);">Хөлөг онгоцны нууц код: <strong>??2??6</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. PROFILE SETTINGS PAGE -->
+            <div id="page-profile" class="page">
+                <div class="profile-card">
+                    <!-- КОВЕР СЭДЭВ ЗУРАГ ХУУЛДАГ ХЭСЭГ -->
+                    <div class="profile-cover-wrapper">
+                        <img id="profileCoverImg" class="profile-cover" src="https://placeholder.com" alt="cover">
+                        <label for="coverInput" class="cover-edit-btn">📷 Change Cover Theme</label>
+                        <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="changeCoverTheme()">
+                    </div>
+                    
+                    <!-- БӨӨРӨНХИЙ АВАТАР ЗУРАГ СОЛИХ ХЭСЭГ -->
+                    <div class="avatar-container" onclick="triggerAvatarInput()">
+                        <img id="profileAvatar" class="avatar" src="https://placeholder.com" alt="avatar">
+                        <div class="avatar-overlay">📷</div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="changeProfileAvatar()">
+                    </div>
+                    
+                    <h2 id="profileName" style="margin-top:10px;">Sainaa</h2>
+                    <p id="profileTitleText" style="color: var(--text-sub); margin:5px 0 0 0;">🔮 Ирээдүйг Зөгнөгч Магистр</p>
                 </div>
             </div>
         </div>
