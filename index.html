@@ -19,6 +19,7 @@
             <button class="menu-btn" id="nav-chats" onclick="switchPage('chats')">💬 Chats</button>
             <button class="menu-btn" id="nav-profile" onclick="switchPage('profile')">👤 Profile Settings</button>
         </div>
+        
         <div class="sidebar-user">
             <img id="sidebarAvatar" class="mini-avatar" src="https://placeholder.com" alt="avatar">
             <div class="user-info">
@@ -44,18 +45,21 @@
             <div id="page-feed" class="page active">
                 <div class="feed-box">
                     <div class="feed-box-header">
-                        <span id="currentUserLabel" style="font-weight:bold; color:var(--accent);">👤 Sainaa</span>
+                        <span id="currentUserLabel" style="font-weight:bold; color:var(--accent-pink);">👤 Sainaa</span>
                     </div>
                     <textarea id="postInput" onkeydown="handlePostSubmit(event)"></textarea>
+                    
                     <div class="post-footer-actions">
                         <div class="media-buttons">
                             <label for="postImageInput" class="icon-media-btn">📷 Image</label>
                             <input type="file" id="postImageInput" accept="image/*" onchange="previewMedia('image')">
+                            
                             <label for="postVideoInput" class="icon-media-btn" style="background:#4facfe;">🎥 Video</label>
                             <input type="file" id="postVideoInput" accept="video/*" onchange="previewMedia('video')">
                         </div>
                         <button id="submitBtn" class="main-post-btn" onclick="createPost()">Post</button>
                     </div>
+                    
                     <div id="mediaPreviewBox" class="preview-box-container" style="display:none;">
                         <button class="preview-close-btn" onclick="clearSelectedMedia()">✕</button>
                         <div id="mediaPreviewContent"></div>
@@ -74,17 +78,17 @@
 
             <!-- 2. MY POSTS PAGE -->
             <div id="page-myposts" class="page">
-                <h3 id="myPostsTitle" style="color:var(--accent); margin-bottom:20px;">📌 Миний оруулсан зөгнөлүүд</h3>
+                <h3 id="myPostsTitle" style="color:var(--accent); margin-bottom:20px;">📌 Миний зөгнөлүүд</h3>
                 <div id="myPostsContainer"></div>
             </div>
 
             <!-- 3. FRIENDS PAGE -->
             <div id="page-friends" class="page">
-                <h3 style="color:var(--accent); margin-bottom:20px;">👥 Friends</h3>
+                <h3 style="color:var(--accent); margin-bottom:20px;">👥 Ирээдүйн Хамтрагчид / Friends</h3>
                 <div id="friendsListContainer"></div>
             </div>
 
-            <!-- 4. CHATS PAGE (НУУЦ ЦОНХ) -->
+            <!-- 4. CHATS PAGE -->
             <div id="page-chats" class="page">
                 <div class="multi-chat-wrapper">
                     <div class="chat-main-window">
@@ -100,17 +104,19 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="chat-side-panel">
                         <div class="side-panel-header">🤖 ERR_ID_2040 Core Log</div>
                         <div id="robotSyncPanel" class="sync-glow-card">
                             <div id="robotSyncText">🔮 Ой санамж: 0%</div>
                             <div class="sync-progress-bar"><div id="syncProgressBarFill" class="sync-progress-fill" style="width:0%;"></div></div>
                         </div>
+                        <!-- ХҮМҮҮСТ ХАРАГДАХ СЭЖҮҮРИЙН КАРТЫГ БҮРМӨСӨН УСТГАВ 🤫 -->
                     </div>
                 </div>
             </div>
 
-            <!-- 5. PROFILE SETTINGS (DOTA 2 THEME SELECTOR) -->
+            <!-- 5. PROFILE SETTINGS (DOTA 2 THEME SELECTION) -->
             <div id="page-profile" class="page">
                 <div class="profile-card">
                     <div class="profile-cover-wrapper">
@@ -118,21 +124,24 @@
                         <label for="coverInput" class="cover-edit-btn">📷 Change Cover Theme</label>
                         <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="changeCoverTheme()">
                     </div>
+                    
                     <div class="avatar-container" onclick="triggerAvatarInput()">
                         <img id="profileAvatar" class="avatar" src="https://placeholder.com" alt="avatar">
                         <div class="avatar-overlay">📷</div>
                         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="changeProfileAvatar()">
                     </div>
-                    <h2 id="profileName" style="margin-top:10px;">Sainaa</h2>
                     
-                    <!-- DOTA 2 СТИЛИЙН БҮРЭН ТӨРӨЛ СОЛИХ ХЭСЭГ -->
-                    <div style="margin-top:30px; border-top:1px solid #242b35; padding-top:20px; text-align:left;">
-                        <h4 style="color:var(--accent); margin:0 0 12px 0;">🎭 Select Custom Cyber Theme (Dota 2 Style)</h4>
-                        <div style="display:flex; gap:10px;">
-                            <button class="tag-filter-btn" style="border-color:#ffb703; color:#ffb703;" onclick="setCyberTheme('#ffb703', '#ffc300')">🔸 Electric Yellow</button>
-                            <button class="tag-filter-btn" style="border-color:#ff4757; color:#ff4757;" onclick="setCyberTheme('#ff4757', '#ff6b81')">🔺 Cyber Red</button>
-                            <button class="tag-filter-btn" style="border-color:#00f2fe; color:#00f2fe;" onclick="setCyberTheme('#00f2fe', '#4facfe')">🔹 Space Blue</button>
-                            <button class="tag-filter-btn" style="border-color:#2ed573; color:#2ed573;" onclick="setCyberTheme('#2ed573', '#7bed9f')">🟩 Matrix Green</button>
+                    <h2 id="profileName" style="margin-top:10px;">Sainaa</h2>
+                    <p id="profileTitleText" style="color: var(--text-sub); margin:5px 0 15px 0;">🔮 Ирээдүйг Зөгнөгч Магистр</p>
+
+                    <!-- DOTA 2 СТИЛИЙН БҮРЭН ЭРХ ЧӨЛӨӨТЭЙ ТЕМА СОЛИГЧ -->
+                    <div style="border-top:1px solid #242b35; padding-top:15px; text-align:left;">
+                        <h4 style="color:var(--accent); margin:0 0 10px 0;">⚔️ Dota 2 Сэдэв Сонгох / Select UI Theme</h4>
+                        <div style="display:flex; gap:8px;">
+                            <button class="tag-filter-btn" onclick="applyDotaTheme('#12161a', '#1a1f26', '#ffb703')">🟨 Cyber Yellow</button>
+                            <button class="tag-filter-btn" onclick="applyDotaTheme('#150c0c', '#251515', '#ff4b4b')">🟥 Dread Red</button>
+                            <button class="tag-filter-btn" onclick="applyDotaTheme('#0a1118', '#101c26', '#00f2fe')">🟦 Mana Blue</button>
+                            <button class="tag-filter-btn" onclick="applyDotaTheme('#0c140e', '#132217', '#00ff88')">🟩 Radiant Green</button>
                         </div>
                     </div>
                 </div>
