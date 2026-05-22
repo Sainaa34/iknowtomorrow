@@ -1,0 +1,79 @@
+:root {
+    --bg-color: #0b0c10; --card-bg: #1f2833; --text-main: #ffffff;
+    --text-sub: #c5a1ff; --accent: #00f2fe; --accent-pink: #4facfe;
+}
+body {
+    background-color: var(--bg-color); color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0;
+    display: flex; min-height: 100vh;
+}
+
+/* ЗҮҮН ТАЛЫН ЦЭСНИЙ ДИЗАЙН */
+.sidebar {
+    width: 260px; background-color: #121824; height: 100vh;
+    position: fixed; top: 0; left: 0; display: flex; flex-direction: column;
+    justify-content: space-between; border-right: 1px solid #2f3b4c; padding: 20px; box-sizing: border-box;
+}
+.logo {
+    font-family: 'Fredoka', cursive; font-size: 1.6rem; margin: 0 0 30px 0;
+    background: linear-gradient(45deg, var(--accent), var(--accent-pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.menu-links { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.menu-btn {
+    background: none; border: none; color: #8a8d91; text-align: left;
+    padding: 12px 15px; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.2s;
+}
+.menu-btn:hover, .menu-btn.active { background-color: var(--card-bg); color: var(--accent); }
+
+/* ЦЭСНИЙ ДООРХ ХЭРЭГЛЭГЧИЙН ХЭСЭГ */
+.sidebar-user {
+    display: flex; align-items: center; gap: 12px; padding: 12px;
+    background-color: #1a2234; border-radius: 12px; cursor: pointer; border: 1px solid #2f3b4c;
+}
+.mini-avatar { width: 40px; height: 40px; background: linear-gradient(45deg, #00f2fe, #ff007f); border-radius: 50%; }
+.user-info { display: flex; flex-direction: column; }
+.user-info span { font-weight: bold; font-size: 0.95rem; }
+.user-info small { color: #00ff88; font-size: 0.75rem; }
+
+/* БАРУУН ТАЛЫН ҮНДСЭН ХЭСЭГ */
+.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 5px; }
+header { width: 100%; max-width: 550px; display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
+#langBtn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+.main-container { width: 90%; max-width: 550px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ФЭЙСБҮҮК ШИГ ПОСТУУДЫН ДИЗАЙН */
+.feed-box { background-color: var(--card-bg); border-radius: 16px; padding: 16px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.1); margin-bottom: 20px; border: 1px solid #2f3b4c; }
+#categorySelect, #userSelect, #chatPartner { width: 100%; padding: 10px; border-radius: 8px; background-color: #0b0c10; color: white; border: 1px solid var(--accent); margin-bottom: 12px; font-size: 0.95rem; }
+textarea { width: 100%; height: 90px; background-color: #121824; border: 1px solid #2f3b4c; border-radius: 8px; color: white; padding: 12px; box-sizing: border-box; resize: none; margin-bottom: 12px; }
+#submitBtn { width: 100%; background: linear-gradient(45deg, #00f2fe, #4facfe); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+.post { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #2f3b4c; position: relative; }
+.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.post-user { font-weight: bold; color: var(--accent-pink); }
+.badge { background-color: #ff007f; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
+.post-time { font-size: 0.8rem; color: #8a8d91; margin-bottom: 10px; }
+.post-content { font-size: 1.05rem; line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
+.post-actions { display: flex; gap: 15px; margin-bottom: 10px; }
+.like-btn { background: none; border: none; color: #ff007f; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+.delete-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #8a8d91; cursor: pointer; font-size: 1.1rem; }
+.comment-section { border-top: 1px solid #2f3b4c; padding-top: 10px; }
+.comment-item { background-color: #121824; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; }
+.comment-input-group { display: flex; gap: 8px; }
+.comment-input { flex: 1; background-color: #121824; border: 1px solid #2f3b4c; border-radius: 6px; color: white; padding: 6px 10px; }
+.comment-btn { background-color: #3a3b3c; color: white; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; }
+.profile-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #2f3b4c; margin-bottom: 20px; }
+.avatar { width: 80px; height: 80px; background: linear-gradient(45deg, #00f2fe, #ff007f); border-radius: 50%; margin: 0 auto 10px; }
+.chat-box { background-color: var(--card-bg); border-radius: 16px; height: 350px; border: 1px solid #2f3b4c; display: flex; flex-direction: column; overflow: hidden; }
+.chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 75%; padding: 10px; border-radius: 12px; font-size: 0.95rem; }
+.msg.sent { background-color: #00f2fe; color: #000; align-self: flex-end; }
+.msg.received { background-color: #3a3b3c; color: #fff; align-self: flex-start; }
+
+/* Гар утсан дээр доод цэс рүү шилжих тохиргоо */
+@media (max-width: 768px) {
+    .sidebar { display: none; }
+    .content-area { margin-left: 0; }
+    /* Доод навигцийн хэсгийг script.js удирдах тул html-д шаардлагатай бол дараа нэмнэ */
+}
