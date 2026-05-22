@@ -292,3 +292,7 @@
             if(partner.includes("Bot")) {
                 setTimeout(() => {
                     allChats[partner].push({ sender: 'them', text: "Ирээдүйг зөгнөсөн гайхалтай мессеж байна! Би үүнийг датабаздаа хадгаллаа. 🤖✨" });
+localStorage.setItem('iknow_chats', JSON.stringify(allChats)); loadChats();
+}, 1000);
+}
+}
