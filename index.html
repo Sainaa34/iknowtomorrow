@@ -7,31 +7,22 @@
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0c10;
-            --card-bg: #1f2833;
-            --text-main: #ffffff;
-            --text-sub: #c5a1ff;
-            --accent: #00f2fe;
-            --accent-pink: #4facfe;
+            --bg-color: #0b0c10; --card-bg: #1f2833; --text-main: #ffffff;
+            --text-sub: #c5a1ff; --accent: #00f2fe; --accent-pink: #4facfe;
         }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-            padding-bottom: 80px;
+            background-color: var(--bg-color); color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center; padding-bottom: 80px;
         }
         header {
-            width: 100%; max-width: 550px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 15px; box-sizing: border-box;
+            width: 100%; max-width: 550px; display: flex; justify-content: space-between;
+            align-items: center; padding: 20px 15px; box-sizing: border-box;
         }
         header h1 {
             font-family: 'Fredoka', cursive;
             background: linear-gradient(45deg, var(--accent), var(--accent-pink));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin: 0; font-size: 1.8rem;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 1.8rem;
         }
         .lang-btn {
             background: transparent; color: var(--accent); border: 1px solid var(--accent);
@@ -42,28 +33,33 @@
         .page.active { display: block; }
         .feed-box {
             background-color: var(--card-bg); border-radius: 16px; padding: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin-bottom: 20px; border: 1px solid #2f3b4c;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); margin-bottom: 20px; border: 1px solid #2f3b4c;
         }
         .category-select, .user-select {
-            width: 100%; padding: 10px; border-radius: 8px;
-            background-color: #0b0c10; color: white; border: 1px solid var(--accent);
-            margin-bottom: 12px; font-size: 0.95rem;
+            width: 100%; padding: 10px; border-radius: 8px; background-color: #0b0c10;
+            color: white; border: 1px solid var(--accent); margin-bottom: 12px; font-size: 0.95rem;
         }
         textarea {
             width: 100%; height: 90px; background-color: #121824; border: 1px solid #2f3b4c;
-            border-radius: 8px; color: white; padding: 12px; box-sizing: border-box;
-            resize: none; font-size: 1rem; margin-bottom: 12px;
+            border-radius: 8px; color: white; padding: 12px; box-sizing: border-box; resize: none; margin-bottom: 12px;
         }
         .submit-btn {
-            width: 100%; background: linear-gradient(45deg, #00f2fe, #4facfe);
-            color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
+            width: 100%; background: linear-gradient(45deg, #00f2fe, #4facfe); color: #000;
+            border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
         }
-        .post { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #2f3b4c; }
+        .post {
+            background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px;
+            border: 1px solid #2f3b4c; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .post-user { font-weight: bold; color: var(--accent-pink); }
         .badge { background-color: #ff007f; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
         .post-time { font-size: 0.8rem; color: #8a8d91; margin-bottom: 10px; }
-        .post-content { font-size: 1.05rem; line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
+        .post-content { font-size: 1.05rem; line-height: 1.5; white-wrap: pre-wrap; margin-bottom: 15px; }
+        .post-actions { display: flex; gap: 15px; margin-bottom: 10px; }
+        .like-btn { background: none; border: none; color: #ff007f; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .delete-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #8a8d91; cursor: pointer; font-size: 1.1rem; }
+        .delete-btn:hover { color: #ff007f; }
         .comment-section { border-top: 1px solid #2f3b4c; padding-top: 10px; }
         .comment-item { background-color: #121824; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; }
         .comment-input-group { display: flex; gap: 8px; }
@@ -87,6 +83,7 @@
         <button id="langBtn" class="lang-btn" onclick="toggleLanguage()">English</button>
     </header>
     <div class="main-container">
+        <!-- 1. FEED -->
         <div id="page-feed" class="page active">
             <div class="feed-box">
                 <select id="userSelect" class="user-select" onchange="updateProfileName()">
@@ -99,6 +96,7 @@
             </div>
             <div id="postsContainer"></div>
         </div>
+        <!-- 2. PROFILE -->
         <div id="page-profile" class="page">
             <div class="profile-card">
                 <div class="avatar"></div>
@@ -108,6 +106,7 @@
             <h3 id="myPostsTitle">Миний Зөгнөлүүд</h3>
             <div id="myPostsContainer"></div>
         </div>
+        <!-- 3. CHATS -->
         <div id="page-chats" class="page">
             <div style="margin-bottom: 10px;">
                 <label id="chatWithLabel">Хэнтэй чатлах: </label>
@@ -119,8 +118,8 @@
             <div class="chat-box">
                 <div class="chat-messages" id="chatMessages"></div>
                 <div class="comment-input-group" style="padding: 10px; background: #121824;">
-                    <input type="text" class="comment-input" id="chatInput" placeholder="Мессеж бичих...">
-                    <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()">Илгээх</button>
+                    <input type="text" class="comment-input" id="chatInput">
+                    <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
                 </div>
             </div>
         </div>
@@ -153,9 +152,7 @@
         let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateLanguageUI();
-            loadPosts();
-            loadChats();
+            updateLanguageUI(); loadPosts(); loadChats();
         });
 
         function switchPage(pageId) {
@@ -169,8 +166,7 @@
         function toggleLanguage() {
             currentLang = currentLang === 'mn' ? 'en' : 'mn';
             localStorage.setItem('iknow_lang', currentLang);
-            updateLanguageUI();
-            renderPosts();
+            updateLanguageUI(); renderPosts();
             if(document.getElementById('page-profile').classList.contains('active')) renderMyPosts();
         }
 
@@ -187,54 +183,33 @@
             const select = document.getElementById('categorySelect');
             select.innerHTML = '';
             t.categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat; opt.innerText = cat; select.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = cat; opt.innerText = cat; select.appendChild(opt);
             });
         }
 
         function updateProfileName() {
-            const currentUser = document.getElementById('userSelect').value;
-            document.getElementById('profileName').innerText = currentUser;
+            document.getElementById('profileName').innerText = document.getElementById('userSelect').value;
         }
 
         function createPost() {
             const content = document.getElementById('postInput').value.trim();
             const category = document.getElementById('categorySelect').value;
             const user = document.getElementById('userSelect').value;
-            
             if(!content) { alert(translations[currentLang].alert); return; }
 
             const now = new Date();
             const formattedDate = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-            const newPost = {
-                id: Date.now(),
-                user: user,
-                category: category,
-                content: content,
-                time: formattedDate,
-                comments: []
-            };
-
+            const newPost = { id: Date.now(), user: user, category: category, content: content, time: formattedDate, likes: 0, comments: [] };
             let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            posts.unshift(newPost);
-            localStorage.setItem('iknow_posts', JSON.stringify(posts));
-
-            document.getElementById('postInput').value = '';
-            renderPosts();
+            posts.unshift(newPost); localStorage.setItem('iknow_posts', JSON.stringify(posts));
+            document.getElementById('postInput').value = ''; renderPosts();
         }
 
         function loadPosts() {
             let posts = JSON.parse(localStorage.getItem('iknow_posts'));
             if(!posts) {
-                posts = [{
-                    id: 1,
-                    user: "Sainaa",
-                    category: "🤖 Хиймэл оюун ухаан (AI)",
-                    content: "2030 он гэхэд бидний хийж буй энэ сошиал сайт дээр хүмүүс тархиараа холбогдож пост оруулдаг болох байх даа!",
-                    time: "2026/05/22 19:45",
-                    comments: ["Үнэхээр гайхалтай зөгнөл байна андаа! 🔥"]
-                }];
+                posts = [{ id: 1, user: "Sainaa", category: "🤖 Хиймэл оюун ухаан (AI)", content: "2030 он гэхэд энэ сошиал сайт дээр хүмүүс тархиараа холбогдож пост оруулдаг болох байх даа!", time: "2026/05/22 19:45", likes: 5, comments: ["Үнэхээр гайхалтай зөгнөл байна! 🔥"] }];
                 localStorage.setItem('iknow_posts', JSON.stringify(posts));
             }
             renderPosts();
@@ -243,21 +218,20 @@
         function renderPosts() {
             const container = document.getElementById('postsContainer');
             const posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
-            const t = translations[currentLang];
-            container.innerHTML = '';
+            const t = translations[currentLang]; container.innerHTML = '';
 
             posts.forEach(post => {
                 let commentHTML = '';
                 post.comments.forEach(c => commentHTML += `<div class="comment-item">${c}</div>`);
-
                 container.innerHTML += `
                     <div class="post">
-                        <div class="post-header">
-                            <span class="post-user">👤 ${post.user}</span>
-                            <span class="badge">${post.category}</span>
-                        </div>
+                        <button class="delete-btn" onclick="deletePost(${post.id})">✕</button>
+                        <div class="post-header"><span class="post-user">👤 ${post.user}</span><span class="badge">${post.category}</span></div>
                         <div class="post-time">📅 ${post.time}</div>
                         <div class="post-content">${post.content}</div>
+                        <div class="post-actions">
+                            <button class="like-btn" onclick="likePost(${post.id})">❤️ <span>${post.likes || 0}</span></button>
+                        </div>
                         <div class="comment-section">
                             <div class="comment-list">${commentHTML}</div>
                             <div class="comment-input-group">
@@ -273,73 +247,48 @@
             const container = document.getElementById('myPostsContainer');
             const posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
             const currentUser = document.getElementById('userSelect').value;
-            const myPosts = posts.filter(p => p.user === currentUser);
-            container.innerHTML = '';
-
-            if(myPosts.length === 0) {
-                container.innerHTML = `<p style="color:#8a8d91; text-align:center;">Одоогоор нийтлэл байхгүй байна.</p>`;
-                return;
-            }
-
+            const myPosts = posts.filter(p => p.user === currentUser); container.innerHTML = '';
+            if(myPosts.length === 0) { container.innerHTML = `<p style="color:#8a8d91; text-align:center;">Одоогоор нийтлэл байхгүй байна.</p>`; return; }
             myPosts.forEach(post => {
-                container.innerHTML += `
-                    <div class="post">
-                        <div class="post-header"><span class="badge">${post.category}</span></div>
-                        <div class="post-time">📅 ${post.time}</div>
-                        <div class="post-content">${post.content}</div>
-                    </div>`;
+                container.innerHTML += `<div class="post"><div class="post-header"><span class="badge">${post.category}</span></div><div class="post-time">📅 ${post.time}</div><div class="post-content">${post.content}</div></div>`;
             });
         }
 
-        function addComment(postId) {
-            const inputField = document.getElementById(`input-${postId}`);
-            const text = inputField.value.trim();
-            if(!text) return;
-
+        function likePost(postId) {
             let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
             const idx = posts.findIndex(p => p.id === postId);
-            if(idx !== -1) {
-                posts[idx].comments.push(text);
-                localStorage.setItem('iknow_posts', JSON.stringify(posts));
-                renderPosts();
-            }
+            if(idx !== -1) { posts[idx].likes = (posts[idx].likes || 0) + 1; localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts(); }
+        }
+
+        function deletePost(postId) {
+            if(!confirm("Энэ зөгнөлийг устгах уу, андаа?")) return;
+            let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
+            posts = posts.filter(p => p.id !== postId); localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts();
+        }
+
+        function addComment(postId) {
+            const inputField = document.getElementById(`input-${postId}`); const text = inputField.value.trim(); if(!text) return;
+            let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
+            const idx = posts.findIndex(p => p.id === postId);
+            if(idx !== -1) { posts[idx].comments.push(text); localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts(); }
         }
 
         function loadChats() {
-            const partner = document.getElementById('chatPartner').value;
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '';
-
+            const partner = document.getElementById('chatPartner').value; const chatMessages = document.getElementById('chatMessages'); chatMessages.innerHTML = '';
             let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
-            let currentChat = allChats[partner] || [
-                { sender: 'them', text: "Сайн уу! Маргаашийн технологийн талаар ярилцах уу? 🚀" }
-            ];
-
+            let currentChat = allChats[partner] || [{ sender: 'them', text: "Сайн уу! Маргаашийн технологийн талаар ярилцах уу? 🚀" }];
             currentChat.forEach(msg => {
-                const div = document.createElement('div');
-                div.classList.add('msg', msg.sender === 'me' ? 'sent' : 'received');
-                div.innerText = msg.text;
-                chatMessages.appendChild(div);
+                const div = document.createElement('div'); div.classList.add('msg', msg.sender === 'me' ? 'sent' : 'received'); div.innerText = msg.text; chatMessages.appendChild(div);
             });
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function sendDirectMessage() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if(!text) return;
-
-            const partner = document.getElementById('chatPartner').value;
-            let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
+            const input = document.getElementById('chatInput'); const text = input.value.trim(); if(!text) return;
+            const partner = document.getElementById('chatPartner').value; let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
             if(!allChats[partner]) allChats[partner] = [{ sender: 'them', text: "Сайн уу! Маргаашийн технологийн талаар ярилцах уу? 🚀" }];
-
-            allChats[partner].push({ sender: 'me', text: text });
-            localStorage.setItem('iknow_chats', JSON.stringify(allChats));
-            
-            input.value = '';
-            loadChats();
-
+            allChats[partner].push({ sender: 'me', text: text }); localStorage.setItem('iknow_chats', JSON.stringify(allChats));
+            input.value = ''; loadChats();
             if(partner.includes("Bot")) {
                 setTimeout(() => {
                     allChats[partner].push({ sender: 'them', text: "Ирээдүйг зөгнөсөн гайхалтай мессеж байна! Би үүнийг датабаздаа хадгаллаа. 🤖✨" });
-                    localStorage.setItem('iknow_chats', JSON.stringify(allChats));
