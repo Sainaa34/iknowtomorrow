@@ -1,94 +1,135 @@
 :root {
-    --bg-color: #0f1015; --card-bg: #1a1c23; --text-main: #ffffff;
-    --text-sub: #a0a5b5; --accent: #ffb703; --accent-glow: rgba(255, 183, 3, 0.3);
+    --bg-color: #12161a;        /* Гүн бараан саарал */
+    --card-bg: #1a1f26;         /* Арай цайвар цэгцтэй саарал */
+    --text-main: #ffffff;
+    --text-sub: #a0a5b0;
+    --accent: #ffb703;          /* Киберпанк цахилгаан шар */
+    --accent-pink: #ffc300;     /* Туслах алтан шар */
 }
+
 body {
     background-color: var(--bg-color); color: var(--text-main);
-    font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0; display: flex; min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0;
+    display: flex; min-height: 100vh;
 }
+
+/* ЗҮҮН ТАЛЫН ЦЭС (SIDEBAR) - ФЕЙСБҮҮК ШИГ ТОГТВОРТОЙ */
 .sidebar {
-    width: 260px; background-color: #090a0d; height: 100vh; position: fixed; top: 0; left: 0;
-    display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #252833; padding: 20px; box-sizing: border-box;
+    width: 260px; background-color: #0d1115; height: 100vh; position: fixed; 
+    top: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between; 
+    border-right: 1px solid #242b35; padding: 20px; box-sizing: border-box; z-index: 100;
 }
 .logo {
-    font-family: 'Fredoka', cursive; font-size: 1.6rem; margin: 0 0 30px 0; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow);
+    font-family: 'Fredoka', cursive; font-size: 1.6rem; margin: 0 0 30px 0;
+    color: var(--accent); text-shadow: 0 0 8px rgba(255, 183, 3, 0.3);
 }
-.menu-links { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.menu-links { display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .menu-btn {
-    background: none; border: none; color: #606575; text-align: left; padding: 12px 15px;
-    font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.3s;
+    background: none; border: none; color: var(--text-sub); text-align: left; padding: 12px 15px;
+    font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.2s;
 }
 .menu-btn:hover, .menu-btn.active {
-    background-color: var(--card-bg); color: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
+    background-color: var(--card-bg); color: var(--accent);
+    box-shadow: inset 4px 0 0 var(--accent);
 }
+
+/* ЦЭСНИЙ ДООР СУУРИЛСАН ПРОФАЙЛ БА ТӨЛӨВ */
 .sidebar-user {
-    display: flex; align-items: center; gap: 12px; padding: 12px; background-color: #13151a; border-radius: 12px; cursor: pointer; border: 1px solid #252833;
+    display: flex; align-items: center; gap: 12px; padding: 12px; 
+    background-color: #161b22; border-radius: 12px; border: 1px solid #242b35;
 }
-.mini-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
-.user-info span { font-weight: bold; font-size: 0.95rem; }
-.user-info small { color: #ffb703; font-size: 0.75rem; }
+.mini-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+.user-info { display: flex; flex-direction: column; flex: 1; }
+.user-info span { font-weight: bold; font-size: 0.95rem; margin-bottom: 2px; }
+#statusSelect {
+    background: transparent; border: none; color: #00ff88; font-size: 0.8rem; 
+    font-weight: bold; cursor: pointer; padding: 0; outline: none; width: 100%;
+}
 
-.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 30px; }
-header { width: 100%; max-width: 750px; display: flex; justify-content: space-between; align-items: center; padding: 20px 15px; box-sizing: border-box; }
-#langBtn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-
-/* PROGRESS BAR ДИЗАЙН */
-.memory-progress-container { display: flex; align-items: center; gap: 10px; flex: 1; max-width: 400px; }
-.progress-bar-bg { flex: 1; height: 10px; background-color: #252833; border-radius: 5px; overflow: hidden; }
-.progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffb703, #ffdd00); box-shadow: 0 0 8px var(--accent); transition: width 0.5s ease; }
-
-.main-container { width: 90%; max-width: 750px; }
+/* БАРУУН ТАЛЫН ҮНДСЭН ХЭСЭГ */
+.content-area { flex: 1; margin-left: 260px; display: flex; flex-direction: column; align-items: center; padding-bottom: 5px; }
+header { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 20px 15px; box-sizing: border-box; }
+#langBtn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+#langBtn:hover { background: var(--accent); color: #000; }
+.main-container { width: 92%; max-width: 600px; }
 .page { display: none; }
 .page.active { display: block; }
 
-/* ПОСТОД */
-.feed-box { background-color: var(--card-bg); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 20px; border: 1px solid #252833; }
-#categorySelect, #userSelect { width: 100%; padding: 10px; border-radius: 8px; background-color: #0f1015; color: white; border: 1px solid var(--accent); margin-bottom: 12px; }
-textarea { width: 100%; height: 90px; background-color: #13151a; border: 1px solid #252833; border-radius: 8px; color: white; padding: 12px; box-sizing: border-box; resize: none; margin-bottom: 12px; }
-#submitBtn { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.post { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #252833; position: relative; }
-.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.post-user { font-weight: bold; color: var(--accent); }
-.badge { background-color: #353945; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; border: 1px solid var(--accent); }
-.post-time { font-size: 0.8rem; color: #606575; margin-bottom: 10px; }
+/* ПОСТ ОРУУЛАХ ТАЛБАРЫН ЦЭГЦТЭЙ ДИЗАЙН */
+.feed-box { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 20px; border: 1px solid #242b35; }
+.feed-box-header { margin-bottom: 10px; }
+textarea { width: 100%; height: 85px; background-color: #12161a; border: 1px solid #242b35; border-radius: 10px; color: white; padding: 12px; box-sizing: border-box; resize: none; font-size: 1rem; margin-bottom: 12px; outline: none; }
+textarea:focus { border-color: var(--accent); }
+
+/* ИКОН ТОВЧНУУД БА МЕДИА ХЭСЭГ */
+.post-footer-actions { display: flex; justify-content: space-between; align-items: center; }
+.media-buttons { display: flex; gap: 8px; }
+.icon-media-btn { background-color: #242b35; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+.feed-box input[type="file"] { display: none; }
+.main-post-btn { background: var(--accent); color: #000; border: none; padding: 9px 20px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 0 10px rgba(255, 183, 3, 0.2); }
+
+/* МЕДИА УРДЧИЛЖ ХАРАХ ХАЙРЦАГ (PREVIEW) */
+.preview-box-container { position: relative; margin-top: 15px; padding: 10px; background: #12161a; border-radius: 10px; border: 1px dashed var(--accent); text-align: center; }
+.preview-close-btn { position: absolute; top: 5px; right: 5px; background: #ff0055; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; font-size: 0.75rem; }
+
+/* ТАГ ШҮҮЛТҮҮРИЙН СИСТЕМ */
+.tag-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.tag-filter-btn { background: #1c232c; color: var(--text-sub); border: 1px solid #242b35; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+.tag-filter-btn:hover { border-color: var(--accent); color: #fff; }
+
+/* ФЭЙСБҮҮК ШИГ ПОСТНУУДЫН ДИЗАЙН */
+.post { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid #242b35; position: relative; }
+.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.post-user { font-weight: bold; color: var(--accent-pink); }
+.badge { background: #242b35; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+.post-time { font-size: 0.8rem; color: #6c727e; margin-bottom: 12px; }
 .post-content { font-size: 1.05rem; line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
-.post-attached-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; }
-.post-actions { display: flex; gap: 15px; margin-bottom: 10px; }
-.like-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-weight: bold; }
-.delete-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #606575; cursor: pointer; }
+.post-attached-img { width: 100%; max-height: 340px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid #242b35; }
 
-/* ЗЭРЭГЦЭЭ 2 ЦОНХНЫ ДИЗАЙН */
-.dual-chat-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 480px; }
-.chat-window-pane { background-color: var(--card-bg); border-radius: 16px; border: 1px solid #252833; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-.pane-header { background-color: #090a0d; padding: 12px; font-weight: bold; color: var(--accent); border-bottom: 1px solid #252833; font-size: 0.9rem; letter-spacing: 1px; }
-.chat-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; background-color: #13151a; }
+/* УХААЛАГ ЭМОЖИ ТОВЧНУУД */
+.post-actions { display: flex; gap: 8px; margin-bottom: 12px; border-top: 1px solid #242b35; padding-top: 10px; }
+.like-btn { background: #242b35; border: 1px solid transparent; color: #fff; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 6px; transition: 0.1s; }
+.like-btn:hover { border-color: var(--accent); }
+.like-btn.user-reacted { background: rgba(255, 183, 3, 0.15); border-color: var(--accent); color: var(--accent); }
+.delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #6c727e; cursor: pointer; font-size: 1.1rem; }
+.delete-btn:hover { color: #ff0055; }
+
+/* КОММЕНТ */
+.comment-section { border-top: 1px solid #242b35; padding-top: 10px; }
+.comment-item { background-color: #12161a; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; color: #e4e6eb; border: 1px solid #242b35; }
+.comment-input-group { display: flex; gap: 8px; margin-top: 8px; }
+.comment-input { flex: 1; background-color: #12161a; border: 1px solid #242b35; border-radius: 8px; color: white; padding: 8px 12px; outline: none; }
+.comment-input:focus { border-color: var(--accent); }
+.comment-btn { background-color: #242b35; color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+/* ПРОФАЙЛ ДЭЭРХ КОВЕР СЭДЭВ ЗУРАГ БА АВАТАР */
+.profile-cover-wrapper { position: relative; width: 100%; height: 160px; border-radius: 12px; overflow: hidden; background: #0d1115; border: 1px solid #242b35; }
+.profile-cover { width: 100%; height: 100%; object-fit: cover; }
+.cover-edit-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border: 1px solid var(--accent); }
+.avatar-container { position: relative; width: 100px; height: 100px; margin: -50px auto 10px auto; cursor: pointer; z-index: 10; }
+.avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg); box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+.avatar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; color: #fff; font-size: 1.2rem; }
+.avatar-container:hover .avatar-overlay { opacity: 1; }
+
+/* ЧАТНЫ 2 ЦОНХНЫ СУПЕР ГРИД БҮТЭЦ */
+.multi-chat-wrapper { display: flex; gap: 15px; width: 100%; min-height: 420px; }
+.chat-main-window { flex: 1.3; display: flex; flex-direction: column; }
+.chat-side-panel { flex: 0.7; background: #0d1115; border-radius: 16px; border: 1px solid #242b35; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+.side-panel-header { font-weight: bold; color: var(--accent); font-size: 0.9rem; border-bottom: 1px solid #242b35; padding-bottom: 8px; font-family: monospace; }
+
+/* РОБОТЫН СИНК ГЭРЭЛТЭХ КАРТ */
+.sync-glow-card { background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255, 183, 3, 0.1); }
+#robotSyncText { font-weight: bold; font-size: 0.95rem; margin-bottom: 8px; }
+.sync-progress-bar { width: 100%; height: 6px; background: #12161a; border-radius: 10px; overflow: hidden; }
+.sync-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; box-shadow: 0 0 8px var(--accent); }
+.hint-card { background: #161b22; padding: 10px; border-radius: 8px; border: 1px solid #242b35; }
+
+/* ЧАТНЫ МЕССЕЖҮҮД */
+.chat-box { background-color: var(--card-bg); border-radius: 16px; height: 350px; border: 1px solid #242b35; display: flex; flex-direction: column; overflow: hidden; }
 .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; }
-.msg.sent { background-color: var(--accent); color: #000; align-self: flex-end; font-weight: 500; }
-.msg.received { background-color: #252833; color: #fff; align-self: flex-start; }
+.msg { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; }
+.msg.sent { background-color: var(--accent); color: #000; align-self: flex-end; font-weight: 600; border-bottom-right-radius: 2px; }
+.msg.received { background-color: #242b35; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
 
-/* ЛОГ БОКСНИЙ ДИЗАЙН */
-.log-box { flex: 1; padding: 15px; background-color: #090a0d; font-family: monospace; font-size: 0.85rem; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-.log-entry { padding: 6px; border-radius: 4px; border-left: 3px solid #606575; color: #a0a5b5; }
-.log-entry.system { border-left-color: #00ff88; color: #00ff88; background: rgba(0,255,136,0.05); }
-.log-entry.success { border-left-color: var(--accent); color: var(--accent); background: rgba(255,183,3,0.05); }
-.log-entry.code-hint { border-left-color: #ff0055; color: #ff0055; background: rgba(255,0,85,0.05); }
-
-.comment-input-group { display: flex; gap: 8px; }
-.comment-input { flex: 1; background-color: #0f1015; border: 1px solid #252833; border-radius: 6px; color: white; padding: 8px; }
-.comment-btn { background-color: var(--accent); color: #000; border: none; padding: 0 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-.profile-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #252833; margin-bottom: 20px; }
-.avatar-container { position: relative; width: 100px; height: 100px; margin: 0 auto 10px; }
-.avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); }
-.avatar-edit-label { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); color: #fff; font-size: 0.75rem; padding: 4px 0; border-bottom-left-radius: 50%; border-bottom-right-radius: 50%; cursor: pointer; }
-.file-upload-group { margin-bottom: 15px; }
-.file-label { background-color: #13151a; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: inline-block; font-size: 0.9rem; border: 1px solid #252833; }
-#postImageInput { display: none; }
-.comment-section { border-top: 1px solid #252833; padding-top: 10px; margin-top: 10px; }
-.comment-item { background-color: #13151a; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 5px; }
-
-@media (max-width: 768px) {
-    .sidebar { display: none; }
-    .content-area { margin-left: 0; }
-    .dual-chat-container { grid-template-columns: 1fr; height: auto; }
-}
+/* НАЙЗЫН ЖАГСААЛТЫН КАРТ */
+.friend-item-box { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid #242b35; padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; }
