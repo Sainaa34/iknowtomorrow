@@ -9,19 +9,16 @@
 </head>
 <body>
 
-    <!-- ФЭЙСБҮҮК ШИГ ЗҮҮН ТАЛЫН ЦЭС (SIDEBAR) -->
+    <!-- SIDEBAR MENU -->
     <div class="sidebar">
         <h1 class="logo">iknowtomorrow</h1>
-        
         <div class="menu-links">
             <button class="menu-btn active" id="nav-feed" onclick="switchPage('feed')">🏠 Feed</button>
             <button class="menu-btn" id="nav-profile" onclick="switchPage('profile')">👤 Profile</button>
             <button class="menu-btn" id="nav-chats" onclick="switchPage('chats')">💬 Chats</button>
         </div>
-
-        <!-- ЦЭСНИЙ ДООР ХАРАГДАХ ПРОФАЙЛ ХЭСЭГ -->
         <div class="sidebar-user" onclick="switchPage('profile')">
-            <div class="mini-avatar"></div>
+            <img id="sidebarAvatar" class="mini-avatar" src="https://placeholder.com" alt="avatar">
             <div class="user-info">
                 <span id="sidebarName">Sainaa</span>
                 <small>🔮 Active Now</small>
@@ -29,10 +26,16 @@
         </div>
     </div>
 
-    <!-- ҮНДСЭН КОНТЕНТ ХАРАГДАХ ХЭСЭГ -->
+    <!-- MAIN CONTENT AREA -->
     <div class="content-area">
         <header>
-            <div></div> <!-- Тэнцвэржүүлэгч -->
+            <div class="memory-progress-container">
+                <span style="color:#ffb703; font-weight:bold; font-size:0.85rem;">MEMORY SYNC:</span>
+                <div class="progress-bar-bg">
+                    <div id="globalProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <span id="progressText" style="color:#ffb703; font-weight:bold; font-size:0.85rem;">0%</span>
+            </div>
             <button id="langBtn" onclick="toggleLanguage()">English</button>
         </header>
 
@@ -46,6 +49,11 @@
                     </select>
                     <select id="categorySelect"></select>
                     <textarea id="postInput"></textarea>
+                    <div class="file-upload-group">
+                        <label for="postImageInput" class="file-label">📷 Зураг нэмэх</label>
+                        <input type="file" id="postImageInput" accept="image/*" onchange="previewPostImage()">
+                        <img id="postImgPreview" style="display:none; max-width:100px; margin-top:10px; border-radius:8px;">
+                    </div>
                     <button id="submitBtn" onclick="createPost()"></button>
                 </div>
                 <div id="postsContainer"></div>
@@ -54,7 +62,11 @@
             <!-- PROFILE PAGE -->
             <div id="page-profile" class="page">
                 <div class="profile-card">
-                    <div class="avatar"></div>
+                    <div class="avatar-container">
+                        <img id="profileAvatar" class="avatar" src="https://placeholder.com" alt="avatar">
+                        <label for="avatarInput" class="avatar-edit-label">Change</label>
+                        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="changeProfileAvatar()">
+                    </div>
                     <h2 id="profileName">Sainaa</h2>
                     <p id="profileTitle" style="color: var(--text-sub)">🔮 Ирээдүйг Зөгнөгч Магистр</p>
                 </div>
@@ -62,20 +74,27 @@
                 <div id="myPostsContainer"></div>
             </div>
 
-            <!-- CHATS PAGE -->
+            <!-- CHATS PAGE (ЗЭРЭГЦЭЭ 2 ЦОНХТОЙ БҮТЭЦ) -->
             <div id="page-chats" class="page">
-                <div style="margin-bottom: 10px;">
-                    <label id="chatWithLabel">Хэнтэй чатлах: </label>
-                    <select id="chatPartner" onchange="loadChats()">
-                        <option value="Future Bot 🤖">Future Bot 🤖</option>
-                        <option value="Amaraa (Найз ☄️)">Amaraa (Найз ☄️)</option>
-                    </select>
-                </div>
-                <div class="chat-box">
-                    <div class="chat-messages" id="chatMessages"></div>
-                    <div class="comment-input-group" style="padding: 10px; background: #121824;">
-                        <input type="text" class="comment-input" id="chatInput">
-                        <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
+                <div class="dual-chat-container">
+                    <!-- ЗҮҮН ЦОНХ: РОБОТТОЙ ЧАТЛАХ -->
+                    <div class="chat-window-pane">
+                        <div class="pane-header">🤖 [ERR_ID_2040]</div>
+                        <div class="chat-box">
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="comment-input-group" style="padding: 10px; background: #1a1e24;">
+                                <input type="text" class="comment-input" id="chatInput" onkeypress="handleChatKey(event)">
+                                <button class="comment-btn" id="chatSendBtn" onclick="sendDirectMessage()"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- БАРУУН ЦОНХ: ОЙ САНАМЖИЙН ХАВТАС -->
+                    <div class="chat-window-pane">
+                        <div class="pane-header">📂 MEMORY LOGS</div>
+                        <div class="log-box" id="memoryLogs">
+                            <div class="log-entry system">[SYSTEM_READY] Роботын системийг сэргээхийн тулд нууц үгнүүдийг чат дээр тааж бичнэ үү.</div>
+                            <div class="log-entry code-hint">Хөлөг онгоцны нууц код: ??2??6</div>
+                        </div>
                     </div>
                 </div>
             </div>
