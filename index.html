@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Know Tomorrow</title>
+    <style>
+        /* ТикТок, Фэйсбүүк шиг залуулаг харанхуй неон загвар */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            max-width: 600px;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #1f2833;
+            box-sizing: border-box;
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #45f3ff; /* Неон цэнхэр */
+            text-shadow: 0 0 10px #45f3ff;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+        /* Олон хэлний ухаалаг автомат цэс байрлах хэсэг */
+        #google_translate_element {
+            margin-bottom: 15px;
+        }
+        /* Навигаци цэс (Зөгнөл болон Зүүд) */
+        .nav-tabs {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+            border-bottom: 1px solid #1f2833;
+        }
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #c5c6c7;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: #ff007f; /* Неон ягаан */
+            border-bottom: 3px solid #ff007f;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        /* Фэйсбүүк шиг нэг постын контейнер хүрээ */
+        .post-card {
+            background-color: #1f2833;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .post-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        /* Хөгжилтэй эможитой товчлуурууд */
+        .reactions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .reaction-btn {
+            background-color: #0b0c10;
+            border: 1px solid #45f3ff;
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+        .reaction-btn:hover {
+            background-color: #ff007f;
+            border-color: #ff007f;
+        }
+        /* Сэтгэгдэл болон Зүүд бичих хайрцаг */
+        .input-area {
+            width: 100%;
+            background-color: #0b0c10;
+            border: 1px solid #45f3ff;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: none;
+            margin-bottom: 10px;
+        }
+        .submit-btn {
+            background-color: #ff007f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            float: right;
+        }
+        .dream-list {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Дээд талын толгой хэсэг + Олон хэлний цэс -->
+    <header>
+        <a href="#" class="logo">🌌 I Know Tomorrow</a>
+        <div id="google_translate_element"></div>
+    </header>
+
+    <!-- Хоёр үндсэн цэс (Зөгнөл ба Зүүд) -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openPage('predictions', this)">🔮 Ирээдүйн Зөгнөл</button>
+        <button class="tab-btn" onclick="openPage('dreams', this)">🌙 Зүүдний Тэмдэглэл</button>
+    </div>
+
+    <div class="container">
+        <!-- 1. ИРЭЭДҮЙН ЗӨГНӨЛ ХУУДАС -->
+        <div id="predictions" class="page active">
+            <div class="post-card">
+                <div class="post-header">🪐 50 жилийн дараа Дэлхий даяар нисдэг машинтай болох уу?</div>
+                <img class="post-image" src="https://unsplash.com" alt="Ирээдүй">
+                
+                <!-- Хөгжилтэй хариу үйлдлийн систем -->
+                <div class="reactions">
+                    <button class="reaction-btn" onclick="count('like')">🔥 I Liked This (<span id="like-count">15</span>)</button>
+                    <button class="reaction-btn" onclick="count('wow')">😮 WoW (<span id="wow-count">4</span>)</button>
+                    <button class="reaction-btn" onclick="count('really')">🤔 Really? (<span id="really-count">3</span>)</button>
+                    <button class="reaction-btn" onclick="count('omg')">😱 OMG (<span id="omg-count">2</span>)</button>
+                </div>
+                <textarea class="input-area" placeholder="Энэ зөгнөл дээр сэтгэгдэл үлдээх..."></textarea>
+            </div>
+        </div>
+
+        <!-- 2. ЗҮҮДНИЙ ТЭМДЭГЛЭЛ ХУУДАС -->
+        <div id="dreams" class="page">
+            <div class="post-card">
+                <div class="post-header">✍️ Өнөөдөр юу зүүдлэв? Ирээдүйн зөн совин байсан уу...</div>
+                <textarea id="dreamInput" class="input-area" rows="4" placeholder="Энд зүүдээ бичиж үлдээгээрэй андаа..."></textarea>
+                <button class="submit-btn" onclick="addDream()">Зүүдээ Нийтлэх</button>
+                <div style="clear:both;"></div>
+                
+                <!-- Жишээ зүүднүүд харагдах жагсаалт -->
+                <div id="dreamList" class="dream-list">
+                    <div style="border-left: 3px solid #ff007f; padding-left: 10px; margin-top: 15px;">
+                        <p style="font-style: italic; color:#ffffff;">"Би өнөөдөр сансар огторгуйд 8 өнцөгт том од нисэж байна гэж зүүдэллээ..."</p>
+                        <small style="color:#45f3ff;">🔮 Зөн зүүд байна</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Системийн ухаалаг функцуудын код -->
+    <script>
+        // Цэс солих код (Зөгнөлөөс Зүүд рүү үсрэх)
+        function openPage(pageId, btn) {
+            let pages = document.getElementsByClassName('page');
+            for(let p of pages) { p.classList.remove('active'); }
+            document.getElementById(pageId).classList.add('active');
+            
+            let tabs = document.getElementsByClassName('tab-btn');
+            for(let t of tabs) { t.classList.remove('active'); }
+            btn.classList.add('active');
+        }
+
+        // Лайк, Эможи дарахад тоо нэмдэг ухаалаг код
+        function count(type) {
+            let element = document.getElementById(type + '-count');
+            let currentCount = parseInt(element.innerText);
+            element.innerText = currentCount + 1;
+        }
+
+        // Шинээр зүүд бичиж нийтлэх код
+        function addDream() {
+            let text = document.getElementById('dreamInput').value;
+            if(!text) return;
+            let list = document.getElementById('dreamList');
+            let newDream = document.createElement('div');
+            newDream.style = "border-left: 3px solid #ff007f; padding-left: 10px; margin-top: 15px;";
+            newDream.innerHTML = `<p style="font-style: italic; color:#ffffff;">"${text}"</p><small style="color:#45f3ff;">🔮 Зөн зүүд байна</small>`;
+            list.insertBefore(newDream, list.firstChild);
+            document.getElementById('dreamInput').value = '';
+        }
+
+        // Олон хэлийг автоматаар хөрвүүлэх Google-ийн албан ёсны код
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'mn', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//://google.com"></script>
+
+</body>
+</html>
