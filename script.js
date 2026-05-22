@@ -23,13 +23,10 @@ let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 let attachedMediaBase64 = "";
 let attachedMediaType = ""; 
 let selectedTagFilter = "";
+let globalSearchQuery = "";
 
 const secretKeywords = ["2026", "хөлөг", "тархи", "сансар", "зүүд", "хиймэл", "энерги", "цаг хугацаа", "сайнаа"];
 const bannedKeywords = ["porn", "порно", "секс", "sex", "казино", "casino", "мөрийтэй", "1xbet", "pussy", "dick", "хөх", "боожгой"];
-
-let messageCount = 0;
-let isHeadacheMode = false;
-let headacheTimeout = null;
 
 const initialFriends = [
     { id: "amaraa", name: "Amaraa [Cyber-Medic]", isFriend: false, avatar: "https://placeholder.com" },
@@ -38,7 +35,7 @@ const initialFriends = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateLanguageUI(); loadPosts(); loadChats(); loadProfileAvatar(); loadCoverTheme(); loadFriends(); updateSyncUI(); loadOnlineStatus(); loadDotaTheme();
+    updateLanguageUI(); loadPosts(); loadChats(); loadProfileAvatar(); loadCoverTheme(); loadFriends(); updateSyncUI(); loadOnlineStatus(); loadCustomSiteTheme();
 });
 
 function switchPage(pageId) {
@@ -67,6 +64,19 @@ function updateLanguageUI() {
     document.getElementById('chatInput').placeholder = t.chatPlaceholder;
     document.getElementById('chatSendBtn').innerText = t.send;
 }
+
+function changeOnlineStatus() {
+    const status = document.getElementById('statusSelect').value; localStorage.setItem('iknow_online_status', status);
+    const selectEl = document.getElementById('statusSelect');
+    if (status === "Active Now") selectEl.style.color = "#00ff88";
+    else if (status === "Sleeping") selectEl.style.color = "#ffb703";
+    else selectEl.style.color = "#6c727e";
+}
+
+function loadOnlineStatus() {
+    const status = localStorage.getItem('iknow_online_status') || "Active Now";
+    document.getElementById('statusSelect').value = status; changeOnlineStatus();
+}
 function previewMedia(type) {
     const inputId = type === 'image' ? 'postImageInput' : 'postVideoInput';
     const file = document.getElementById(inputId).files;
@@ -77,7 +87,7 @@ function previewMedia(type) {
             document.getElementById('mediaPreviewBox').style.display = "block";
             const content = document.getElementById('mediaPreviewContent');
             if (type === 'image') content.innerHTML = `<img src="${attachedMediaBase64}" style="max-width:100%; max-height:150px; border-radius:8px;">`;
-            else content.innerHTML = `<video src="${attachedMediaBase64}" controls style="max-width:100%; max-height:150px; border-radius:8px Pap;"></video>`;
+            else content.innerHTML = `<video src="${attachedMediaBase64}" controls style="max-width:100%; max-height:150px; border-radius:8px;"></video>`;
         }
         reader.readAsDataURL(file);
     }
@@ -106,7 +116,6 @@ function createPost() {
     document.getElementById('postInput').value = ''; clearSelectedMedia(); renderPosts();
 }
 
-// ФЭЙСБҮҮК ШИГ АМЬД ЦАГ ХУГАЦАА БОДОХ ЛОГИК
 function calculateTimeAgo(postTimestamp) {
     const diff = Date.now() - postTimestamp;
     const seconds = Math.floor(diff / 1000);
@@ -126,9 +135,26 @@ function renderPosts() {
     const posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
     const t = translations[currentLang]; container.innerHTML = '';
 
+    // УХААЛАГ АЛГОРИТМ: ПОСТУУД 10-ААС ДАВБАЛ ЗӨВХӨН НАЙЗУУДЫНХЫГ ХАРУУЛНА
+    let friends = JSON.parse(localStorage.getItem('iknow_friends')) || [];
+    let friendNames = friends.filter(f => f.isFriend).map(f => f.name);
+    let isAlgorithmActive = posts.length > 10;
+    
+    const algoStatus = document.getElementById('feedAlgorithmStatus');
+    if (algoStatus) {
+        algoStatus.innerText = isAlgorithmActive ? "⚡ Алгоритм: Зөвхөн найзуудын урсгал (Хязгаарласан)" : "⚡ Алгоритм: Бүх нийтийн урсгал";
+    }
+
     posts.forEach(post => {
         let cleanContent = post.content.toLowerCase();
+        let cleanUser = post.user;
+
+        // Хайлт болон Таг шүүлтүүр шалгах
         if (selectedTagFilter && !cleanContent.includes('#' + selectedTagFilter) && !cleanContent.includes('?' + selectedTagFilter)) return;
+        if (globalSearchQuery && !cleanContent.includes(globalSearchQuery) && !cleanUser.toLowerCase().includes(globalSearchQuery)) return;
+        
+        // Алгоритмын хязгаарлалт шалгах
+        if (isAlgorithmActive && post.user !== "Sainaa" && !friendNames.includes(post.user)) return;
 
         let commentHTML = ''; post.comments.forEach(c => commentHTML += `<div class="comment-item">${c}</div>`);
         let mediaHTML = post.media ? (post.mediaType === 'image' ? `<img class="post-attached-img" src="${post.media}">` : `<video class="post-attached-img" src="${post.media}" controls></video>`) : '';
@@ -159,6 +185,53 @@ function renderPosts() {
             </div>`;
     });
 }
+// УХААЛАГ АВТОМАТ ТАГ ГҮЙЦЭЭГЧ СИСТЕМ (AUTOCOMPLETE)
+const allAvailableTags = ["ai", "aliens", "dreams", "future", "technology", "cyborg", "space"];
+
+function handleTagSuggestions(event) {
+    const text = event.target.value;
+    const box = document.getElementById('tagSuggestBox');
+    
+    // Сүүлийн бичсэн үг нь # эсвэл ? -аар эхэлсэн эсэхийг олох
+    const words = text.split(/\s+/);
+    const lastWord = words[words.length - 1];
+    
+    if (lastWord.startsWith('#') || lastWord.startsWith('?')) {
+        const symbol = lastWord[0];
+        const query = lastWord.slice(1).toLowerCase();
+        
+        const matches = allAvailableTags.filter(t => t.startsWith(query));
+        if (matches.length > 0 && query.length > 0) {
+            box.innerHTML = '';
+            matches.forEach(match => {
+                const item = document.createElement('div');
+                item.className = 'tag-suggest-item';
+                item.innerText = `${symbol}${match}`;
+                item.onclick = () => applyTagSuggestion(symbol, match);
+                box.appendChild(item);
+            });
+            box.style.display = 'block';
+            return;
+        }
+    }
+    box.style.display = 'none';
+}
+
+function applyTagSuggestion(symbol, tag) {
+    const input = document.getElementById('postInput');
+    const words = input.value.split(/\s+/);
+    words[words.length - 1] = `${symbol}${tag} `;
+    input.value = words.join(' ');
+    document.getElementById('tagSuggestBox').style.display = 'none';
+    input.focus();
+}
+
+// ГЛОБАЛ УХААЛАГ ХАЙЛТ
+function handleGlobalSearch() {
+    globalSearchQuery = document.getElementById('globalSearchInput').value.trim().toLowerCase();
+    renderPosts();
+}
+
 function highlightTags(text) {
     return text.replace(/([#?])(\w+|[\u0400-\u04FF]+)/g, '<span style="color:var(--accent); cursor:pointer;" onclick="filterByTag(\'$2\')">$1$2</span>');
 }
@@ -192,11 +265,10 @@ function renderMyPosts() {
     if(myPosts.length === 0) { container.innerHTML = `<p style="color:#8a8d91; text-align:center;">Одоогоор нийтлэл байхгүй байна.</p>`; return; }
     myPosts.forEach(post => {
         let mediaHTML = post.media ? (post.mediaType === 'image' ? `<img class="post-attached-img" src="${post.media}">` : `<video class="post-attached-img" src="${post.media}" controls></video>`) : '';
-        container.innerHTML += `<div class="post"><div class="post-header"><span class="badge">Timeline</span></div><div class="post-time">📅 ${calculateTimeAgo(post.timestamp || post.id)}</div><div class="post-content">${highlightTags(post.content)}</div>${mediaHTML}</div>`;
+        container.innerHTML += `<div class="post"><button class="delete-btn" onclick="deletePost(${post.id})">✕</button><div class="post-header"><span class="badge">Timeline</span></div><div class="post-time">📅 ${calculateTimeAgo(post.timestamp || post.id)}</div><div class="post-content">${highlightTags(post.content)}</div>${mediaHTML}</div>`;
     });
 }
 
-// ӨӨРИЙН ПОСТОО УСТГАХЫГ ХҮЧТЭЙ ЗАСАВ
 function deletePost(postId) {
     if(!confirm("Устгах уу, андаа?")) return;
     let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
@@ -213,11 +285,10 @@ function addComment(postId) {
     inputField.value = '';
 }
 
-function loadOnlineStatus() {
-    const status = localStorage.getItem('iknow_online_status') || "Active Now";
-    document.getElementById('statusSelect').value = status; changeOnlineStatus();
+function toggleEditOptions() {
+    const panel = document.getElementById('editOptionsPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 }
-
 function triggerAvatarInput() { document.getElementById('avatarInput').click(); }
 function changeProfileAvatar() {
     const file = document.getElementById('avatarInput').files;
@@ -244,6 +315,8 @@ function loadCoverTheme() {
     const saved = localStorage.getItem('iknow_cover') || "https://placeholder.com";
     document.getElementById('profileCoverImg').src = saved;
 }
+
+// НАЙЗ БОЛОХ БА UNFRIEND СИСТЕМ (ТӨГС ЗАСВАР)
 function loadFriends() {
     let friends = JSON.parse(localStorage.getItem('iknow_friends'));
     if (!friends) { localStorage.setItem('iknow_friends', JSON.stringify(initialFriends)); friends = initialFriends; }
@@ -253,17 +326,18 @@ function renderFriendsList() {
     const container = document.getElementById('friendsListContainer'); container.innerHTML = '';
     let friends = JSON.parse(localStorage.getItem('iknow_friends')) || [];
     friends.forEach(f => {
-        let btnText = f.isFriend ? "🤝 Friends" : "➕ Add Friend";
+        let btnText = f.isFriend ? "❌ Unfriend" : "➕ Add Friend";
         let btnClass = f.isFriend ? "friend-add-btn is-friend" : "friend-add-btn";
-        container.innerHTML += `<div class="friend-item-box"><div class="friend-info-left"><img src="${f.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--accent);"><span style="font-weight:bold;">${f.name}</span></div><button class="${btnClass}" onclick="addFriendAction('${f.id}')">${btnText}</button></div>`;
+        container.innerHTML += `<div class="friend-item-box"><div class="friend-info-left"><img src="${f.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--accent);"><span style="font-weight:bold;">${f.name}</span></div><button class="${btnClass}" onclick="toggleFriendAction('${f.id}')">${btnText}</button></div>`;
     });
 }
-function addFriendAction(id) {
+function toggleFriendAction(id) {
     let friends = JSON.parse(localStorage.getItem('iknow_friends')) || [];
     const idx = friends.findIndex(f => f.id === id);
-    if(idx !== -1 && !friends[idx].isFriend) {
-        friends[idx].isFriend = true; localStorage.setItem('iknow_friends', JSON.stringify(friends));
-        renderFriendsList(); updateChatPartnersDropdown(friends);
+    if(idx !== -1) {
+        friends[idx].isFriend = !friends[idx].isFriend; // Төгс солигч (Toggle)
+        localStorage.setItem('iknow_friends', JSON.stringify(friends));
+        renderFriendsList(); updateChatPartnersDropdown(friends); loadChats(); renderPosts();
     }
 }
 function updateChatPartnersDropdown(friends) {
@@ -279,7 +353,7 @@ function loadChats() {
     const partner = document.getElementById('chatPartner').value; const chatMessages = document.getElementById('chatMessages'); chatMessages.innerHTML = '';
     let allChats = JSON.parse(localStorage.getItem('iknow_chats')) || {};
     document.getElementById('robotSyncPanel').style.display = partner.includes("Bot") ? "block" : "none";
-    let defaultText = partner.includes("Bot") ? "Миний систем бүрэн устсан... Надад зөвхөн 2040 он гэсэн хугацаа л үлдэж. 🤖" : `Сайн уу андаа! Бид одоо найзууд боллоо. 🚀`;
+    let defaultText = partner.includes("Bot") ? "Миний систем бүрэн устсан... Надад зөвхөн 2040 он гэсэн хугацаа л үлдэж. 🤖" : `Сайн уу андаа! Чатлахад бэлэн байна. 🚀`;
     let currentChat = allChats[partner] || [{ sender: 'them', text: defaultText }];
     currentChat.forEach(msg => {
         const div = document.createElement('div'); div.classList.add('msg', msg.sender === 'me' ? 'sent' : 'received'); div.innerText = msg.text; chatMessages.appendChild(div);
@@ -347,26 +421,22 @@ function updateSyncUI() {
     const fill = document.getElementById('syncProgressBarFill'); if(fill) fill.style.width = percentage + "%";
 }
 
-// DOTA 2 ШИГ ОДОО БҮРЭН ЭРХ ЧӨЛӨӨТЭЙ ТЕМЕ СОЛИХ СИСТЕМ ТӨЛӨВЛӨГӨӨНД СУУЖ ЗАСАГДЛАА
-function loadDotaTheme() {
-    const cardEl = document.querySelector('.profile-card');
-    if(cardEl && !document.getElementById('dotaThemeSelect')) {
-        const div = document.createElement('div'); div.style.marginTop = "15px";
-        div.innerHTML = `<label style="font-size:0.85rem; font-weight:bold; color:var(--accent);">🎭 Dota Profile Theme: </label>
-            <select id="dotaThemeSelect" onchange="applyDotaTheme()" style="background:#12161a; color:white; border:1px solid var(--accent); padding:5px; border-radius:6px; cursor:pointer;">
-                <option value="default">Charcoal Dark</option>
-                <option value="cyber">Electric Amber</option>
-                <option value="neon">Neon Overload</option>
-            </select>`;
-        cardEl.appendChild(div);
-        const savedTheme = localStorage.getItem('iknow_dota_theme') || 'default';
-        document.getElementById('dotaThemeSelect').value = savedTheme; applyDotaTheme();
-    }
+// ӨНӨӨХ БҮРЭН ЭРХТ ТЕМЕ СОЛИХ СИСТЕМ (CUSTOM THEME SYSTEM)
+function loadCustomSiteTheme() {
+    const savedTheme = localStorage.getItem('iknow_site_theme') || 'default';
+    const select = document.getElementById('siteThemeSelect');
+    if (select) select.value = savedTheme;
+    applySiteCustomTheme();
 }
-function applyDotaTheme() {
-    const theme = document.getElementById('dotaThemeSelect').value; localStorage.setItem('iknow_dota_theme', theme);
-    const card = document.querySelector('.profile-card'); if(!card) return;
-    if(theme === 'cyber') { card.style.background = "#2b2000"; card.style.borderColor = "#ffb703"; }
-    else if(theme === 'neon') { card.style.background = "#1b002b"; card.style.borderColor = "#ff00ff"; }
-    else { card.style.background = "var(--card-bg)"; card.style.borderColor = "#242b35"; }
+function applySiteCustomTheme() {
+    const select = document.getElementById('siteThemeSelect'); if(!select) return;
+    const theme = select.value; localStorage.setItem('iknow_site_theme', theme);
+    const root = document.documentElement;
+    if(theme === 'dark-purple') {
+        root.style.setProperty('--bg-color', '#130d1a'); root.style.setProperty('--card-bg', '#1f142b'); root.style.setProperty('--accent', '#bf40bf'); root.style.setProperty('--accent-pink', '#e066ff');
+    } else if(theme === 'cyber-blue') {
+        root.style.setProperty('--bg-color', '#09141c'); root.style.setProperty('--card-bg', '#112230'); root.style.setProperty('--accent', '#00f2fe'); root.style.setProperty('--accent-pink', '#4facfe');
+    } else {
+        root.style.setProperty('--bg-color', '#12161a'); root.style.setProperty('--card-bg', '#1a1f26'); root.style.setProperty('--accent', '#ffb703'); root.style.setProperty('--accent-pink', '#ffc300');
+    }
 }
