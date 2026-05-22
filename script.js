@@ -6,7 +6,10 @@ const translations = {
         myPosts: "📌 Миний оруулсан зөгнөлүүд", chatWith: "Хэнтэй чатлах: ",
         chatPlaceholder: "Мессеж бичих...",
         syncText: "🔮 Ой санамж сэргэлт", JustNow: "Дөнгөж сая",
-        MinsAgo: "минутын өмнө", HoursAgo: "цагийн өмнө", DaysAgo: "хоногийн өмнө"
+        MinsAgo: "минутын өмнө", HoursAgo: "цагийн өмнө", DaysAgo: "хоногийн өмнө",
+        friendsTitle: "👥 Ирээдүйн Хамтрагчид", addFriend: "➕ Хамтрагч нэмэх", unfriend: "❌ Хасах",
+        editProfileBtn: "⚙️ Профайл Тохиргоог Засах", coverChangeLabel: "📷 Ковер Сэдэв Зургаа Солих",
+        themeSelectLabel: "🎨 Сайтын үндсэн өнгө: ", globalSearchPlaceholder: "🔍 Хайх (Үг, таг эсвэл нэр...)"
     },
     en: {
         placeholder: "What will happen in the future? Share here... (#ai or ?alien)",
@@ -15,25 +18,27 @@ const translations = {
         myPosts: "📌 My Predictions", chatWith: "Chat with: ",
         chatPlaceholder: "Type a message...",
         syncText: "🔮 Memory Synced", JustNow: "Just now",
-        MinsAgo: "mins ago", HoursAgo: "hours ago", DaysAgo: "days ago"
+        MinsAgo: "mins ago", HoursAgo: "hours ago", DaysAgo: "days ago",
+        friendsTitle: "👥 Future Companions", addFriend: "➕ Add Friend", unfriend: "❌ Unfriend",
+        editProfileBtn: "⚙️ Edit Profile Settings", coverChangeLabel: "📷 Change Cover Theme",
+        themeSelectLabel: "🎨 Main Site Color: ", globalSearchPlaceholder: "🔍 Search (Tag, keyword or name...)"
     }
 };
 
 let currentLang = localStorage.getItem('iknow_lang') || 'mn';
-let attachedMediaBase64 = "";
-let attachedMediaType = ""; 
-let selectedTagFilter = "";
-let globalSearchQuery = "";
+let attachedMediaBase64 = ""; let attachedMediaType = ""; 
+let selectedTagFilter = ""; let globalSearchQuery = "";
 
 const secretKeywords = ["2026", "хөлөг", "тархи", "сансар", "зүүд", "хиймэл", "энерги", "цаг хугацаа", "сайнаа"];
 const bannedKeywords = ["porn", "порно", "секс", "sex", "казино", "casino", "мөрийтэй", "1xbet", "pussy", "dick", "хөх", "боожгой"];
+
+let messageCount = 0; let isHeadacheMode = false; let headacheTimeout = null;
 
 const initialFriends = [
     { id: "amaraa", name: "Amaraa [Cyber-Medic]", isFriend: false, avatar: "https://placeholder.com" },
     { id: "zorigoo", name: "Zorigoo [Alien Hunter]", isFriend: false, avatar: "https://placeholder.com" },
     { id: "unknown", name: "Unknown Cyborg", isFriend: false, avatar: "https://placeholder.com" }
 ];
-
 document.addEventListener('DOMContentLoaded', () => {
     updateLanguageUI(); loadPosts(); loadChats(); loadProfileAvatar(); loadCoverTheme(); loadFriends(); updateSyncUI(); loadOnlineStatus(); loadCustomSiteTheme();
 });
@@ -63,6 +68,14 @@ function updateLanguageUI() {
     document.getElementById('chatWithLabel').innerText = t.chatWith;
     document.getElementById('chatInput').placeholder = t.chatPlaceholder;
     document.getElementById('chatSendBtn').innerText = t.send;
+    
+    // Хэл солиход бүрэн хөрвөх шинэ элементүүд
+    document.getElementById('friendsTitle').innerText = t.friendsTitle;
+    document.getElementById('editProfileTriggerBtn').innerText = t.editProfileBtn;
+    document.getElementById('coverChangeLabel').innerText = t.coverChangeLabel;
+    document.getElementById('themeSelectLabel').innerText = t.themeSelectLabel;
+    document.getElementById('globalSearchInput').placeholder = t.globalSearchPlaceholder;
+    renderFriendsList();
 }
 
 function changeOnlineStatus() {
@@ -110,7 +123,12 @@ function createPost() {
     }
     if(!content && !attachedMediaBase64) return;
 
-    const newPost = { id: Date.now(), user: "Sainaa", content: content, timestamp: Date.now(), reactions: { likes: [], wows: [], omgs: [] }, comments: [], media: attachedMediaBase64, mediaType: attachedMediaType };
+    const newPost = { 
+        id: Date.now(), user: "Sainaa", content: content, timestamp: Date.now(), 
+        reactions: { likes: [], wows: [], omgs: [] }, 
+        effects: { fulfilled: 0, confirmed: 0, sight: 0 }, // Эффектийн тоолуур
+        comments: [], media: attachedMediaBase64, mediaType: attachedMediaType 
+    };
     let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
     posts.unshift(newPost); localStorage.setItem('iknow_posts', JSON.stringify(posts));
     document.getElementById('postInput').value = ''; clearSelectedMedia(); renderPosts();
@@ -118,10 +136,8 @@ function createPost() {
 
 function calculateTimeAgo(postTimestamp) {
     const diff = Date.now() - postTimestamp;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    const seconds = Math.floor(diff / 1000); const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60); const days = Math.floor(hours / 24);
     const t = translations[currentLang];
 
     if (seconds < 60) return t.JustNow;
@@ -129,52 +145,72 @@ function calculateTimeAgo(postTimestamp) {
     if (hours < 24) return `${hours} ${t.HoursAgo}`;
     return `${days} ${t.DaysAgo}`;
 }
-
 function renderPosts() {
     const container = document.getElementById('postsContainer');
     const posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
     const t = translations[currentLang]; container.innerHTML = '';
 
-    // УХААЛАГ АЛГОРИТМ: ПОСТУУД 10-ААС ДАВБАЛ ЗӨВХӨН НАЙЗУУДЫНХЫГ ХАРУУЛНА
     let friends = JSON.parse(localStorage.getItem('iknow_friends')) || [];
     let friendNames = friends.filter(f => f.isFriend).map(f => f.name);
     let isAlgorithmActive = posts.length > 10;
-    
-    const algoStatus = document.getElementById('feedAlgorithmStatus');
-    if (algoStatus) {
-        algoStatus.innerText = isAlgorithmActive ? "⚡ Алгоритм: Зөвхөн найзуудын урсгал (Хязгаарласан)" : "⚡ Алгоритм: Бүх нийтийн урсгал";
-    }
 
     posts.forEach(post => {
         let cleanContent = post.content.toLowerCase();
         let cleanUser = post.user;
 
-        // Хайлт болон Таг шүүлтүүр шалгах
         if (selectedTagFilter && !cleanContent.includes('#' + selectedTagFilter) && !cleanContent.includes('?' + selectedTagFilter)) return;
         if (globalSearchQuery && !cleanContent.includes(globalSearchQuery) && !cleanUser.toLowerCase().includes(globalSearchQuery)) return;
-        
-        // Алгоритмын хязгаарлалт шалгах
         if (isAlgorithmActive && post.user !== "Sainaa" && !friendNames.includes(post.user)) return;
 
         let commentHTML = ''; post.comments.forEach(c => commentHTML += `<div class="comment-item">${c}</div>`);
         let mediaHTML = post.media ? (post.mediaType === 'image' ? `<img class="post-attached-img" src="${post.media}">` : `<video class="post-attached-img" src="${post.media}" controls></video>`) : '';
+
+        // 🌟 ЭФФЕКТҮҮДИЙН ШАТЛАЛЫН ДҮРС БА КЛАСС ТОДОРХОЙЛОХ
+        if (!post.effects) post.effects = { fulfilled: 0, confirmed: 0, sight: 0 };
+        let maxCount = Math.max(post.effects.fulfilled, post.effects.confirmed, post.effects.sight);
+        
+        let glowClass = "";
+        if (maxCount >= 1 && maxCount < 5) glowClass = ""; 
+        else if (maxCount >= 5 && maxCount < 10) glowClass = "effect-glow-medium";
+        else if (maxCount >= 10 && maxCount < 20) glowClass = "effect-glow-high";
+        else if (maxCount >= 20) glowClass = "effect-glow-legendary";
+
+        let effectIconHTML = "";
+        if (post.effects.fulfilled > 0 && post.effects.fulfilled >= post.effects.confirmed && post.effects.fulfilled >= post.effects.sight) {
+            effectIconHTML = `<div class="post-effect-icon-slot">🔥 <span>${post.effects.fulfilled}</span></div>`;
+        } else if (post.effects.confirmed > 0 && post.effects.confirmed >= post.effects.fulfilled && post.effects.confirmed >= post.effects.sight) {
+            effectIconHTML = `<div class="post-effect-icon-slot">⚡ <span>${post.effects.confirmed}</span></div>`;
+        } else if (post.effects.sight > 0) {
+            let eyeAnim = maxCount >= 5 ? "eye-pulse-anim" : "";
+            effectIconHTML = `<div class="post-effect-icon-slot ${eyeAnim}">👁️ <span>${post.effects.sight}</span></div>`;
+        }
 
         let userReactedLike = (post.reactions?.likes || []).includes("Sainaa") ? "user-reacted" : "";
         let userReactedWow = (post.reactions?.wows || []).includes("Sainaa") ? "user-reacted" : "";
         let userReactedOmg = (post.reactions?.omgs || []).includes("Sainaa") ? "user-reacted" : "";
 
         container.innerHTML += `
-            <div class="post">
+            <div class="post ${glowClass}">
                 <button class="delete-btn" onclick="deletePost(${post.id})">✕</button>
                 <div class="post-header"><span class="post-user">👤 ${post.user}</span><span class="badge">🛸 Timeline</span></div>
                 <div class="post-time">📅 ${calculateTimeAgo(post.timestamp || post.id)}</div>
                 <div class="post-content">${highlightTags(post.content)}</div>
                 ${mediaHTML}
-                <div class="post-actions">
-                    <button class="like-btn ${userReactedLike}" onclick="handleReaction(${post.id}, 'likes')">❤️ <span>${(post.reactions?.likes || []).length}</span></button>
-                    <button class="like-btn ${userReactedWow}" onclick="handleReaction(${post.id}, 'wows')">😮 Wow <span>${(post.reactions?.wows || []).length}</span></button>
-                    <button class="like-btn ${userReactedOmg}" onclick="handleReaction(${post.id}, 'omgs')">😱 OMG <span>${(post.reactions?.omgs || []).length}</span></button>
+                ${effectIconHTML}
+                
+                <!-- 🌟 ХҮЧТЭЙ ХӨВЖ ГАРДАГ РЕАКЦ ЦЭС - ФЭЙСБҮҮК ШИГ УДААН ДАРАХАД ЗОРИУЛЖ HOVER БОЛГОЖ ЗАСАВ -->
+                <div class="reaction-container-wrapper">
+                    <button class="reaction-trigger-main-btn">✨ Ирээдүйн Баталгаа</button>
+                    <div class="reaction-hover-drawer">
+                        <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${post.id}, 'fulfilled')">🔮 <small>Зөн биеллээ</small></button>
+                        <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${post.id}, 'confirmed')">⚡ <small>Батлагдлаа</small></button>
+                        <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${post.id}, 'sight')">👁️ <small>Ирээдүй харлаа</small></button>
+                        <button class="reaction-sub-btn ${userReactedLike}" onclick="handleReaction(${post.id}, 'likes')">❤️</button>
+                        <button class="reaction-sub-btn ${userReactedWow}" onclick="handleReaction(${post.id}, 'wows')">😮</button>
+                        <button class="reaction-sub-btn ${userReactedOmg}" onclick="handleReaction(${post.id}, 'omgs')">😱</button>
+                    </div>
                 </div>
+
                 <div class="comment-section">
                     <div class="comment-list">${commentHTML}</div>
                     <div class="comment-input-group">
@@ -185,22 +221,31 @@ function renderPosts() {
             </div>`;
     });
 }
-// УХААЛАГ АВТОМАТ ТАГ ГҮЙЦЭЭГЧ СИСТЕМ (AUTOCOMPLETE)
+
+// ТУРШИЛТЫН ТӨЛӨВӨӨР ХЭЗЯАРЛАЛТГҮЙ ДАРДАГ БОЛГОВ
+function triggerSpecialEffect(postId, effectType) {
+    let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
+    const idx = posts.findIndex(p => p.id === postId);
+    if (idx !== -1) {
+        if (!posts[idx].effects) posts[idx].effects = { fulfilled: 0, confirmed: 0, sight: 0 };
+        posts[idx].effects[effectType] += 1; // 1 хүн хязгааргүй нэмж дарж болно
+        localStorage.setItem('iknow_posts', JSON.stringify(posts));
+        renderPosts();
+    }
+}
 const allAvailableTags = ["ai", "aliens", "dreams", "future", "technology", "cyborg", "space"];
 
 function handleTagSuggestions(event) {
     const text = event.target.value;
     const box = document.getElementById('tagSuggestBox');
-    
-    // Сүүлийн бичсэн үг нь # эсвэл ? -аар эхэлсэн эсэхийг олох
     const words = text.split(/\s+/);
     const lastWord = words[words.length - 1];
     
     if (lastWord.startsWith('#') || lastWord.startsWith('?')) {
         const symbol = lastWord[0];
         const query = lastWord.slice(1).toLowerCase();
-        
         const matches = allAvailableTags.filter(t => t.startsWith(query));
+        
         if (matches.length > 0 && query.length > 0) {
             box.innerHTML = '';
             matches.forEach(match => {
@@ -226,7 +271,6 @@ function applyTagSuggestion(symbol, tag) {
     input.focus();
 }
 
-// ГЛОБАЛ УХААЛАГ ХАЙЛТ
 function handleGlobalSearch() {
     globalSearchQuery = document.getElementById('globalSearchInput').value.trim().toLowerCase();
     renderPosts();
@@ -284,11 +328,11 @@ function addComment(postId) {
     if(idx !== -1) { posts[idx].comments.push(`Sainaa: ${text}`); localStorage.setItem('iknow_posts', JSON.stringify(posts)); renderPosts(); }
     inputField.value = '';
 }
-
 function toggleEditOptions() {
     const panel = document.getElementById('editOptionsPanel');
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 }
+
 function triggerAvatarInput() { document.getElementById('avatarInput').click(); }
 function changeProfileAvatar() {
     const file = document.getElementById('avatarInput').files;
@@ -316,7 +360,6 @@ function loadCoverTheme() {
     document.getElementById('profileCoverImg').src = saved;
 }
 
-// НАЙЗ БОЛОХ БА UNFRIEND СИСТЕМ (ТӨГС ЗАСВАР)
 function loadFriends() {
     let friends = JSON.parse(localStorage.getItem('iknow_friends'));
     if (!friends) { localStorage.setItem('iknow_friends', JSON.stringify(initialFriends)); friends = initialFriends; }
@@ -326,7 +369,7 @@ function renderFriendsList() {
     const container = document.getElementById('friendsListContainer'); container.innerHTML = '';
     let friends = JSON.parse(localStorage.getItem('iknow_friends')) || [];
     friends.forEach(f => {
-        let btnText = f.isFriend ? "❌ Unfriend" : "➕ Add Friend";
+        let btnText = f.isFriend ? translations[currentLang].unfriend : translations[currentLang].addFriend;
         let btnClass = f.isFriend ? "friend-add-btn is-friend" : "friend-add-btn";
         container.innerHTML += `<div class="friend-item-box"><div class="friend-info-left"><img src="${f.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--accent);"><span style="font-weight:bold;">${f.name}</span></div><button class="${btnClass}" onclick="toggleFriendAction('${f.id}')">${btnText}</button></div>`;
     });
@@ -335,7 +378,7 @@ function toggleFriendAction(id) {
     let friends = JSON.parse(localStorage.getItem('iknow_friends')) || [];
     const idx = friends.findIndex(f => f.id === id);
     if(idx !== -1) {
-        friends[idx].isFriend = !friends[idx].isFriend; // Төгс солигч (Toggle)
+        friends[idx].isFriend = !friends[idx].isFriend;
         localStorage.setItem('iknow_friends', JSON.stringify(friends));
         renderFriendsList(); updateChatPartnersDropdown(friends); loadChats(); renderPosts();
     }
@@ -421,11 +464,9 @@ function updateSyncUI() {
     const fill = document.getElementById('syncProgressBarFill'); if(fill) fill.style.width = percentage + "%";
 }
 
-// ӨНӨӨХ БҮРЭН ЭРХТ ТЕМЕ СОЛИХ СИСТЕМ (CUSTOM THEME SYSTEM)
 function loadCustomSiteTheme() {
     const savedTheme = localStorage.getItem('iknow_site_theme') || 'default';
-    const select = document.getElementById('siteThemeSelect');
-    if (select) select.value = savedTheme;
+    const select = document.getElementById('siteThemeSelect'); if (select) select.value = savedTheme;
     applySiteCustomTheme();
 }
 function applySiteCustomTheme() {
