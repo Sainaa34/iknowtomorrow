@@ -66,6 +66,8 @@ body {
 
 /* 🔒 ГОЛЫН НЭВТРЭХ ХАЙРЦАГНЫ АРД ЗУРАГ ОРУУЛАХ ДИЗАЙН */
 .auth-card {
+    /* 🪐 Хар өнгийг устгаж, зургийг шууд нэвт харагддаг тунгалаг болгов */
+    background: transparent; 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -79,6 +81,17 @@ body {
     position: relative;
     z-index: 2;
 }
+
+/* 🌟 Голын зураг дээрх бичвэрийг уншихад амар болгох неон манан (0.45 буюу 45%-ийн тунгалаг болгов) */
+.auth-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 12, 5, 0.45); 
+    border-radius: 10px;
+    z-index: -1;
+}
+
 
 .auth-card::before {
     content: "";
