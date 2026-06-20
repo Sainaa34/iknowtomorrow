@@ -1,5 +1,5 @@
 // Global State Variables
-let currentLang = localStorage.getItem('iknow_lang') || 'en'; // Global focus for international users
+let currentLang = localStorage.getItem('iknow_lang') || 'en'; // Default to English for international users
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
@@ -27,7 +27,7 @@ const translations = {
     mn: {
         feed: "Ирээдүйн урсгал",
         friends: "🤝 Найзууд & Чат",
-        chats: "🤖 Ирээдүйн Bот",
+        chats: "🤖 Ирээдүйн Бот",
         profileSettings: "⚙️ Профайл Тохиргоо",
         futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
         postBtn: "Нийтлэх",
@@ -63,7 +63,6 @@ function initIndexedDB() {
         loadPosts();
     };
 }
-
 // Main DOM Loader Core
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
@@ -105,6 +104,7 @@ function toggleTheme() {
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) themeBtn.innerText = "🎨 Theme: " + currentTheme.toUpperCase();
 }
+
 function switchLang() {
     currentLang = currentLang === 'mn' ? 'en' : 'mn';
     localStorage.setItem('iknow_lang', currentLang);
@@ -147,7 +147,6 @@ function applyTranslations() {
     const searchInput = document.getElementById('search-input');
     if (searchInput && langData.searchLabel) searchInput.placeholder = langData.searchLabel;
 }
-
 function showAuthPage(page) {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
@@ -172,7 +171,7 @@ function handleRegister(e) {
     const passwordInput = document.getElementById('reg-password')?.value;
 
     if (!usernameInput || !passwordInput) {
-        alert("Please fill all fields!");
+        alert("Please fill all required registration fields!");
         return;
     }
 
@@ -183,7 +182,7 @@ function handleRegister(e) {
 
     const userExists = usersDb.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
     if (userExists) {
-        alert("Username already taken!");
+        alert("This cybernetic username identity is already taken!");
         return;
     }
 
@@ -195,7 +194,7 @@ function handleRegister(e) {
     
     usersDb.push(newUser);
     localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
-    alert("Registration successful!");
+    alert("New network entity registered successfully!");
     showAuthPage('login');
 }
 
@@ -205,7 +204,7 @@ function handleLogin(e) {
     const passwordInput = document.getElementById('login-password')?.value;
 
     if (!usernameInput || !passwordInput) {
-        alert("Please fill all fields!");
+        alert("Access fields cannot be blank!");
         return;
     }
 
@@ -221,9 +220,10 @@ function handleLogin(e) {
         localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
         showMainApp();
     } else {
-        alert("Wrong credentials!");
+        alert("Access Denied: Invalid Username or Password Key Matrix!");
     }
 }
+
 function openProfileModal() {
     const modal = document.getElementById('profile-modal');
     const nameInput = document.getElementById('modal-username');
@@ -311,6 +311,7 @@ function showMainApp() {
     if (db) loadPosts();
 }
 
+function toggleLanguage() { switchLang(); }
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
     const file = event.target.files;
@@ -394,6 +395,7 @@ function timeAgo(timestamp) {
         return currentLang === 'mn' ? `${days} өдрийн өмнө` : `${days} days ago`;   
     }
 }
+
 function createPost() {
     const inputEl = document.getElementById('future-input');
     const text = inputEl ? inputEl.value.trim() : "";
@@ -429,7 +431,6 @@ function createPost() {
     clearAttachedMedia();
     renderPosts();
 }
-
 function deletePost(postId) {
     const postIndex = allPosts.findIndex(p => p.id === postId);
     if (postIndex === -1) return;
@@ -495,7 +496,7 @@ function reportPost(postId) {
         renderPosts();
     }
 }
-// 💬 FACEBOOK OPTIMIZED ... MENU INTERACTION TOGGLE
+
 function togglePostMenu(event, menuId) {
     event.stopPropagation();
     
@@ -530,7 +531,6 @@ function renderPosts() {
     let usersDb = [];
     try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
 
-    // 📰 1. DRAW TIMELINE NETWORK FEED
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
         
@@ -609,7 +609,6 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 
-    // 🗑️ 2. DRAW ARCHIVE FOR CITIZENS
     const myDeletedPosts = deletedPostsArchive.filter(p => currentUser && p.author === currentUser.username);
     if (myDeletedPosts.length > 0) {
         const archiveTitle = document.createElement('h3');
@@ -797,7 +796,6 @@ function randomizeAuthImages() {
     const authCard = document.querySelector('.auth-card');
     if (!authContainer || !authCard) return;
 
-    // 🪐 Чиний GitHub дээр оруулсан яг тэр шинэ 9 зургуудын нэрс
     const newCyberImages = [
         'r1.webp', 'r2.jpg', 'r3.jpg', 'r4.jpg', 
         'r5.jpg', 'r6.jpg', 'r7.jpg', 'r8.jpg', 'r9.jpg'
@@ -812,12 +810,12 @@ function randomizeAuthImages() {
     const centerImg = shuffled[4]; // Голын хайрцагны арын зураг
 
     // 📐 4 буланд ямар ч хар зай үлдээхгүй дэлгэц дүүрэн (50% х 50%) тулгах CSS шахалт
-    authContainer.style.backgroundImage = `url('${leftTopImg}'), url('${rightTopImg}'), url('${leftBottomImg}'), url('${rightBottomImg}')`;
+    authContainer.style.backgroundImage = "url('" + leftTopImg + "'), url('" + rightTopImg + "'), url('" + leftBottomImg + "'), url('" + rightBottomImg + "')";
     authContainer.style.backgroundPosition = 'left top, right top, left bottom, right bottom';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat, no-repeat';
     authContainer.style.backgroundSize = '50% 50%, 50% 50%, 50% 50%, 50% 50%'; 
 
-    authCard.style.backgroundImage = `url('${centerImg}')`;
+    authCard.style.backgroundImage = "url('" + centerImg + "')";
 }
 
 // 👁️ ЧИНИЙ ХҮССЭН: НУУЦ ҮГИЙГ ХАРДАГ/НУУДАГ ТОГТОЛЦОО
