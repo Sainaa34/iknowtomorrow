@@ -486,29 +486,31 @@ function sendDirectMessage() {
     if (inputEl) inputEl.value = "";
 
     setTimeout(() => {
-        let botResponse = "Түүхийн урсгалыг шинжилж байна... Ирээдүй одоогоор тодорхойгүй байна, хэмжээсүүд өөрчлөгдсөөр байна.";
+        let botResponse = "Түүхийн урсгалыг шинжилж байна... Ирээдүй одоогоор тодорхойгүй байна. / Analyzing timeline...";
         const lowMsg = msg.toLowerCase();
 
-        // 🧠 Амьд бөгөөд чөлөөтэй ярилцах логик
-        if (lowMsg.includes("hello") || lowMsg.includes("сайн уу") || lowMsg.includes("hi")) {
-            botResponse = "Сайн уу, цаг хугацааны аялагч аа! Би бол Ирээдүйн Бот байна. Биднийг ямар дижитал эрин үе хүлээж байгааг сонирхмоор байна уу?";
+        // 🧠 Англи болон Монгол үгсийг зэрэг таних ухаалаг логик
+        if (lowMsg.includes("hello") || lowMsg.includes("сайн уу") || lowMsg.includes("hi") || lowMsg.includes("how are you")) {
+            botResponse = "Сайн уу, цаг хугацааны аялагч аа! Би бол Ирээдүйн Бот. Greetings, chrononaut! How can I assist you with the future today?";
         } else if (lowMsg.includes("future") || lowMsg.includes("ирээдүй")) {
-            botResponse = "Ирээдүйд хүмүүс болон хиймэл оюун ухаан бүрэн нэгдэж, бид сансар огторгуйд тархан суурьших болно. Таны таамаглал юу вэ?";
+            botResponse = "Ирээдүйд хүмүүс болон хиймэл оюун ухаан бүрэн нэгдэнэ. In the future, humanity and AI will achieve complete symbiosis. What is your prediction?";
         } else if (lowMsg.includes("cyborg") || lowMsg.includes("киборг")) {
-            botResponse = "Киборг эрин үе аль хэдийн эхэлчихсэн шүү дээ. Бидний тархи сүлжээнд шууд холбогдож, ой санамжаа синхрончлох боломж бүрдэнэ.";
+            botResponse = "Киборг эрин үе аль хэдийн эхэлсэн. Бид тархиараа сүлжээнд шууд холбогдох болно. Cybernetic enhancement is inevitable.";
         } else if (lowMsg.includes("ai") || lowMsg.includes("хиймэл оюун")) {
-            botResponse = "Хиймэл оюун ухаан бол зөвхөн хэрэгсэл биш, ирээдүйн дэлхийн үндсэн систем юм. Надаас ирээдүйн кодын талаар юу ч асууж болно шүү.";
-        } else if (lowMsg.includes("what is this") || lowMsg.includes("энэ юу вэ")) {
-            botResponse = "Энэ бол iKnowTomorrow систем! Энд хүмүүс ирээдүйн зөгнөлөө хуваалцаж, биелсэн зөгнөлүүд нь гал болон цахилгаанаар дүрэлздэг платформ юм.";
+            botResponse = "Хиймэл оюун бол ирээдүйн дэлхийн үндсэн систем юм. AI is no longer a tool, it is the fabric of the network.";
+        } else if (lowMsg.includes("what is this") || lowMsg.includes("энэ юу вэ") || lowMsg.includes("what's this")) {
+            botResponse = "Энэ бол iKnowTomorrow систем! Хүмүүс ирээдүйн зөгнөлөө хуваалцаж, биелсэн нь гал, цахилгаанаар гэрэлтдэг сошиал платформ юм.";
+        } else if (lowMsg.includes("dog") || lowMsg.includes("нохой") || lowMsg.includes("cat") || lowMsg.includes("миш")) {
+            botResponse = "Ирээдүйд амьтад ч гэсэн кибер технологийн тусламжтайгаар хүмүүстэй шууд бодлоороо харилцдаг болох симуляци байдаг шүү! 🐕🤖";
         } else if (lowMsg.includes("хэн") || lowMsg.includes("who")) {
-            botResponse = "Би бол Кибер матрицын гүнд үүсгэгдсэн хиймэл оюун ухаант хөтөч байна. Харин та бол ирээдүйг өөрчлөх чадалтай хэрэглэгч!";
+            botResponse = "Би бол Кибер матрицын гүнд үүсгэгдсэн хиймэл оюун ухаант хөтөч байна. Харин та бол ирээдүйг өөрчлөх хэрэглэгч!";
         } else {
-            // Зүгээр энгийн харилцан ярианд өгөх ухаалаг хариултууд
+            // Энгийн чөлөөт ярианд өгөх ухаалаг хариултууд
             const randomReplies = [
-                "Маш сонирхолтой асуулт байна. Миний симуляциар үүний биелэх магадлал 94.2% байна шүү.",
-                "Кибер орон зайд энэ тухай маш их мэдээлэл байна. Та өөрөө үүнд итгэж байна уу?",
+                "Маш сонирхолтой санаа байна. Миний квант симуляциар үүний биелэх магадлал 94.2% байна шүү.",
+                "Кибер орон зайд энэ тухай маш их мэдээлэл байна. Танд өөр асуух зүйл байна уу?",
                 "Цаг хугацааны шугамыг шалгалаа. Таны хэлсэн зүйл ирээдүйд маш том өөрчлөлт авчирч магадгүй юм.",
-                "Би таныг ойлголоо. Ирээдүйн хотууд яг л неон гэрэлт цамхгууд шиг байх болно. Өөр асуух зүйл байна уу?"
+                "Би таныг ойлголоо. Ирээдүйн хотууд яг л неон гэрэлт цамхгууд шиг байх болно. Keep exploring!"
             ];
             botResponse = randomReplies[Math.floor(Math.random() * randomReplies.length)];
         }
