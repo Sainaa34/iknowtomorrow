@@ -50,35 +50,39 @@ body {
     transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* 🔐 AUTHENTICATION CONTAINER (3 ТАЛЫН ЗУРГИЙГ ЖАВАСРИПТЭЭР ХОЛЬЖ ШАХАХ СУУРЬ) */
+/* 🔐 НЭВТРЭХ ХЭСГИЙН ХООСОН ЗАЙГ БҮРЭН НӨХӨЖ, 3 ТАЛААС НЬ ДҮҮРГЭХ */
 #auth-container {
-    display: flex;
-    justify-content: center;
+    display: flex !important;
     align-items: center;
+    justify-content: center;
     min-height: 100vh;
-    padding: 20px;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    /* Скриптээс ирж буй 3 зургийг зүүн, баруун, голд нь ямар ч хар зайгүй наах тохиргоо */
+    background-size: 35% 100%, 35% 100%, cover !important;
+    background-position: left center, right center, center center !important;
+    background-repeat: no-repeat, no-repeat, no-repeat !important;
     position: relative;
-    background: radial-gradient(circle at center, #051405 0%, #020502 100%);
-    background-attachment: fixed;
-    background-size: cover;
+    overflow: hidden;
 }
 
-/* 🔒 ГОЛЫН БАЛАЙ ХАР ХЭСГИЙГ БҮРМӨСӨН УСТГАЖ ТУНГАЛАГ ШИЛ ШИГ БОЛГОСОН ХЭСЭГ */
+/* Голын нэвтрэх картын загвар */
 .auth-card {
-    background: transparent !important;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-size: cover !important;
+    background-position: center !important;
+    backdrop-filter: blur(10px);
     border: 2px solid var(--cyber-cyan);
-    padding: 35px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+    padding: 40px;
     border-radius: 12px;
     width: 100%;
-    max-width: 420px;
-    box-shadow: 0 0 35px rgba(0, 255, 102, 0.3);
+    max-width: 450px;
     text-align: center;
+    z-index: 5;
     position: relative;
-    z-index: 2;
 }
+
 
 .auth-card::before {
     content: "";
