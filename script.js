@@ -42,7 +42,7 @@ const translations = {
     }
 };
 
-// 🖼️ ЗУРГУУДЫН САНАМСАРГҮЙ МАССИВ
+// 🖼️ ЗУРГУУДЫН МАССИВ
 const authImages = [
     'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
     'Designer (4).png', 'Designer (5).png', 'Designer (6).png',
@@ -62,7 +62,7 @@ window.onload = function() {
     setupPasswordToggles();
 };
 
-// 🔐 АРЫН ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ
+// 🔐 АРЫН ЗУРГУУДЫГ ОНООХ
 function initAuthPage() {
     const authContainer = document.getElementById('auth-container');
     if (!authContainer) return;
@@ -92,7 +92,7 @@ function showAuthPage(type) {
     }
 }
 
-// 📦 INDEXEDDB ИДЭВХЖҮҮЛЭХ
+// 📦 INDEXEDDB СУУРИЛУУЛАХ БОЛОН ФОРМ СОНСОХЫГ ХАМТДАНА
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 3);
 
@@ -104,6 +104,7 @@ function initIndexedDB() {
     request.onsuccess = function(event) {
         db = event.target.result;
         initAuthPage(); 
+        setupFormListeners(); // Энд ганцхан удаа зөв холбоно
         checkLoginStatus();
     };
 
@@ -121,7 +122,27 @@ function initIndexedDB() {
     };
 }
 
-// 👀 НУУЦ ҮГ ХАРАХ ТОХИРГОО
+// 🎮 ФОРМЫГ ГАЦААХГҮЙ, СЭРГЭЭХГҮЙ (NO REFRESH) СОНСОХ ХЭСЭГ
+function setupFormListeners() {
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    if(loginForm) {
+        loginForm.onsubmit = function(e) {
+            e.preventDefault(); // Үндсэн ачаалалтыг зогсооно
+            handleLogin();
+        };
+    }
+
+    if(registerForm) {
+        registerForm.onsubmit = function(e) {
+            e.preventDefault(); // Үндсэн ачаалалтыг зогсооно
+            handleRegister();
+        };
+    }
+}
+
+// 👀 НУУЦ ҮГ ХАРАХ / НУУХ (EYE TOGGLE)
 function setupPasswordToggles() {
     const toggleLogin = document.getElementById('toggleLoginPassword');
     const loginPass = document.getElementById('login-password');
@@ -144,10 +165,8 @@ function setupPasswordToggles() {
     }
 }
 
-// 🔑 БҮРТГҮҮЛЭХҮҮД (EVENT ДАМЖУУЛАЛТЫГ ЗӨВ БОЛГОЖ ХҮҮДЭС REFRESH ХИЙДГИЙГ ЗАСАВ)
-function handleRegister(event) {
-    if(event) event.preventDefault(); // Хуудсыг дахин ачаалахаас 100% хамгаална
-
+// 🔑 БҮРТГҮҮЛЭХ
+function handleRegister() {
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
 
@@ -170,10 +189,8 @@ function handleRegister(event) {
     };
 }
 
-// 🔑 НЭВТРЭХҮҮД
-function handleLogin(event) {
-    if(event) event.preventDefault(); // Хуудсыг дахин ачаалахаас 100% хамгаална
-
+// 🔑 НЭВТРЭХ
+function handleLogin() {
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
 
@@ -443,6 +460,7 @@ function togglePostMenu(id) {
     if(menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
+// Пост устгах
 function deletePost(id) {
     if(!confirm("Are you sure?")) return;
     let transaction = db.transaction(["posts"], "readwrite");
@@ -481,7 +499,7 @@ function searchPosts() {
     renderFeed(matched);
 }
 
-// 🖼️ MEDIA UPLOAD PREVIEW
+// 🖼️ MEDIA PREVIEW
 function handleFileSelect(event, type) {
     let file = event.target.files[0];
     if(!file) return;
@@ -569,7 +587,7 @@ function sendDirectMessage() {
     }, 900);
 }
 
-// ⚙️ PROFILE SETTINGS & HISTORY
+// ⚙️ PROFILE SETTINGS
 function openProfileModal() {
     document.getElementById('profile-modal').style.display = 'flex';
     document.getElementById('modal-username').value = currentUser.username;
