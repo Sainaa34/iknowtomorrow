@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iKnowTomorrow - Quantum Timeline</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="theme-cyber">
 
@@ -12,9 +13,12 @@
         <div id="login-card" class="auth-card">
             <h1>iKnowTomorrow</h1>
             <div class="subtitle">ENTER QUANTUM MATRIX</div>
-            <form id="login-form" onsubmit="return handleLogin(event)">
+            <form id="login-form">
                 <input type="text" id="login-username" placeholder="Identity Username" required autocomplete="off">
-                <input type="password" id="login-password" placeholder="Matrix Password Access Key" required>
+                <div style="position: relative; width: 100%;">
+                    <input type="password" id="login-password" placeholder="Matrix Password Access Key" required style="padding-right: 40px;">
+                    <i class="fa-solid fa-eye" id="toggleLoginPassword" style="position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--cyber-cyan);"></i>
+                </div>
                 <button type="submit" class="cyber-btn">AUTHENTICATE</button>
             </form>
             <button class="toggle-link" onclick="showAuthPage('register')">Initialize New Identity Profile ➔</button>
@@ -23,9 +27,12 @@
         <div id="register-card" class="auth-card" style="display: none;">
             <h1>Initialize Identity</h1>
             <div class="subtitle">CREATE TIMELINE ANCHOR</div>
-            <form id="register-form" onsubmit="return handleRegister(event)">
+            <form id="register-form">
                 <input type="text" id="reg-username" placeholder="Choose Username" required autocomplete="off">
-                <input type="password" id="reg-password" placeholder="Create Password Access Key" required>
+                <div style="position: relative; width: 100%;">
+                    <input type="password" id="reg-password" placeholder="Create Password Access Key" required style="padding-right: 40px;">
+                    <i class="fa-solid fa-eye" id="toggleRegPassword" style="position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--cyber-cyan);"></i>
+                </div>
                 <button type="submit" class="cyber-btn">INITIALIZE MATRIX</button>
             </form>
             <button class="toggle-link" onclick="showAuthPage('login')">⬅️ Return to Authentication</button>
