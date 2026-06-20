@@ -794,51 +794,45 @@ function sendDirectMessage() {
     }, 600);
 }
 
-// 🎲 REFRESH ХИЙХ БОЛГОНД БАРУУН, ЗҮҮН, ГОЛЫН ЗУРГИЙГ ЗЭРЭГ СОЛИХ СИСТЕМ
+// 🎲 REFRESH ХИЙХ БОЛГОНД 4 ТАЛД 4 ӨӨР ШИНИЙ ЗУРГИЙГ ДЭЛГЭЦ ДҮҮРЭН СУНГАХ СИСТЕМ
 function randomizeAuthImages() {
     const authContainer = document.getElementById('auth-container');
     const authCard = document.querySelector('.auth-card');
     if (!authContainer || !authCard) return;
 
-    const cyberImages = [
-        'Designer.png', 'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
-        'Designer (4).png', 'Designer (5).png', 'Designer (6).png', 'Designer (7).png',
-        'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 'future, kids art, kids paint, happy tomorrow.png'
+    // 🪐 Чиний GitHub дээр оруулсан яг тэр шинэ зургуудын нэрс
+    const newCyberImages = [
+        'r1.webp', 'r2.jpg', 'r3.jpg', 'r4.jpg', 
+        'r5.jpg', 'r6.jpg', 'r7.jpg', 'r8.jpg', 'r9.jpg'
     ];
 
-    const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
+    // Зургуудыг санамсаргүйгээр холих
+    const shuffled = [...newCyberImages].sort(() => 0.5 - Math.random());
 
-    const leftImg = shuffled[0];
-    const rightImg = shuffled[1];
-    const centerImg = shuffled[2]; // 🎯 Голын зургийг урагш гаргах зөв индекс холболт
+    // 📐 4 талд болон голын хайрцагны ард байрлах 5 өөр зургийг сонгох
+    const leftTopImg = shuffled[0];
+    const rightTopImg = shuffled[1];
+    const leftBottomImg = shuffled[2];
+    const rightBottomImg = shuffled[3];
+    const centerImg = shuffled[4];
 
-    authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
-    authContainer.style.backgroundPosition = 'left center, right center, center center';
-    authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
-    authContainer.style.backgroundSize = '50% 100%, 50% 100%, cover'; 
+    // 🖼️ 4 ТАЛД ЯМАР Ч ХАР ЗАЙГҮЙ ДЭЛГЭЦ ДҮҮРЭН (50% x 50%) ТУЛГАЖ СУНГАХ CSS ШАХАЛТ
+    authContainer.style.backgroundImage = `url('${leftTopImg}'), url('${rightTopImg}'), url('${leftBottomImg}'), url('${rightBottomImg}')`;
+    authContainer.style.backgroundPosition = 'left top, right top, left bottom, right bottom';
+    authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat, no-repeat';
+    authContainer.style.backgroundSize = '50% 50%, 50% 50%, 50% 50%, 50% 50%'; 
 
-    authCard.style.backgroundImage = "url('" + centerImg + "')";
-}
+    // Голын нэвтрэх хайрцагны арын зургийг солих
+    authCard.style.backgroundImage = `url('${centerImg}')`;
 
-// 👁️ ЧИНИЙ ХҮССЭН: НУУЦ ҮГИЙГ ХАРДАГ/НУУДАГ ТОГТОЛЦОО
-function togglePasswordVisibility(inputId) {
-    const input = document.getElementById(inputId);
-    if (!input) return;
-    const eyeBtn = input.nextElementSibling;
-    if (input.type === "password") {
-        input.type = "text";
-        if (eyeBtn) eyeBtn.innerText = "🙈";
-    } else {
-        input.type = "password";
-        if (eyeBtn) eyeBtn.innerText = "👁️";
+    // 🔓 НЭВТРЭХ ҮГИЙГ БУЦААЖ ТОД ГАРГАХ СИСТЕМ
+    const loginCard = document.getElementById('login-card');
+    if (loginCard) {
+        const subtitle = loginCard.querySelector('.subtitle');
+        if (subtitle) subtitle.innerText = "🛸 GLOBAL TIMELINE CITIZEN LOGIN";
     }
 }
 
-function handleLogout() {
-    currentUser = null;
-    localStorage.removeItem('iknow_current_user');
-    showAuthPage('login');
-}
-
-// Жаваскриптийг давхардалгүй ажиллуулах нэгдсэн урсгал
+// Функцийг ганцхан нэгдсэн урсгалаар эхлүүлж дуудах
 randomizeAuthImages();
+
