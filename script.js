@@ -1,12 +1,12 @@
 // Global State Variables
-let currentLang = localStorage.getItem('iknow_lang') || 'en'; // Гадаад хүмүүст зориулж анхны хэлийг шууд Англи (en) болгов
+let currentLang = localStorage.getItem('iknow_lang') || 'en';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
-let deletedPostsArchive = []; 
+let deletedPostsArchive = [];
 let currentTab = 'feed';
 let selectedFriend = null;
-let db = null; // IndexedDB Баазыг удирдах хувьсагч
+let db = null; // IndexedDB
 
 // Translations Database
 const translations = {
@@ -16,6 +16,7 @@ const translations = {
         chats: "🤖 Future Bot",
         profileSettings: "⚙️ Profile Settings",
         futurePlaceholder: "What will happen in the future? Share here...",
+        botPlaceholder: "Ask Future Bot...",
         postBtn: "Post",
         verifiedFuture: "Ирээдүй биелсэн",
         writeComment: "Write a comment...",
@@ -30,34 +31,32 @@ const translations = {
         chats: "🤖 Ирээдүйн Бот",
         profileSettings: "⚙️ Профайл Тохиргоо",
         futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
+        botPlaceholder: "Ирээдүйн Ботноос асуух...",
         postBtn: "Нийтлэх",
         verifiedFuture: "Ирээдүй биелсэн",
         writeComment: "Сэтгэгдэл бичих...",
         botTitle: "Ирээдүйн Бот 🤖",
         sendBtn: "Илгээх",
         bannedWordAlert: "Таны постонд хориотой үг байна!",
-        searchLabel: "Search Timeline..."
+        searchLabel: "Хайлтын хэсэг..."
     }
 };
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
-// 💾 ХИЗГААРГҮЙ БАГТААМЖТАЙ INDEXEDDB БААЗЫГ ЭХЛҮҮЛЖ ТҮГЖИХ ЛОГИК
+// 💾 INDEXEDDB БААЗЫГ ЭХЛҮҮЛЭХ
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 1);
-    
     request.onupgradeneeded = function(e) {
         let database = e.target.result;
         if (!database.objectStoreNames.contains("system_data")) {
             database.createObjectStore("system_data");
         }
     };
-
     request.onsuccess = function(e) {
         db = e.target.result;
-        loadPosts(); // Бааз амжилттай нээгдвэл постуудыг уншина
+        loadPosts();
     };
-
     request.onerror = function() {
         console.error("IndexedDB error, falling back to basic storage.");
         loadPosts();
@@ -81,10 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         showAuthPage('login');
     }
-    applyTranslations();
-    initIndexedDB(); // Жинхэнэ баазыг эхлүүлэх
 
-    // Facebook цэсийг гадна талд нь дарахад хаах хамгаалалт
+    applyTranslations();
+    initIndexedDB();
+    randomizeAuthImages(); // Ачаалагдах үед зургийг солих
+
+    // Дэлгэцийн хаана ч хамаагүй дарахад dropdown хаах
     document.addEventListener('click', (e) => {
         if (!e.target.matches('.post-more-btn')) {
             document.querySelectorAll('.post-dropdown-menu').forEach(menu => {
@@ -98,13 +99,13 @@ function toggleTheme() {
     if (currentTheme === 'cyber') currentTheme = 'matrix';
     else if (currentTheme === 'matrix') currentTheme = 'dark';
     else currentTheme = 'cyber';
-
+    
     localStorage.setItem('iknow_theme', currentTheme);
     document.body.className = "theme-" + currentTheme;
-    
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) themeBtn.innerText = "🎨 Theme: " + currentTheme.toUpperCase();
 }
+
 function switchLang() {
     currentLang = currentLang === 'mn' ? 'en' : 'mn';
     localStorage.setItem('iknow_lang', currentLang);
@@ -118,11 +119,7 @@ function applyTranslations() {
     const langData = translations[currentLang];
     if (!langData) return;
 
-    const ids = [
-        'feed-btn', 'friends-btn', 'chats-btn', 'profile-btn', 
-        'post-btn', 'bot-title', 'send-btn'
-    ];
-
+    const ids = ['feed-btn', 'friends-btn', 'chats-btn', 'profile-btn', 'post-btn', 'bot-title', 'send-btn'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -133,7 +130,6 @@ function applyTranslations() {
             if (id === 'profile-btn') key = 'profileSettings';
             if (id === 'post-btn') key = 'postBtn';
             if (id === 'send-btn') key = 'sendBtn';
-            
             if (langData[key]) el.innerText = langData[key];
         }
     });
@@ -179,7 +175,9 @@ function handleRegister(e) {
     let usersDb = [];
     try {
         usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
-    } catch (err) { usersDb = []; }
+    } catch (err) {
+        usersDb = [];
+    }
 
     const userExists = usersDb.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
     if (userExists) {
@@ -190,9 +188,9 @@ function handleRegister(e) {
     const newUser = {
         username: usernameInput,
         password: passwordInput,
-        avatar: "https://robohash.org" + encodeURIComponent(usernameInput) + ".png?set=set4"
+        avatar: "https://robohash.org/" + encodeURIComponent(usernameInput) + ".png?set=set4"
     };
-    
+
     usersDb.push(newUser);
     localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
     alert("Registration successful!");
@@ -212,10 +210,11 @@ function handleLogin(e) {
     let usersDb = [];
     try {
         usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
-    } catch (err) { usersDb = []; }
+    } catch (err) {
+        usersDb = [];
+    }
 
     const matchedUser = usersDb.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
-
     if (matchedUser) {
         currentUser = matchedUser;
         localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
@@ -245,6 +244,7 @@ function closeProfileModal() {
 function handleAvatarFile(event) {
     const file = event.target.files[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = function(e) {
         const avatarInput = document.getElementById('modal-avatar');
@@ -263,7 +263,11 @@ function saveProfileModal() {
     }
 
     let usersDb = [];
-    try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch (err) { usersDb = []; }
+    try {
+        usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
+    } catch (err) {
+        usersDb = [];
+    }
 
     usersDb = usersDb.map(u => {
         if (u.username.toLowerCase() === currentUser.username.toLowerCase()) {
@@ -272,12 +276,12 @@ function saveProfileModal() {
         }
         return u;
     });
-    localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
 
+    localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
     currentUser.username = newName;
     if (newAvatar) currentUser.avatar = newAvatar;
     localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
-
+    
     closeProfileModal();
     showMainApp();
 }
@@ -312,8 +316,6 @@ function showMainApp() {
     if (db) loadPosts();
 }
 
-function toggleLanguage() { switchLang(); }
-// 🖼️ ЗУРАГ/ВИДЕОГ ШУУД ДЭЛГЭЦЭНД УРЬДЧИЛЖ ХАРУУЛАХ (PREVIEW) ФУНКЦ
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
     const file = event.target.files[0];
@@ -322,13 +324,11 @@ function handleFileSelect(event, type) {
     const reader = new FileReader();
     reader.onload = function(e) {
         postAttachedMedia = { type: type, url: e.target.result };
-        
         const previewBox = document.getElementById('post-media-preview-box');
         const previewImg = document.getElementById('post-image-preview-img');
         const previewVid = document.getElementById('post-video-preview-vid');
 
         if (previewBox) previewBox.style.display = 'block';
-        
         if (type === 'image' && previewImg && previewVid) {
             previewImg.src = e.target.result;
             previewImg.style.display = 'block';
@@ -353,7 +353,6 @@ function clearAttachedMedia() {
     if (previewVid) previewVid.style.display = 'none';
 }
 
-// 💾 ХӨТӨЧ ГАЦААХГҮЙН ТУЛД ЖИНХЭНЭ ИНДЕКСДБ БААЗААС ПОСТУУДЫГ УНШИХ
 function loadPosts() {
     if (!db) return;
     const transaction = db.transaction(["system_data"], "readonly");
@@ -371,27 +370,25 @@ function loadPosts() {
     };
 }
 
-// 🕒 FACEBOOK ШИГ ХУГАЦАА БОДДОГ ФУНКЦ
 function timeAgo(timestamp) {
     const now = new Date();
     const past = new Date(timestamp);
     const msPerMinute = 60 * 1000;
     const msPerHour = msPerMinute * 60;
     const msPerDay = msPerHour * 24;
-
     const elapsed = now - past;
 
     if (elapsed < msPerMinute) {
-         return currentLang === 'mn' ? 'Яг одоо' : 'Just now';   
+        return currentLang === 'mn' ? 'Яг одоо' : 'Just now';
     } else if (elapsed < msPerHour) {
-         const mins = Math.round(elapsed/msPerMinute);
-         return currentLang === 'mn' ? `${mins} минутын өмнө` : `${mins} min ago`;   
+        const mins = Math.round(elapsed / msPerMinute);
+        return currentLang === 'mn' ? `${mins} минутын өмнө` : `${mins} min ago`;
     } else if (elapsed < msPerDay) {
-         const hours = Math.round(elapsed/msPerHour);
-         return currentLang === 'mn' ? `${hours} цагийн өмнө` : `${hours} hours ago`;   
+        const hours = Math.round(elapsed / msPerHour);
+        return currentLang === 'mn' ? `${hours} цагийн өмнө` : `${hours} hours ago`;
     } else {
-        const days = Math.round(elapsed/msPerDay);
-        return currentLang === 'mn' ? `${days} өдрийн өмнө` : `${days} days ago`;   
+        const days = Math.round(elapsed / msPerDay);
+        return currentLang === 'mn' ? `${days} өдрийн өмнө` : `${days} days ago`;
     }
 }
 
@@ -419,8 +416,7 @@ function createPost() {
     };
 
     allPosts.unshift(newPost);
-    
-    // Хязгааргүй багтаамжтай бааз руу том зураг/видеог найдвартай бичих
+
     if (db) {
         const transaction = db.transaction(["system_data"], "readwrite");
         const store = transaction.objectStore("system_data");
@@ -437,7 +433,7 @@ function deletePost(postId) {
     if (postIndex === -1) return;
 
     if (!confirm(currentLang === 'mn' ? "Энэ постыг устгах уу? (Та хожим сэргээж болно)" : "Move this post to archive?")) return;
-    
+
     const targetPost = allPosts[postIndex];
     deletedPostsArchive.push(targetPost);
     allPosts.splice(postIndex, 1);
@@ -468,13 +464,13 @@ function restorePost(postId) {
     alert(currentLang === 'mn' ? "Пост амжилттай сэргээгдлээ!" : "Post restored successfully!");
     renderPosts();
 }
+
 function reportPost(postId) {
     if (!currentUser) return;
     const post = allPosts.find(p => p.id === postId);
     if (!post) return;
 
     if (!post.reports) post.reports = [];
-
     if (post.reports.includes(currentUser.username)) {
         alert(currentLang === 'mn' ? "Та аль хэдийн гомдол гаргасан байна!" : "You have already reported this post!");
         return;
@@ -482,12 +478,10 @@ function reportPost(postId) {
 
     if (confirm(currentLang === 'mn' ? "Энэ постонд гомдол гаргах уу?" : "Report this post?")) {
         post.reports.push(currentUser.username);
-
         if (post.reports.length >= 10) {
             alert(currentLang === 'mn' ? "Энэ постыг 10 иргэн гомдоллосон тул систем автоматаар устгалаа." : "Post auto-deleted due to 10 reports.");
             allPosts = allPosts.filter(p => p.id !== postId);
         }
-
         if (db) {
             const transaction = db.transaction(["system_data"], "readwrite");
             const store = transaction.objectStore("system_data");
@@ -497,14 +491,11 @@ function reportPost(postId) {
     }
 }
 
-// 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭСТИЙГ НЭЭЖ ХААХ ФУНКЦ
 function togglePostMenu(event, menuId) {
     event.stopPropagation();
-    
     document.querySelectorAll('.post-dropdown-menu').forEach(m => {
         if (m.id !== menuId) m.style.display = 'none';
     });
-
     const menu = document.getElementById(menuId);
     if (menu) {
         menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
@@ -518,24 +509,19 @@ function searchPosts() {
 function renderPosts() {
     const feedContainer = document.getElementById('feed-container');
     if (!feedContainer) return;
-
     feedContainer.innerHTML = "";
+
     const searchVal = document.getElementById('search-input')?.value.toLowerCase() || "";
-
-    let filteredPosts = allPosts.filter(post => 
-        post.text.toLowerCase().includes(searchVal) || 
-        post.author.toLowerCase().includes(searchVal)
-    );
-
+    let filteredPosts = allPosts.filter(post => post.text.toLowerCase().includes(searchVal) || post.author.toLowerCase().includes(searchVal));
     filteredPosts.sort((a, b) => b.votes - a.votes);
 
     let usersDb = [];
-    try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
+    try {
+        usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
+    } catch (e) {}
 
-    // 📰 1. ҮНДЭСЭН ПОСТУУДЫГ ЗУРАХ
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
-        
         let tierClass = "post-card";
         if (post.votes >= 5000) tierClass += " tier-matrix";
         else if (post.votes >= 500) tierClass += " tier-electric";
@@ -549,27 +535,27 @@ function renderPosts() {
         }
 
         let commentsHtml = "";
-        post.comments.forEach(c => {
-            const cUser = usersDb.find(u => u.username.toLowerCase() === c.author.toLowerCase());
-            const cAvatar = cUser ? cUser.avatar : "https://robohash.org";
-            const cTime = c.timestamp ? timeAgo(c.timestamp) : "";
-
-            commentsHtml += `
-                <div class="comment-node" style="display:flex; align-items:center; gap:8px;">
-                    <img src="${cAvatar}" style="width:20px; height:20px; border-radius:50%;">
-                    <div style="flex:1;">
-                        <strong>${c.author}:</strong> ${c.text}
-                        <span style="font-size:10px; color:var(--text-gray); margin-left:5px;">${cTime}</span>
-                    </div>
-                </div>`;
-        });
+        if(post.comments) {
+            post.comments.forEach(c => {
+                const cUser = usersDb.find(u => u.username.toLowerCase() === c.author.toLowerCase());
+                const cAvatar = cUser ? cUser.avatar : "https://robohash.org";
+                const cTime = c.timestamp ? timeAgo(c.timestamp) : "";
+                commentsHtml += `
+                 <div class="comment-node" style="display:flex; align-items:center; gap:8px; margin-top:5px;">
+                     <img src="${cAvatar}" style="width:20px; height:20px; border-radius:50%;">
+                     <div style="flex:1;">
+                         <strong>${c.author}:</strong> ${c.text}
+                         <span style="font-size:10px; color:var(--text-gray); margin-left:5px;">${cTime}</span>
+                     </div>
+                 </div>`;
+            });
+        }
 
         const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
         const liveAvatar = authorUser ? authorUser.avatar : "https://robohash.org";
-
         const menuId = `menu_${post.id}`;
+
         let actionButtonsHtml = `<button onclick="reportPost('${post.id}')">⚠️ Report</button>`;
-        
         if (currentUser && (post.author === currentUser.username || currentUser.username.toLowerCase() === 'sainaa34')) {
             actionButtonsHtml += `<button onclick="deletePost('${post.id}')" class="delete-btn-red">🗑️ Delete</button>`;
         }
@@ -583,13 +569,11 @@ function renderPosts() {
                         <span>📅 ${timeAgo(post.timestamp)}</span>
                     </div>
                 </div>
-                
                 <div class="post-header-actions">
                     <div class="vote-tooltip-container">
                         <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 (${post.votes})</button>
                         <span class="tooltip-box-text">${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"}</span>
                     </div>
-
                     <div class="post-menu-container">
                         <button onclick="togglePostMenu(event, '${menuId}')" class="post-more-btn">•••</button>
                         <div id="${menuId}" class="post-dropdown-menu">
@@ -611,7 +595,7 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 
-    // 🗑️ 2. ХОГИЙН САН ДАХЬ УСТСАН ПОСТУУДЫГ ХАРУУЛАХ (Архив)
+    // Архив харуулах хэсэг
     const myDeletedPosts = deletedPostsArchive.filter(p => currentUser && p.author === currentUser.username);
     if (myDeletedPosts.length > 0) {
         const archiveTitle = document.createElement('h3');
@@ -623,7 +607,6 @@ function renderPosts() {
             const archEl = document.createElement('div');
             archEl.className = "post-card";
             archEl.style.opacity = "0.6";
-            
             archEl.innerHTML = `
                 <div class="post-header-row">
                     <div class="post-user-info">
@@ -642,6 +625,7 @@ function renderPosts() {
         });
     }
 }
+
 function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
     if (post) {
@@ -662,11 +646,13 @@ function addComment(postId) {
 
     const post = allPosts.find(p => p.id === postId);
     if (post) {
+        if(!post.comments) post.comments = [];
         post.comments.push({
             author: currentUser ? currentUser.username : "Anonymous",
             text: text,
             timestamp: new Date().toISOString()
         });
+
         if (db) {
             const transaction = db.transaction(["system_data"], "readwrite");
             const store = transaction.objectStore("system_data");
@@ -684,10 +670,13 @@ function loadFriendsList() {
     container.innerHTML = "";
 
     let usersDb = [];
-    try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch (e) { usersDb = []; }
+    try {
+        usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
+    } catch (e) {
+        usersDb = [];
+    }
 
     const onlineFriends = usersDb.filter(u => u.username.toLowerCase() !== currentUser.username.toLowerCase());
-
     if (onlineFriends.length === 0) {
         container.innerHTML = `<div style="font-size:12px; color:var(--text-gray); padding:10px;">No citizens online.</div>`;
         return;
@@ -734,14 +723,14 @@ function sendFriendMessage() {
 
     let chatKey = [currentUser.username, selectedFriend].sort().join("_chat_");
     let messages = JSON.parse(localStorage.getItem(chatKey)) || [];
-
     messages.push({ sender: currentUser.username, text: text });
+    
     localStorage.setItem(chatKey, JSON.stringify(messages));
     if (inputEl) inputEl.value = "";
     renderFriendMessages();
 }
 
-// 🤖 ЖИНХЭНЭ УХААЛАГ, ОЛОН УЛСЫН АНГЛИ ХЭЛТЭЙ AI БОТ
+// 🤖 AI FUTURE BOT
 function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
@@ -750,7 +739,6 @@ function sendDirectMessage() {
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer) return;
 
-    // 1. Хэрэглэгчийн мессежийг зурах
     const userRow = document.createElement('div');
     userRow.className = "msg-row user";
     userRow.innerHTML = `<strong>You:</strong> ${msg}`;
@@ -758,7 +746,6 @@ function sendDirectMessage() {
     if (inputEl) inputEl.value = "";
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // 2. Ботны хариулах төлөв харуулах
     const botRow = document.createElement('div');
     botRow.className = "msg-row bot";
     botRow.innerHTML = `<strong>Future Bot:</strong> Synchronizing timeline query...`;
@@ -769,7 +756,6 @@ function sendDirectMessage() {
         let botResponse = "The temporal matrix is calculating your query. Processing quantum data...";
         const cleanMsg = msg.toLowerCase();
 
-        // Олон улсын хэрэглэгчдэд зориулсан 100% Англи хэлний ухаалаг хариултууд
         if (cleanMsg.includes("hello") || cleanMsg.includes("hi") || cleanMsg.includes("hey") || cleanMsg.includes("sup")) {
             botResponse = `Greetings, Citizen ${currentUser.username}! Welcome to the deep Matrix of iKnowTomorrow. What prophecy or future timeline shall we explore today?`;
         } else if (cleanMsg.includes("who are you") || cleanMsg.includes("your name")) {
@@ -790,37 +776,37 @@ function sendDirectMessage() {
             ];
             botResponse = contextualReplies[Math.floor(Math.random() * contextualReplies.length)];
         }
-
         botRow.innerHTML = `<strong>Future Bot:</strong> ${botResponse}`;
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }, 600);
 }
 
-// 🎲 REFRESH ХИЙХ БОЛГОНД БАРУУН, ЗҮҮН, ГОЛЫН ЗУРГИЙГ ЗЭРЭГ СОЛИХ СИСТЕМ
+// 🎲 BACKGROUND IMAGES RANDOMIZER
 function randomizeAuthImages() {
     const authContainer = document.getElementById('auth-container');
     const authCard = document.querySelector('.auth-card');
     if (!authContainer || !authCard) return;
 
     const cyberImages = [
-        'Designer.png', 'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
-        'Designer (4).png', 'Designer (5).png', 'Designer (6).png', 'Designer (7).png',
-        'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 'future, kids art, kids paint, happy tomorrow.png'
+        'Designer.png', 'Designer (1).png', 'Designer (2).png', 'Designer (3).png', 
+        'Designer (4).png', 'Designer (5).png', 'Designer (6).png', 'Designer (7).png', 
+        'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 
+        'future, kids art, kids paint, happy tomorrow.png'
     ];
 
+    // Зургуудыг холих
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
-    const leftImg = shuffled;
-    const rightImg = shuffled;
-    const centerImg = shuffled; // Голын зургийг индексээр зөв дуудав
+    // Индексээр нь салгаж авах (Массив чигээр нь хийж болохгүй)
+    const leftImg = shuffled[0];
+    const rightImg = shuffled[1];
+    const centerImg = shuffled[2];
 
-    // БҮХ ХАШИЛТ БОЛОН ҮСГИЙГ 100% ЗӨВ БОЛГОЖ ТҮГЖИВ
-    authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
+    authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), radial-gradient(circle at center, #051405 0%, #020502 100%)`;
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
-    authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover'; 
-
-    authCard.style.backgroundImage = "url('" + centerImg + "')";
+    authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover';
+    authCard.style.backgroundImage = `url('${centerImg}')`;
 }
 
 function handleLogout() {
@@ -828,6 +814,3 @@ function handleLogout() {
     localStorage.removeItem('iknow_current_user');
     showAuthPage('login');
 }
-
-// Функцийг ганцхан нэгдсэн урсгалаар эхлүүлж дуудах
-randomizeAuthImages();
