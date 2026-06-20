@@ -42,12 +42,12 @@ const translations = {
     }
 };
 
-// 🖼️ ЗУРГУУДЫН НЭРИЙГ ТОМ ҮСГЭЭР БОЛОН ЗӨВ ЗАМААР ЗАСАВ
+// 🖼️ ЗУРГУУДЫГ ЗӨВ ХАРУУЛАХ САНАМСАРГҮЙ СОНГОЛТЫН МАССИВ
 const authImages = [
-    './Designer (1).png', './Designer (2).png', './Designer (3).png',
-    './Designer (4).png', './Designer (5).png', './Designer (6).png',
-    './Designer (7).png', './Designer (8).png', './Designer (9).png',
-    './Designer (10).png', './Designer.png'
+    'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
+    'Designer (4).png', 'Designer (5).png', 'Designer (6).png',
+    'Designer (7).png', 'Designer (8).png', 'Designer (9).png',
+    'Designer (10).png', 'Designer.png'
 ];
 
 let attachedMedia = null; 
@@ -59,20 +59,19 @@ const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "яа
 // 🔄 Window Load
 window.onload = function() {
     initIndexedDB();
+    setupPasswordToggles(); // Нүдний зураг дээр дарахад нууц үг харах код
 };
 
-// 🔐 АРЫН ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ ФУНКЦ
+// 🔐 НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ
 function initAuthPage() {
     const authContainer = document.getElementById('auth-container');
     if (!authContainer) return;
 
-    // Зургуудыг холих
     let shuffled = [...authImages].sort(() => 0.5 - Math.random());
     let leftImg = shuffled[0];
     let rightImg = shuffled[1];
     let centerImg = shuffled[2];
 
-    // CSS рүү зургуудыг илгээх
     authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), url('${centerImg}')`;
     
     const loginCard = document.getElementById('login-card');
@@ -93,19 +92,19 @@ function showAuthPage(type) {
     }
 }
 
-// 📦 INDEXEDDB
+// 📦 INDEXEDDB INITIALIZATION
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 3);
 
     request.onerror = function(event) {
         console.error("Database error: " + event.target.errorCode);
-        // Бааз гацсан ч зургийг харуулна
         initAuthPage();
     };
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        initAuthPage(); // Бааз амжилттай нээгдвэл зургуудыг уншина
+        initAuthPage(); 
+        setupFormListeners(); // Формуудыг гацаахгүй сонсох функц дуудах
         checkLoginStatus();
     };
 
@@ -123,22 +122,55 @@ function initIndexedDB() {
     };
 }
 
-// 🔑 БҮРТГҮҮЛЭХ (REGISTER) - БҮРЭН ЗАСАВ
-function handleRegister(e) {
-    if (e) e.preventDefault(); // Хуудас сэргэхээс хамгаална
-    
+// 🎮 ЭНД ФОРМ ИЛГЭЭХЭД REFRESH ХИЙДГИЙГ БҮРМӨСӨН ЗАСАВ (EVENT LISTENERS)
+function setupFormListeners() {
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    if(loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleLogin();
+        });
+    }
+
+    if(registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleRegister();
+        });
+    }
+}
+
+// 👀 `*****` НУУЦ ҮГИЙГ ХАРЖ, НУУДАГ БОЛГОХ ФУНКЦ
+function setupPasswordToggles() {
+    const toggleLogin = document.getElementById('toggleLoginPassword');
+    const loginPass = document.getElementById('login-password');
+    if(toggleLogin && loginPass) {
+        toggleLogin.addEventListener('click', function() {
+            const type = loginPass.getAttribute('type') === 'password' ? 'text' : 'password';
+            loginPass.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+
+    const toggleReg = document.getElementById('toggleRegPassword');
+    const regPass = document.getElementById('reg-password');
+    if(toggleReg && regPass) {
+        toggleReg.addEventListener('click', function() {
+            const type = regPass.getAttribute('type') === 'password' ? 'text' : 'password';
+            regPass.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+}
+
+// 🔑 БҮРТГҮҮЛЭХ
+function handleRegister() {
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
 
-    if(!u || !p) {
-        alert("Please enter both username and password!");
-        return false;
-    }
-
-    if (!db) {
-        alert("Database is initializing, please try again in a second.");
-        return false;
-    }
+    if(!u || !p) return;
 
     let transaction = db.transaction(["users"], "readwrite");
     let store = transaction.objectStore("users");
@@ -146,33 +178,23 @@ function handleRegister(e) {
 
     getRequest.onsuccess = function() {
         if (getRequest.result) {
-            alert("This username already exists!");
+            alert("This identity username already exists in timeline.");
         } else {
-            let newUser = { username: u, password: p, avatar: './Designer.png' };
+            let newUser = { username: u, password: p, avatar: 'Designer.png' };
             store.add(newUser);
-            alert("Identity Created! Please login now.");
+            alert("Identity Initialized! Proceed to authentication.");
+            document.getElementById('register-form').reset();
             showAuthPage('login');
         }
     };
-    return false;
 }
 
-// 🔑 НЭВТРЭХ (LOGIN) - БҮРЭН ЗАСАВ
-function handleLogin(e) {
-    if (e) e.preventDefault(); 
-    
+// 🔑 НЭВТРЭХ
+function handleLogin() {
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
 
-    if(!u || !p) {
-        alert("Please enter username and password!");
-        return false;
-    }
-
-    if (!db) {
-        alert("Database connection is building...");
-        return false;
-    }
+    if(!u || !p) return;
 
     let transaction = db.transaction(["users"], "readonly");
     let store = transaction.objectStore("users");
@@ -184,10 +206,9 @@ function handleLogin(e) {
             localStorage.setItem('iknow_logged_user', currentUser.username);
             showMainApp();
         } else {
-            alert("Access Denied: Invalid Username or Password Key.");
+            alert("Access Denied: Invalid Username or Password Matrix Key.");
         }
     };
-    return false;
 }
 
 function handleLogout() {
