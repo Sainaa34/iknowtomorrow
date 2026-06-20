@@ -7,12 +7,10 @@ let db = null;
 
 // Translations Database
 const translations = {
-    en: { feed: "Timeline", friends: "🤝 Friends & Chats", chats: "🤖 Future Bot", futurePlaceholder: "What will happen in the future? Share here...", postBtn: "Post", verifiedFuture: "Verified Future", writeComment: "Write a comment...", botTitle: "Future Bot 🤖", sendBtn: "Send", bannedWordAlert: "Your post contains banned keywords!", searchLabel: "Search Timeline...", exitBtn: "🚪 Exit" },
-    mn: { feed: "Таймлайн", friends: "🤝 Түншүүд ба Чат", chats: "🤖 Ирээдүйн Бот", futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...", postBtn: "Нийтлэх", verifiedFuture: "Ирээдүй биелсэн", writeComment: "Сэтгэгдэл үлдээх...", botTitle: "Ирээдүйн Бот 🤖", sendBtn: "Илгээх", bannedWordAlert: "Таны бичвэрт хориотой үг байна!", searchLabel: "Таймлайнаас хайх...", exitBtn: "🚪 Гарах" }
+    en: { feed: "Timeline", chats: "🤖 Future Bot", futurePlaceholder: "What will happen in the future? Share here...", postBtn: "Post", writeComment: "Write a comment...", botTitle: "Future Bot 🤖", sendBtn: "Send", bannedWordAlert: "Your post contains banned keywords!" },
+    mn: { feed: "Таймлайн", chats: "🤖 Ирээдүйн Бот", futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...", postBtn: "Нийтлэх", writeComment: "Сэтгэгдэл үлдээх...", botTitle: "Ирээдүйн Бот 🤖", sendBtn: "Илгээх", bannedWordAlert: "Таны бичвэрт хориотой үг байна!" }
 };
 
-const authImages = ['Designer (1).png', 'Designer (2).png', 'Designer (3).png', 'Designer (4).png', 'Designer (5).png', 'Designer.png'];
-let attachedMedia = null, attachedMediaType = null, modalAttachedAvatar = null;
 const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "пизда"];
 
 // 🔄 Window Load
@@ -21,35 +19,21 @@ window.onload = function() {
     setupPasswordToggles();
 };
 
-// 🔐 BACKGROUND IMAGES
-function initAuthPage() {
-    const authContainer = document.getElementById('auth-container');
-    if (!authContainer) return;
-    let shuffled = [...authImages].sort(() => 0.5 - Math.random());
-    authContainer.style.backgroundImage = `url('${shuffled[0]}'), url('${shuffled[1]}'), url('${shuffled[2]}')`;
-    
-    if (document.getElementById('login-card')) document.getElementById('login-card').style.backgroundImage = `url('${shuffled[2]}')`;
-    if (document.getElementById('register-card')) document.getElementById('register-card').style.backgroundImage = `url('${shuffled[2]}')`;
-}
-
 function showAuthPage(type) {
     document.getElementById('login-card').style.display = type === 'register' ? 'none' : 'block';
     document.getElementById('register-card').style.display = type === 'register' ? 'block' : 'none';
 }
 
-// 📦 INDEXEDDB СУУРИЛУУЛАХ БОЛОН ШАЛГАХ
+// 📦 INDEXEDDB СУУРИЛУУЛАХ
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 3);
     request.onsuccess = function(e) {
         db = e.target.result;
-        initAuthPage(); 
         setupFormListeners(); 
         
-        // Бааз бэлэн болмогц сессийг шалгана
         let loggedName = localStorage.getItem('iknow_logged_user');
         if(loggedName) {
-            let tx = db.transaction(["users"], "readonly");
-            tx.objectStore("users").get(loggedName).onsuccess = function(event) {
+            db.transaction(["users"], "readonly").objectStore("users").get(loggedName).onsuccess = function(event) {
                 if(event.target.result) {
                     currentUser = event.target.result;
                     showMainApp();
@@ -64,7 +48,7 @@ function initIndexedDB() {
     };
 }
 
-// 🎮 ФОРМ СОНСОХ ХЭСЭГ (SUBMIT)
+// 🎮 ФОРМ СОНСОХ ХЭСЭГ
 function setupFormListeners() {
     document.getElementById('login-form').onsubmit = function(e) {
         e.preventDefault();
@@ -139,7 +123,6 @@ function handleLogout() {
     localStorage.removeItem('iknow_logged_user');
     document.getElementById('main-app').style.display = 'none';
     document.getElementById('auth-container').style.display = 'flex';
-    initAuthPage();
 }
 
 function showMainApp() {
@@ -156,13 +139,11 @@ function showMainApp() {
 function updateLanguageUI() {
     let lang = translations[currentLang];
     document.getElementById('feed-btn').innerText = lang.feed;
-    document.getElementById('friends-btn').innerText = lang.friends;
     document.getElementById('chats-btn').innerText = lang.chats;
     document.getElementById('future-input').placeholder = lang.futurePlaceholder;
     document.getElementById('post-btn').innerText = lang.postBtn;
     document.getElementById('bot-title').innerText = lang.botTitle;
     document.getElementById('send-btn').innerText = lang.sendBtn;
-    document.getElementById('search-input').placeholder = lang.searchLabel;
 }
 function switchLang() {
     currentLang = currentLang === 'en' ? 'mn' : 'en';
@@ -198,13 +179,13 @@ function loadPostsFromDB() {
 
 function createPost() {
     const input = document.getElementById('future-input');
-    if(!input.value && !attachedMedia) return;
+    if(!input.value) return;
     if(bannedKeywords.some(w => input.value.toLowerCase().includes(w))) { alert(translations[currentLang].bannedWordAlert); return; }
 
-    let newPost = { id: "post_" + Date.now(), author: currentUser.username, avatar: currentUser.avatar, text: input.value, media: attachedMedia, mediaType: attachedMediaType, timestamp: Date.now(), votes: 0, voters: [], comments: [] };
+    let newPost = { id: "post_" + Date.now(), author: currentUser.username, avatar: currentUser.avatar, text: input.value, timestamp: Date.now(), comments: [] };
     
     db.transaction(["posts"], "readwrite").objectStore("posts").add(newPost).onsuccess = function() {
-        input.value = ''; clearAttachedMedia(); loadPostsFromDB();
+        input.value = ''; loadPostsFromDB();
     };
 }
 
@@ -214,21 +195,19 @@ function renderFeed(posts) {
     posts.forEach(p => {
         let card = document.createElement('div');
         card.className = "post-card tier-electric";
+        card.style.border = "1px solid var(--cyber-cyan)";
+        card.style.padding = "15px";
+        card.style.marginBottom = "10px";
+        card.style.background = "rgba(0,0,0,0.5)";
         card.innerHTML = `
-            <div class="post-header-row">
-                <div class="post-user-info">
-                    <img class="post-avatar-mini" src="${p.avatar}">
-                    <div><h4>${p.author}</h4><span>${new Date(p.timestamp).toLocaleTimeString()}</span></div>
+            <div class="post-header-row" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="post-user-info" style="display:flex; gap:10px; align-items:center;">
+                    <img class="post-avatar-mini" src="${p.avatar}" style="width:4px0; height:40px; border-radius:50%;">
+                    <div><h4 style="margin:0;">${p.author}</h4><span style="font-size:11px; color:#888;">${new Date(p.timestamp).toLocaleTimeString()}</span></div>
                 </div>
-                <button class="delete-btn-red" style="display:${p.author===currentUser.username?'block':'none'}" onclick="deletePost('${p.id}')">❌</button>
+                <button class="delete-btn-red" style="display:${p.author===currentUser.username?'block':'none'}; background:red; color:white; border:none; padding:5px 10px; cursor:pointer;" onclick="deletePost('${p.id}')">❌</button>
             </div>
-            <div class="post-main-text">${p.text}</div>
-            <div class="comments-section">
-                <div class="comment-input-row">
-                    <input id="reply-input-${p.id}" type="text" placeholder="Comment...">
-                    <button class="comment-add-btn" onclick="addComment('${p.id}')">➔</button>
-                </div>
-            </div>`;
+            <div class="post-main-text" style="margin-top:10px; font-size:14px;">${p.text}</div>`;
         container.appendChild(card);
     });
 }
@@ -237,27 +216,11 @@ function deletePost(id) {
     if(confirm("Delete post?")) db.transaction(["posts"], "readwrite").objectStore("posts").delete(id).onsuccess = () => loadPostsFromDB();
 }
 
-// 🖼️ MEDIA PREVIEW
-function handleFileSelect(event, type) {
-    let file = event.target.files[0]; if(!file) return;
-    let r = new FileReader();
-    r.onload = function(e) {
-        attachedMedia = e.target.result; attachedMediaType = type;
-        document.getElementById('post-media-preview-box').style.display = 'block';
-        let img = document.getElementById('post-image-preview-img'), vid = document.getElementById('post-video-preview-vid');
-        img.style.display = type === 'image' ? 'block' : 'none'; if(type==='image') img.src = e.target.result;
-        vid.style.display = type === 'video' ? 'block' : 'none'; if(type==='video') vid.src = e.target.result;
-    };
-    r.readAsDataURL(file);
-}
-function clearAttachedMedia() { attachedMedia = null; document.getElementById('post-media-preview-box').style.display = 'none'; }
-
-// 🤖 AI & CHAT SHUMS
+// 🤖 AI BOT
 function sendDirectMessage() {
     let box = document.getElementById('chat-container'), input = document.getElementById('bot-input');
     if(!input.value) return;
-    box.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${input.value}</div>`;
-    input.value = ''; box.scrollTop = box.scrollHeight;
-    setTimeout(() => { box.innerHTML += `<div class="msg-row bot"><strong>Bot:</strong> Calculations active. Future looks stable.</div>`; box.scrollTop = box.scrollHeight; }, 700);
+    box.innerHTML += `<div class="msg-row user" style="margin-bottom:8px; text-align:right;"><strong>You:</strong> ${input.value}</div>`;
+    let userText = input.value; input.value = ''; box.scrollTop = box.scrollHeight;
+    setTimeout(() => { box.innerHTML += `<div class="msg-row bot" style="margin-bottom:8px; color:var(--cyber-cyan);"><strong>Bot:</strong> Calculations active. Future looks stable.</div>`; box.scrollTop = box.scrollHeight; }, 700);
 }
-function loadOnlineCitizens() {} function openProfileModal() {} function closeProfileModal() {}
