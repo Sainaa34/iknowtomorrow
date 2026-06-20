@@ -19,28 +19,48 @@ window.onload = function() {
     setupPasswordToggles();
 };
 
+// Цонх солих функц (Давхцлыг арилгана)
 function showAuthPage(type) {
-    document.getElementById('login-card').style.display = type === 'register' ? 'none' : 'block';
-    document.getElementById('register-card').style.display = type === 'register' ? 'block' : 'none';
+    const loginCard = document.getElementById('login-card');
+    const registerCard = document.getElementById('register-card');
+    
+    if (type === 'register') {
+        if(loginCard) loginCard.style.display = 'none';
+        if(registerCard) registerCard.style.display = 'block';
+    } else {
+        if(loginCard) loginCard.style.display = 'block';
+        if(registerCard) registerCard.style.display = 'none';
+    }
 }
 
-// 📦 INDEXEDDB СУУРИЛУУЛАХ
+// 📦 INDEXEDDB СУУРИЛУУЛАХ БОЛОН ШАЛГАХ
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 3);
+    
+    request.onerror = function() {
+        showAuthPage('login');
+    };
+
     request.onsuccess = function(e) {
         db = e.target.result;
         setupFormListeners(); 
         
         let loggedName = localStorage.getItem('iknow_logged_user');
         if(loggedName) {
-            db.transaction(["users"], "readonly").objectStore("users").get(loggedName).onsuccess = function(event) {
+            let tx = db.transaction(["users"], "readonly");
+            tx.objectStore("users").get(loggedName).onsuccess = function(event) {
                 if(event.target.result) {
                     currentUser = event.target.result;
                     showMainApp();
-                } else { showAuthPage('login'); }
+                } else { 
+                    showAuthPage('login'); 
+                }
             };
-        } else { showAuthPage('login'); }
+        } else { 
+            showAuthPage('login'); 
+        }
     };
+    
     request.onupgradeneeded = function(e) {
         let dbInstance = e.target.result;
         if (!dbInstance.objectStoreNames.contains("users")) dbInstance.createObjectStore("users", { keyPath: "username" });
@@ -50,28 +70,42 @@ function initIndexedDB() {
 
 // 🎮 ФОРМ СОНСОХ ХЭСЭГ
 function setupFormListeners() {
-    document.getElementById('login-form').onsubmit = function(e) {
-        e.preventDefault();
-        handleLogin();
-    };
-    document.getElementById('register-form').onsubmit = function(e) {
-        e.preventDefault();
-        handleRegister();
-    };
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    if(loginForm) {
+        loginForm.onsubmit = function(e) {
+            e.preventDefault();
+            handleLogin();
+        };
+    }
+    if(registerForm) {
+        registerForm.onsubmit = function(e) {
+            e.preventDefault();
+            handleRegister();
+        };
+    }
 }
 
 // 👀 PASSWORD TOGGLE
 function setupPasswordToggles() {
-    document.getElementById('toggleLoginPassword').onclick = function() {
-        let input = document.getElementById('login-password');
-        input.type = input.type === 'password' ? 'text' : 'password';
-        this.classList.toggle('fa-eye-slash');
-    };
-    document.getElementById('toggleRegPassword').onclick = function() {
-        let input = document.getElementById('reg-password');
-        input.type = input.type === 'password' ? 'text' : 'password';
-        this.classList.toggle('fa-eye-slash');
-    };
+    const toggleLogin = document.getElementById('toggleLoginPassword');
+    const toggleReg = document.getElementById('toggleRegPassword');
+
+    if(toggleLogin) {
+        toggleLogin.onclick = function() {
+            let input = document.getElementById('login-password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash');
+        };
+    }
+    if(toggleReg) {
+        toggleReg.onclick = function() {
+            let input = document.getElementById('reg-password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash');
+        };
+    }
 }
 
 // 🔑 БҮРТГҮҮЛЭХ
@@ -123,6 +157,7 @@ function handleLogout() {
     localStorage.removeItem('iknow_logged_user');
     document.getElementById('main-app').style.display = 'none';
     document.getElementById('auth-container').style.display = 'flex';
+    showAuthPage('login');
 }
 
 function showMainApp() {
@@ -202,7 +237,7 @@ function renderFeed(posts) {
         card.innerHTML = `
             <div class="post-header-row" style="display:flex; justify-content:space-between; align-items:center;">
                 <div class="post-user-info" style="display:flex; gap:10px; align-items:center;">
-                    <img class="post-avatar-mini" src="${p.avatar}" style="width:4px0; height:40px; border-radius:50%;">
+                    <img class="post-avatar-mini" src="${p.avatar}" style="width:40px; height:40px; border-radius:50%;">
                     <div><h4 style="margin:0;">${p.author}</h4><span style="font-size:11px; color:#888;">${new Date(p.timestamp).toLocaleTimeString()}</span></div>
                 </div>
                 <button class="delete-btn-red" style="display:${p.author===currentUser.username?'block':'none'}; background:red; color:white; border:none; padding:5px 10px; cursor:pointer;" onclick="deletePost('${p.id}')">❌</button>
@@ -221,6 +256,6 @@ function sendDirectMessage() {
     let box = document.getElementById('chat-container'), input = document.getElementById('bot-input');
     if(!input.value) return;
     box.innerHTML += `<div class="msg-row user" style="margin-bottom:8px; text-align:right;"><strong>You:</strong> ${input.value}</div>`;
-    let userText = input.value; input.value = ''; box.scrollTop = box.scrollHeight;
+    input.value = ''; box.scrollTop = box.scrollHeight;
     setTimeout(() => { box.innerHTML += `<div class="msg-row bot" style="margin-bottom:8px; color:var(--cyber-cyan);"><strong>Bot:</strong> Calculations active. Future looks stable.</div>`; box.scrollTop = box.scrollHeight; }, 700);
 }
