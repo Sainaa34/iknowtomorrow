@@ -9,7 +9,7 @@ const translations = {
         themeSelectLabel: "🎨 Main Site Color: ", globalSearchPlaceholder: "🔍 Search (Tag, keyword or name...)",
         profileTitleText: "🔮 Future Predicting Master",
         
-        // Нэвтрэх хуудасны орчуулга (Анх ороход харагдах Англи хэл)
+        // Нэвтрэх хуудасны Англи орчуулга
         authSub: "🔒 FUTURE CITIZEN LOGIN SYSTEM",
         userInput: "Citizen identity name (Username)",
         passInput: "Access key (Password)",
@@ -17,7 +17,7 @@ const translations = {
         signUpBtn: "REGISTER NEW IDENTITY",
         guestBtn: "👁️ Browse as Guest (Anonymous)",
         
-        // Анхааруулга мессежүүд
+        // Ухаалаг Англи анхааруулга мессежүүд
         alertEmpty: "🚨 [ACCESS DENIED] Enter your identity name and password!",
         alertExist: "🚨 [SYSTEM ERROR] This identity name already exists in the system!",
         alertSuccess: "🎉 [SUCCESS] New identity successfully registered! Now click LOGIN.",
@@ -55,7 +55,7 @@ const translations = {
     }
 };
 
-// АНХ ОРОХОД ЗААВАЛ АНЛИ ХЭЛЭЭР УГТАХ ТОХИРГОО
+// АНХ ОРОХОД ЗААВАЛ АНГЛИ ХЭЛЭЭР УГТАХ СИСТЕМ
 let currentLang = localStorage.getItem('iknow_lang') || 'en';
 let attachedMediaBase64 = ""; let attachedMediaType = ""; 
 let selectedTagFilter = ""; let globalSearchQuery = "";
@@ -73,33 +73,11 @@ const initialFriends = [
     { id: "unknown", name: "Unknown Cyborg", isFriend: false, avatar: "https://placeholder.com" }
 ];
 
-// 🔒 ЖИНХЭНЭ АККАУНТ СИСТЕМ (ХОРШСОН ЛОГИК)
 let currentUser = localStorage.getItem('iknow_current_user') || "";
 let isGuestMode = localStorage.getItem('iknow_guest_mode') === 'true';
 
-// НЭВТРЭХ ХУУДАСНЫ БАРУУН ДЭЭД БУЛАНД ХЭЛ СОЛИХ ТОВЧЛУУРЫГ АМЬДАР ДУУДАХ
-function injectAuthLangBtn() {
-    const overlay = document.getElementById('authOverlay');
-    if (overlay && !document.getElementById('authLangBtn')) {
-        const btn = document.createElement('button');
-        btn.id = 'authLangBtn';
-        btn.className = 'corner-lang-btn';
-        // Нэвтрэх карт дотор биш, бүтэн дэлгэцийн баруун дээд буланд байрлуулна
-        btn.style.position = 'absolute';
-        btn.style.right = '20px';
-        btn.style.top = '20px';
-        btn.onclick = (e) => {
-            e.stopPropagation();
-            toggleLanguage();
-        };
-        overlay.appendChild(btn);
-    }
-}
-
 function checkAuth() {
     const overlay = document.getElementById('authOverlay');
-    injectAuthLangBtn(); // Хэл солих товчийг шалгаж оруулна
-    
     if (!currentUser && !isGuestMode) {
         if (overlay) overlay.style.display = 'flex';
         return false;
@@ -107,7 +85,7 @@ function checkAuth() {
     if (overlay) overlay.style.display = 'none';
     return true;
 }
-// ШИНЭЭР БҮРТГҮҮЛЭХ ФУНКЦ (ТУСДАА АЖИЛЛАДАГ БОЛОВ)
+// ➕ ШИНЭЭР БҮРТГҮҮЛЭХ ФУНКЦ (ТӨГС ЗАСВАРТАЙ БҮРЭН ЭХ)
 function handleSignUp() {
     const u = document.getElementById('authUsername').value.trim();
     const p = document.getElementById('authPassword').value.trim();
@@ -123,7 +101,7 @@ function handleSignUp() {
     alert(t.alertSuccess);
 }
 
-// КИБЕРПАНК НЭВТРЭХ ФУНКЦ
+// 🔑 НЭВТРЭХ ФУНКЦ
 function handleLogin() {
     const u = document.getElementById('authUsername').value.trim();
     const p = document.getElementById('authPassword').value.trim();
@@ -143,10 +121,9 @@ function handleLogin() {
     }
 }
 
-// 🌐 GOOGLE ACCOUNT-ААР НЭВТРЭХ УХААЛАГ СИСТЕМ
+// 🌐 GOOGLE ACCOUNT СИСТЕМ
 function handleGoogleLogin(response) {
     const t = translations[currentLang];
-    // Google-ээс ирсэн нууцлаг өгөгдлийг тайлж унших
     const base64Url = response.credential.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
@@ -169,7 +146,7 @@ function enterAsGuest() {
     location.reload();
 }
 
-// СИСТЕМЭЭС ГАРАХ
+// 🚪 СИСТЕМЭЭС ГАРАХ
 function logoutAction() {
     const t = translations[currentLang];
     if (confirm(t.alertLogout)) {
@@ -246,7 +223,7 @@ function updateLanguageUI() {
     
     // Нэвтрэх хуудасны хэл солих ухаалаг систем (Бүх үгсийг нэг дор хөрвүүлнэ)
     if (document.getElementById('authOverlay') && document.getElementById('authOverlay').style.display !== 'none') {
-        const pSub = document.querySelector('#authOverlay p');
+        const pSub = document.getElementById('authSubText');
         if (pSub) pSub.innerText = t.authSub;
         
         const uInput = document.getElementById('authUsername');
@@ -261,7 +238,7 @@ function updateLanguageUI() {
         const sBtn = document.getElementById('signUpSubmitBtn');
         if (sBtn) sBtn.innerText = t.signUpBtn;
         
-        const gBtn = document.querySelector('.guest-btn');
+        const gBtn = document.getElementById('guestBtn');
         if (gBtn) gBtn.innerText = t.guestBtn;
         
         const authLangBtn = document.getElementById('authLangBtn');
@@ -426,7 +403,7 @@ function renderPosts() {
                     <div class="reaction-hover-drawer">
                         <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${p.id}, 'fulfilled')">🔮 <small>Зөн биеллээ</small></button>
                         <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${p.id}, 'confirmed')">⚡ <small>Батлагдлаа</small></button>
-                        <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${post.id || p.id}, 'sight')">👁️ <small>Ирээдүй харлаа</small></button>
+                        <button class="reaction-sub-btn" onclick="triggerSpecialEffect(${p.id}, 'sight')">👁️ <small>Ирээдүй харлаа</small></button>
                         <button class="reaction-sub-btn ${userReactedLike}" onclick="handleReaction(${p.id}, 'likes')">❤️</button>
                         <button class="reaction-sub-btn ${userReactedWow}" onclick="handleReaction(${p.id}, 'wows')">😮</button>
                         <button class="reaction-sub-btn ${userReactedOmg}" onclick="handleReaction(${p.id}, 'omgs')">😱</button>
@@ -523,6 +500,7 @@ function renderMyPosts() {
     });
 }
 
+// Пост устгах
 function deletePost(id) {
     if (!confirm("Устгах уу?")) return;
     let posts = JSON.parse(localStorage.getItem('iknow_posts')) || [];
@@ -532,6 +510,7 @@ function deletePost(id) {
     if (document.getElementById('page-myposts').classList.contains('active')) renderMyPosts();
 }
 
+// Коммент нэмэх
 function addComment(id) {
     const input = document.getElementById(`input-${id}`);
     const txt = input.value.trim();
