@@ -171,3 +171,19 @@
                     
                     <!-- ⚙️ STEAM EDIT PROFILE ТОВЧУУР ЯГ ХЭВЭЭРЭЭ ҮЛДЭВ -->
                     <button id="editProfileTriggerBtn" class="edit-profile-trigger-btn" onclick="toggleEditOptions()">⚙️ Профайл Тохиргоог Засах</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧠 ҮНДСЭН СКРИПТ ФАЙЛЫГ ХОЛБОЖ УНШИХ ХЭСЭГ -->
+    <script src="script.js"></script>
+
+    <!-- 🔒 БҮРТГЭЛИЙН ЦОНХЫГ УДИРДАХ УХААЛАГ СКРИПТ -->
+    <script>
+        if (localStorage.getItem('iknow_current_user')) {
+            document.getElementById('authOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
