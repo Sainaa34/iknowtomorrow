@@ -104,7 +104,7 @@ function initIndexedDB() {
     request.onsuccess = function(event) {
         db = event.target.result;
         initAuthPage(); 
-        setupFormListeners(); // Энд ганцхан удаа зөв холбоно
+        setupFormListeners(); 
         checkLoginStatus();
     };
 
@@ -122,21 +122,21 @@ function initIndexedDB() {
     };
 }
 
-// 🎮 ФОРМЫГ ГАЦААХГҮЙ, СЭРГЭЭХГҮЙ (NO REFRESH) СОНСОХ ХЭСЭГ
+// 🎮 ФОРМ СОНСОХ ХЭСЭГ
 function setupFormListeners() {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
     if(loginForm) {
         loginForm.onsubmit = function(e) {
-            e.preventDefault(); // Үндсэн ачаалалтыг зогсооно
+            e.preventDefault(); 
             handleLogin();
         };
     }
 
     if(registerForm) {
         registerForm.onsubmit = function(e) {
-            e.preventDefault(); // Үндсэн ачаалалтыг зогсооно
+            e.preventDefault(); 
             handleRegister();
         };
     }
@@ -165,7 +165,7 @@ function setupPasswordToggles() {
     }
 }
 
-// 🔑 БҮРТГҮҮЛЭХ
+// 🔑 ШИНЭЭР БҮРТГҮҮЛЭХ (АСИНХРОН ХҮЛЭЭЛТ НЭМЖ ЗАСАВ)
 function handleRegister() {
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
@@ -181,15 +181,22 @@ function handleRegister() {
             alert("This identity username already exists in timeline.");
         } else {
             let newUser = { username: u, password: p, avatar: 'Designer.png' };
-            store.add(newUser);
-            alert("Identity Initialized! Proceed to authentication.");
-            document.getElementById('register-form').reset();
-            showAuthPage('login');
+            let addRequest = store.add(newUser);
+            
+            // Бааз руу нэмэгдэж дууссаныг баталгаажуулж байж дараагийн алхам руу шилжинэ
+            addRequest.onsuccess = function() {
+                alert("Identity Initialized! Proceed to authentication.");
+                document.getElementById('register-form').reset();
+                showAuthPage('login');
+            };
+            addRequest.onerror = function() {
+                alert("Database registration error. Try again.");
+            };
         }
     };
 }
 
-// 🔑 НЭВТРЭХ
+// 🔑 НЭВТРЭХ (АСИНХРОН ХҮЛЭЭЛТ НЭМЖ ЗАСАВ)
 function handleLogin() {
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
@@ -204,10 +211,15 @@ function handleLogin() {
         if(request.result && request.result.password === p) {
             currentUser = request.result;
             localStorage.setItem('iknow_logged_user', currentUser.username);
+            // Нэвтрэх үйлдэл амжилттай болсны дараа формоо цэвэрлээд апп руу орно
+            document.getElementById('login-form').reset();
             showMainApp();
         } else {
             alert("Access Denied: Invalid Username or Password Matrix Key.");
         }
+    };
+    request.onerror = function() {
+        alert("Authentication grid error.");
     };
 }
 
@@ -460,7 +472,6 @@ function togglePostMenu(id) {
     if(menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
-// Пост устгах
 function deletePost(id) {
     if(!confirm("Are you sure?")) return;
     let transaction = db.transaction(["posts"], "readwrite");
