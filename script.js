@@ -2,6 +2,8 @@
 let currentLang = localStorage.getItem('iknow_lang') || 'en';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
+let attachedMedia = null;
+let attachedMediaType = null;
 
 // Translations Database
 const translations = {
@@ -9,14 +11,27 @@ const translations = {
     mn: { feed: "Таймлайн", chats: "🤖 Ирээдүйн Бот", futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...", postBtn: "Нийтлэх", writeComment: "Сэтгэгдэл үлдээх...", botTitle: "Ирээдүйн Бот 🤖", sendBtn: "Илгээх", bannedWordAlert: "Таны бичвэрт хориотой үг байна!" }
 };
 
+const authImages = ['Designer (1).png', 'Designer (2).png', 'Designer (3).png', 'Designer (4).png', 'Designer (5).png', 'Designer.png'];
 const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "пизда"];
 
-// 🔄 Window Load - Шууд ажиллана, бааз хүлээхгүй
+// 🔄 Window Load
 window.onload = function() {
+    initAuthPage(); // Арын зургуудыг оруулж ирэх функц
     setupFormListeners();
     setupPasswordToggles();
     checkLoginStatus();
 };
+
+// 🔐 BACKGROUND IMAGES
+function initAuthPage() {
+    const authContainer = document.getElementById('auth-container');
+    if (!authContainer) return;
+    let shuffled = [...authImages].sort(() => 0.5 - Math.random());
+    authContainer.style.backgroundImage = `url('${shuffled[0]}'), url('${shuffled[1]}'), url('${shuffled[2]}')`;
+    
+    if (document.getElementById('login-card')) document.getElementById('login-card').style.backgroundImage = `url('${shuffled[2]}')`;
+    if (document.getElementById('register-card')) document.getElementById('register-card').style.backgroundImage = `url('${shuffled[3]}')`;
+}
 
 function showAuthPage(type) {
     document.getElementById('login-card').style.display = type === 'register' ? 'none' : 'block';
@@ -49,7 +64,7 @@ function setupPasswordToggles() {
     };
 }
 
-// 🔑 БҮРТГҮҮЛЭХ (localStorage ашиглав)
+// 🔑 БҮРТГҮҮЛЭХ
 function handleRegister() {
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
@@ -68,7 +83,7 @@ function handleRegister() {
     }
 }
 
-// 🔑 НЭВТРЭХ (localStorage ашиглав)
+// 🔑 НЭВТРЭХ
 function handleLogin() {
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
@@ -104,6 +119,7 @@ function handleLogout() {
     localStorage.removeItem('iknow_logged_user');
     document.getElementById('main-app').style.display = 'none';
     document.getElementById('auth-container').style.display = 'flex';
+    initAuthPage();
     showAuthPage('login');
 }
 
@@ -149,18 +165,28 @@ function switchTab(tab) {
     document.getElementById(tab + '-btn').classList.add('active');
 }
 
-// 📝 POSTS SYSTEM (localStorage)
+// 📝 POSTS & COMMENTS SYSTEM (Хуучин функцуудыг бүрэн буцааж оруулав)
 function createPost() {
     const input = document.getElementById('future-input');
-    if(!input.value) return;
+    if(!input.value && !attachedMedia) return;
     if(bannedKeywords.some(w => input.value.toLowerCase().includes(w))) { alert(translations[currentLang].bannedWordAlert); return; }
 
     let posts = JSON.parse(localStorage.getItem('iknow_posts') || '[]');
-    let newPost = { id: "post_" + Date.now(), author: currentUser.username, avatar: currentUser.avatar, text: input.value, timestamp: Date.now() };
+    let newPost = { 
+        id: "post_" + Date.now(), 
+        author: currentUser.username, 
+        avatar: currentUser.avatar, 
+        text: input.value, 
+        media: attachedMedia,
+        mediaType: attachedMediaType,
+        timestamp: Date.now(),
+        comments: []
+    };
     
     posts.unshift(newPost);
     localStorage.setItem('iknow_posts', JSON.stringify(posts));
     input.value = ''; 
+    clearAttachedMedia();
     renderFeed();
 }
 
@@ -175,17 +201,49 @@ function renderFeed() {
         card.className = "post-card tier-electric";
         card.style.border = "1px solid var(--cyber-cyan)";
         card.style.padding = "15px";
-        card.style.marginBottom = "10px";
-        card.style.background = "rgba(0,0,0,0.5)";
+        card.style.marginBottom = "15px";
+        card.style.background = "rgba(0,0,0,0.6)";
+        card.style.borderRadius = "8px";
+
+        // Медиа хавсралт шалгах
+        let mediaHtml = '';
+        if(p.media) {
+            if(p.mediaType === 'image') {
+                mediaHtml = `<img src="${p.media}" style="max-width:100%; margin-top:10px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">`;
+            } else if(p.mediaType === 'video') {
+                mediaHtml = `<video src="${p.media}" controls style="max-width:100%; margin-top:10px; border-radius:4px;"></video>`;
+            }
+        }
+
+        // Сэтгэгдлийн жагсаалт үүсгэх
+        let commentsHtml = '';
+        if(p.comments && p.comments.length > 0) {
+            p.comments.forEach(c => {
+                commentsHtml += `
+                    <div style="background:rgba(255,255,255,0.05); padding:8px; margin-top:5px; border-radius:4px; font-size:13px;">
+                        <strong>${c.author}:</strong> ${c.text}
+                    </div>`;
+            });
+        }
+        
         card.innerHTML = `
             <div class="post-header-row" style="display:flex; justify-content:space-between; align-items:center;">
                 <div class="post-user-info" style="display:flex; gap:10px; align-items:center;">
                     <img class="post-avatar-mini" src="${p.avatar}" style="width:40px; height:40px; border-radius:50%;">
                     <div><h4 style="margin:0;">${p.author}</h4><span style="font-size:11px; color:#888;">${new Date(p.timestamp).toLocaleTimeString()}</span></div>
                 </div>
-                <button class="delete-btn-red" style="display:${p.author===currentUser.username?'block':'none'}; background:red; color:white; border:none; padding:5px 10px; cursor:pointer;" onclick="deletePost('${p.id}')">❌</button>
+                <button class="delete-btn-red" style="display:${p.author===currentUser.username?'block':'none'}; background:red; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;" onclick="deletePost('${p.id}')">❌</button>
             </div>
-            <div class="post-main-text" style="margin-top:10px; font-size:14px;">${p.text}</div>`;
+            <div class="post-main-text" style="margin-top:10px; font-size:14px; white-space: pre-wrap;">${p.text}</div>
+            ${mediaHtml}
+            
+            <div class="comments-section" style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                <div id="comments-list-${p.id}">${commentsHtml}</div>
+                <div class="comment-input-row" style="display:flex; gap:5px; margin-top:8px;">
+                    <input id="reply-input-${p.id}" type="text" placeholder="Write a comment..." style="margin-bottom:0; padding:6px 10px; font-size:13px;">
+                    <button style="background:var(--cyber-cyan); color:#000; border:none; padding:0 15px; cursor:pointer; border-radius:4px;" onclick="addComment('${p.id}')">➔</button>
+                </div>
+            </div>`;
         container.appendChild(card);
     });
 }
@@ -197,6 +255,43 @@ function deletePost(id) {
         localStorage.setItem('iknow_posts', JSON.stringify(posts));
         renderFeed();
     }
+}
+
+function addComment(postId) {
+    const input = document.getElementById(`reply-input-${postId}`);
+    if(!input || !input.value.trim()) return;
+
+    let posts = JSON.parse(localStorage.getItem('iknow_posts') || '[]');
+    let postIndex = posts.findIndex(p => p.id === postId);
+    
+    if(postIndex !== -1) {
+        if(!posts[postIndex].comments) posts[postIndex].comments = [];
+        posts[postIndex].comments.push({
+            author: currentUser.username,
+            text: input.value.trim(),
+            timestamp: Date.now()
+        });
+        localStorage.setItem('iknow_posts', JSON.stringify(posts));
+        input.value = '';
+        renderFeed();
+    }
+}
+
+// 🖼️ МЕДИА ХАВСРАЛТ УНШИХ
+function handleFileSelect(event, type) {
+    let file = event.target.files[0]; 
+    if(!file) return;
+    let r = new FileReader();
+    r.onload = function(e) {
+        attachedMedia = e.target.result; 
+        attachedMediaType = type;
+        alert(type.toUpperCase() + " attached successfully!");
+    };
+    r.readAsDataURL(file);
+}
+function clearAttachedMedia() { 
+    attachedMedia = null; 
+    attachedMediaType = null; 
 }
 
 // 🤖 AI BOT
