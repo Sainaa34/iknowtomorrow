@@ -7,7 +7,7 @@ let deletedPostsArchive = [];
 let currentTab = 'feed';
 let selectedFriend = null;
 
-// Translations Database
+// Орчуулгын сан (Timeline - Ирээдүйн урсгал)
 const translations = {
     en: {
         feed: "Timeline",
@@ -41,7 +41,7 @@ const translations = {
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
-// App Core Init
+// Апп ачаалагдах үед ажиллах үндсэн код
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyTranslations();
 
-    // Facebook шиг унадаг цэсийг гадна талд нь дарахад хаах хамгаалалт
+    // Facebook цэсийг гадна талд нь дарахад хаах хамгаалалт
     document.addEventListener('click', (e) => {
         if (!e.target.matches('.post-more-btn')) {
             document.querySelectorAll('.post-dropdown-menu').forEach(menu => {
@@ -141,7 +141,6 @@ function showAuthPage(page) {
         if (registerCard) registerCard.style.display = 'block';
     }
 }
-
 function handleRegister(e) {
     if (e) e.preventDefault();
     const usernameInput = document.getElementById('reg-username')?.value.trim();
@@ -219,7 +218,7 @@ function closeProfileModal() {
 }
 
 function handleAvatarFile(event) {
-    const file = event.target.files[0];
+    const file = event.target.files;
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -292,7 +291,7 @@ function toggleLanguage() { switchLang(); }
 // 🖼️ ЗУРАГ/ВИДЕОГ ШУУД ДЭЛГЭЦЭНД УРЬДЧИЛЖ ХАРУУЛАХ (PREVIEW) ФУНКЦ
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
-    const file = event.target.files[0];
+    const file = event.target.files;
     if (!file) return;
 
     const reader = new FileReader();
@@ -335,7 +334,6 @@ function loadPosts() {
         allPosts = JSON.parse(sessionStorage.getItem('iknow_posts_db')) || [];
         deletedPostsArchive = JSON.parse(sessionStorage.getItem('iknow_archive_db')) || [];
         
-        // Хэрэв түр санах ой хоосон бол үндсэн баазаас уншина
         if (allPosts.length === 0) {
             allPosts = JSON.parse(localStorage.getItem('iknow_posts_db')) || [];
         }
@@ -398,12 +396,10 @@ function createPost() {
 
     allPosts.unshift(newPost);
     
-    // Гацахаас сэргийлж Session болон Local баазад зэрэг хуваарилна
     try {
         sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     } catch(err) {
-        // Хэрэв хэт том файл бол зөвхөн Session санах ойд хадгална
         sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     }
 
@@ -472,9 +468,8 @@ function reportPost(postId) {
 
 // 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭСТИЙГ НЭЭЖ ХААХ ФУНКЦ
 function togglePostMenu(event, menuId) {
-    event.stopPropagation(); // Дээшээ уусах хөдөлгөөнийг зогсоох
+    event.stopPropagation();
     
-    // Өөр нээлттэй байсан бүх цэснүүдийг хаах
     document.querySelectorAll('.post-dropdown-menu').forEach(m => {
         if (m.id !== menuId) m.style.display = 'none';
     });
@@ -541,7 +536,6 @@ function renderPosts() {
         const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
         const liveAvatar = authorUser ? authorUser.avatar : "https://robohash.org";
 
-        // 💬 FACEBOOK-ИЙН ... ЦЭСНИЙ ДОТОР ТОХИРУУЛАХ ТОВЧНУУД
         const menuId = `menu_${post.id}`;
         let actionButtonsHtml = `<button onclick="reportPost('${post.id}')">⚠️ Report</button>`;
         
@@ -560,13 +554,11 @@ function renderPosts() {
                 </div>
                 
                 <div class="post-header-actions">
-                    <!-- 🔮 ЧИНИЙ ХҮССЭН TWITTER TOOLTIP ЭФФЕКТ -->
                     <div class="vote-tooltip-container">
                         <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 (${post.votes})</button>
                         <span class="tooltip-box-text">${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"}</span>
                     </div>
 
-                    <!-- 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭС -->
                     <div class="post-menu-container">
                         <button onclick="togglePostMenu(event, '${menuId}')" class="post-more-btn">•••</button>
                         <div id="${menuId}" class="post-dropdown-menu">
@@ -648,7 +640,7 @@ function addComment(postId) {
     }
 }
 
-// 🤝 FRIENDS SYSTEM
+// 🤝 НАЙЗУУДЫН СИСТЕМ
 function loadFriendsList() {
     const container = document.getElementById('friends-list-container');
     if (!container) return;
@@ -785,11 +777,10 @@ function randomizeAuthImages() {
 
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
-    const leftImg = shuffled;
-    const rightImg = shuffled;
-    const centerImg = shuffled; // 🎯 Голын зургийг индексээр зөв дуудав!
+    const leftImg = shuffled[0];
+    const rightImg = shuffled[1];
+    const centerImg = shuffled[2];
 
-    // БҮХ ХАШИЛТ БОЛОН ҮСГИЙГ 100% ЗӨВ БОЛГОЖ ТҮГЖИВ
     authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
@@ -797,10 +788,12 @@ function randomizeAuthImages() {
 
     authCard.style.backgroundImage = "url('" + centerImg + "')";
 }
-randomizeAuthImages();
 
 function handleLogout() {
     currentUser = null;
     localStorage.removeItem('iknow_current_user');
     showAuthPage('login');
 }
+
+// Систем ачаалагдах үед функцийг дуудах ганцхан нэгдсэн урсгал (Давхардалгүй)
+randomizeAuthImages();
