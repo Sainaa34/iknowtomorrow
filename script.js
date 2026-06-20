@@ -815,7 +815,7 @@ function randomizeAuthImages() {
     authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
-    authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover'; 
+    authContainer.style.backgroundSize = '50% 100%, 50% 100%, cover'; 
 
     authCard.style.backgroundImage = "url('" + centerImg + "')";
 }
