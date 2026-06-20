@@ -51,29 +51,46 @@ body {
 }
 
 /* 🔐 AUTHENTICATION CARD SYSTEM */
-#auth-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    position: relative;
-    /* 🪐 Суурь неон гүн ногоон өнгө */
-    background: radial-gradient(circle at center, #051405 0%, #020502 100%);
-    /* 🚀 ИНТЕРНЭТ ГАЦААХГҮЙН ТУЛД ЗӨВХӨН 2 ТОМ, ТОД ЗУРГИЙГ БАРУУН, ЗҮҮН ТАЛД НЬ ТААРУУЛАВ */
-    background-image: 
-        url('future, kids art, kids paint, happy tomorrow.png'), 
-        url('Designer (1).png');
-    background-position: 
-        left center, 
-        right center;
-    background-repeat: 
-        no-repeat, 
-        no-repeat;
-    /* Зургуудыг улам том, маш тод (35% дэлгэц эзлэхээр) харуулна */
-    background-size: 35% auto, 35% auto;
-    background-attachment: fixed;
+// 🎲 REFRESH ХИЙХ БОЛГОНД НЭВТРЭХ ХУУДАСНЫ ЗУРГУУДЫГ САНАМСАРГҮЙГЭЭР СОЛИХ СИСТЕМ
+function randomizeAuthImages() {
+    const authContainer = document.getElementById('auth-container');
+    const authCard = document.querySelector('.auth-card');
+    if (!authContainer || !authCard) return;
+
+    // Чиний оруулсан яг тэр 12 зургийн жагсаалт
+    const cyberImages = [
+        'Designer.png', 'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
+        'Designer (4).png', 'Designer (5).png', 'Designer (6).png', 'Designer (7).png',
+        'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 'future, kids art, kids paint, happy tomorrow.png'
+    ];
+
+    // Зургуудыг холих (Shuffle)
+    const shuffled = cyberImages.sort(() => 0.5 - Math.random());
+
+    // Зүүн талын зураг (Дээд, доод ирмэгтээ тулсан, сунасан форматтай)
+    const leftImg = shuffled[0];
+    // Баруун талын зураг (Дээд, доод ирмэгтээ тулсан, сунасан форматтай)
+    const rightImg = shuffled[1];
+    // Голын нэвтрэх хайрцагны арын зураг
+    const centerImg = shuffled[2];
+
+    // CSS стилийг динамикаар шууд шахаж өгөх
+    authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), radial-gradient(circle at center, #051405 0%, #020502 100%)`;
+    authContainer.style.backgroundPosition = 'left center, right center, center center';
+    authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
+    
+    // 📐 '100% 100%' гэж бичсэнээр дээд, доод ирмэг рүүгээ яг таг тулж сунана!
+    authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover'; 
+
+    // Голын нэвтрэх хайрцагны арын зургийг солих
+    authCard.style.backgroundImage = `url('${centerImg}')`;
 }
+
+// Хуудас ачаалагдах үед зургуудыг шууд холино
+document.addEventListener('DOMContentLoaded', () => {
+    randomizeAuthImages();
+});
+
 
 /* 📱 Утаснаас ороход зургууд нь нэвтрэх цонхоо дарахгүй байх хамгаалалт */
 @media (max-width: 1000px) {
