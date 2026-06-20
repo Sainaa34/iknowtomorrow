@@ -50,8 +50,7 @@ body {
     transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* 🔐 AUTHENTICATION CARD SYSTEM */
-/* 🤖 AUTHENTICATION CARD SYSTEM */
+/* 🔐 AUTHENTICATION CONTAINER (3 ТАЛЫН ЗУРГИЙГ ЖАВАСРИПТЭЭР ШАХАХ ХОЛИГДОХ СУУРЬ) */
 #auth-container {
     display: flex;
     justify-content: center;
@@ -64,10 +63,9 @@ body {
     background-size: cover;
 }
 
-/* 🔒 ГОЛЫН НЭВТРЭХ ХАЙРЦАГНЫ АРД ЗУРАГ ОРУУЛАХ ДИЗАЙН */
+/* 🔒 ЧИНИЙ ХҮССЭН: ГОЛЫН БАЛАЙ ХАР ХЭСГИЙГ АРИЛГАЖ, ТУНГАЛАГ НЕОН ШИЛТЭЙ БОЛГОСОН ХЭСЭГ */
 .auth-card {
-    /* 🪐 Хар өнгийг устгаж, зургийг шууд нэвт харагддаг тунгалаг болгов */
-    background: transparent; 
+    background: transparent !important; /* Хатуу хар фон өгөхийг бүрмөсөн хориглов */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -82,7 +80,7 @@ body {
     z-index: 2;
 }
 
-/* 🌟 Голын зураг дээрх бичвэрийг уншихад амар болгох неон манан (0.45 буюу 45%-ийн тунгалаг болгов) */
+/* 🌟 Арын зургийг нэвт харуулах 45%-ийн тунгалаг неон манан хамгаалалт (Үг тод харагдуулна) */
 .auth-card::before {
     content: "";
     position: absolute;
@@ -91,60 +89,10 @@ body {
     border-radius: 10px;
     z-index: -1;
 }
-
-
-.auth-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(5, 12, 5, 0.88);
-    border-radius: 10px;
-    z-index: -1;
-}
-
-
-/* 📱 Утаснаас ороход зургууд нь нэвтрэх цонхоо дарахгүй байх хамгаалалт */
-@media (max-width: 1000px) {
-    #auth-container {
-        background-image: none;
-        background-color: #020502;
-    }
-}
-
-/* 🔐 Голын нэвтрэх хайрцаг нь ард талын зургууддаа дарагдахгүй, тод гадаргуу дээр гарах хамгаалалт */
-.auth-card {
-    position: relative;
-    z-index: 2;
-    background: rgba(5, 15, 5, 0.92); /* Ард талын зургийг үл мэдэг нэвт харуулна (Blur) */
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--cyber-cyan);
-    box-shadow: 0 0 35px rgba(0, 255, 102, 0.2);
-}
-
-.auth-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    padding: 35px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
-    text-align: center;
-    border-top: 3px solid var(--cyber-cyan);
-}
-
 .auth-card h1 {
     font-size: 2.2rem;
     font-weight: 900;
     letter-spacing: -1px;
-}
-
-.subtitle {
-    font-size: 0.7rem;
-    color: var(--cyber-cyan);
-    letter-spacing: 2px;
-    margin-bottom: 25px;
-    font-weight: bold;
 }
 
 .auth-card input, .create-post-box textarea, .chat-input-bar input, .modal-form-group input {
@@ -158,6 +106,7 @@ body {
     font-size: 0.95rem;
     outline: none;
 }
+
 .auth-card input:focus, .create-post-box textarea:focus, .chat-input-bar input:focus, .modal-form-group input:focus {
     border-color: var(--cyber-cyan);
     box-shadow: 0 0 10px var(--cyber-glow);
@@ -195,14 +144,7 @@ body {
     color: var(--cyber-cyan);
 }
 
-.auth-divider {
-    color: var(--text-gray);
-    font-size: 0.75rem;
-    margin: 12px 0;
-    letter-spacing: 1px;
-}
-
-/* 🛸 MAIN APP HEADER & LAYOUT WITH TOP EXIT */
+/* 🛸 MAIN APP HEADER WITH TOP RIGHT EXIT */
 .cyber-header {
     display: flex;
     justify-content: space-between;
@@ -247,11 +189,7 @@ body {
     font-size: 0.8rem;
 }
 
-.theme-toggle-btn:hover, .lang-toggle-btn:hover {
-    border-color: var(--cyber-cyan);
-}
-
-/* 🚪 БАРУУН ДЭЭД БУЛАНГИЙН АЮУЛГҮЙ EXIT ТОВЧИЙН ДИЗАЙН */
+/* 🚪 БАРУУН ДЭЭД БУЛАНГИЙН EXIT ТОВЧ */
 .exit-top-btn {
     background: rgba(255, 0, 127, 0.1);
     border: 1px solid rgba(255, 0, 127, 0.3);
@@ -314,11 +252,6 @@ body {
     cursor: pointer;
     margin-top: 10px;
     width: 100%;
-}
-
-.edit-profile-btn:hover {
-    border-color: var(--cyber-cyan);
-    color: var(--cyber-cyan);
 }
 
 .side-menu {
@@ -432,7 +365,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* 🔮 TIMELINE POST CARD & SHATALAL EFFECTS */
+/* 🔮 TIMELINE POST CARD & SHATALAL REAL EFFECTS */
 .post-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -444,31 +377,37 @@ body {
     overflow: hidden;
 }
 
+/* 🔥 50+ Санал: Жинхэнэ Неон Галт Эффект */
 .post-card.tier-fire {
     border-color: var(--cyber-orange);
     animation: neonFireGlow 2s infinite alternate;
 }
 
+/* ⚡ 500+ Санал: Кибер Цахилгаанжсан Аянгын Эффект */
 .post-card.tier-electric {
     border-color: var(--cyber-cyan);
     animation: neonLightningPulse 1s infinite alternate;
 }
 
+/* 🪐 5000+ Санал: Matrix Асар хүчтэй Супер Гэрэлтэлт */
 .post-card.tier-matrix {
     border-color: #ff00ff;
     animation: neonMatrixHyper 1.5s infinite linear;
 }
 
+/* 🔥 Галт Анимацийн код */
 @keyframes neonFireGlow {
-    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3); }
-    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8); }
+    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3), inset 0 0 4px rgba(255, 69, 0, 0.1); }
+    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8), inset 0 0 12px rgba(255, 69, 0, 0.3); }
 }
 
+/* ⚡ Цахилгаан Анимацийн код */
 @keyframes neonLightningPulse {
     0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); transform: scale(1); }
     100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.9); transform: scale(1.005); }
 }
 
+/* 🪐 Matrix Анимацийн код */
 @keyframes neonMatrixHyper {
     0% { box-shadow: 0 0 15px #ff00ff; filter: hue-rotate(0deg); }
     50% { box-shadow: 0 0 35px #00ffff; }
