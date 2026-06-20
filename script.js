@@ -2,7 +2,6 @@
 let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 let currentUser = null;
 let allPosts = [];
-
 // Translations Database
 const translations = {
     en: {
