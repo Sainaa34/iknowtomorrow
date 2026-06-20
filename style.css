@@ -58,34 +58,29 @@ body {
     min-height: 100vh;
     padding: 20px;
     position: relative;
-    overflow: hidden;
-    /* 🌌 Цаана нь харагдах үндсэн неон гүн ногоон суурь өнгө */
-    background: radial-gradient(circle at center, #081a08 0%, #030703 100%);
+    /* 🪐 Суурь неон гүн ногоон өнгө */
+    background: radial-gradient(circle at center, #051405 0%, #020502 100%);
+    /* 🚀 ИНТЕРНЭТ ГАЦААХГҮЙН ТУЛД ЗӨВХӨН 2 ТОМ, ТОД ЗУРГИЙГ БАРУУН, ЗҮҮН ТАЛД НЬ ТААРУУЛАВ */
+    background-image: 
+        url('future, kids art, kids paint, happy tomorrow.png'), 
+        url('Designer (1).png');
+    background-position: 
+        left center, 
+        right center;
+    background-repeat: 
+        no-repeat, 
+        no-repeat;
+    /* Зургуудыг улам том, маш тод (35% дэлгэц эзлэхээр) харуулна */
+    background-size: 35% auto, 35% auto;
+    background-attachment: fixed;
 }
 
-/* 🪐 ЧИНИЙ ОРУУЛСАН БҮХ ЗУРГУУДЫГ ХАДНЫ ЦААС ШИГ ЭВЛҮҮЛЖ ХАРУУЛАХ СҮЛЖЭЭ (CSS GRID) */
-#auth-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    /* 🪐 Чиний GitHub-д оруулсан яг тэр нэрнүүдээр 12 зургийг давхарлаж уяв */
-    background-image: 
-        url('Designer.png'), url('Designer (1).png'), url('Designer (2).png'), url('Designer (3).png'),
-        url('Designer (4).png'), url('Designer (5).png'), url('Designer (6).png'), url('Designer (7).png'),
-        url('Designer (8).png'), url('Designer (9).png'), url('Designer (10).png'), url('future, kids art, kids paint, happy tomorrow.png');
-    
-    /* Зургуудыг дэлгэц дүүрэн байнга давтаж, мозайк шиг жижиг хэсгүүдээр харуулна */
-    background-repeat: repeat;
-    /* Жижиг зургуудын харагдах хэмжээ (Зургуудыг жижиг неон тэмдэг шиг гоё харагдуулна) */
-    background-size: 160px auto; 
-    /* 🌟 Зургуудыг тас хар харагдуулахгүй, дээрээс нь неон ногоон манан татаж уусгах эффект */
-    opacity: 0.25; 
-    filter: saturate(1.2) contrast(1.1);
-    pointer-events: none;
+/* 📱 Утаснаас ороход зургууд нь нэвтрэх цонхоо дарахгүй байх хамгаалалт */
+@media (max-width: 1000px) {
+    #auth-container {
+        background-image: none;
+        background-color: #020502;
+    }
 }
 
 /* 🔐 Голын нэвтрэх хайрцаг нь ард талын зургууддаа дарагдахгүй, тод гадаргуу дээр гарах хамгаалалт */
