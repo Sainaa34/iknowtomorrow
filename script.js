@@ -6,7 +6,7 @@ let allPosts = [];
 let deletedPostsArchive = [];
 let currentTab = 'feed';
 let selectedFriend = null;
-let db = null; // IndexedDB Баазыг удирдах хувьсагч
+let db = null; 
 
 // Translations Database
 const translations = {
@@ -17,7 +17,7 @@ const translations = {
         profileSettings: "⚙️ Profile Settings",
         futurePlaceholder: "What will happen in the future? Share here...",
         postBtn: "Post",
-        verifiedFuture: "Ирээдүй биелсэн",
+        verifiedFuture: "Verified Future",
         writeComment: "Write a comment...",
         botTitle: "Future Bot 🤖",
         sendBtn: "Send",
@@ -42,38 +42,37 @@ const translations = {
     }
 };
 
-// 🖼️ НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУД
+// 🖼️ ЗУРГУУДЫН НЭРИЙГ ТОМ ҮСГЭЭР БОЛОН ЗӨВ ЗАМААР ЗАСАВ
 const authImages = [
-    'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
-    'Designer (4).png', 'Designer (5).png', 'Designer (6).png',
-    'Designer (7).png', 'Designer (8).png', 'Designer (9).png',
-    'Designer (10).png', 'Designer.png'
+    './Designer (1).png', './Designer (2).png', './Designer (3).png',
+    './Designer (4).png', './Designer (5).png', './Designer (6).png',
+    './Designer (7).png', './Designer (8).png', './Designer (9).png',
+    './Designer (10).png', './Designer.png'
 ];
 
-// Media Upload Variables
 let attachedMedia = null; 
 let attachedMediaType = null; 
 let modalAttachedAvatar = null;
 
-// Banned words list (Цензур)
 const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "яахуу", "пизда"];
 
-// 🔄 Window Load Event
+// 🔄 Window Load
 window.onload = function() {
     initIndexedDB();
-    initAuthPage();
 };
 
-// 🔐 НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ
+// 🔐 АРЫН ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ ФУНКЦ
 function initAuthPage() {
     const authContainer = document.getElementById('auth-container');
     if (!authContainer) return;
 
+    // Зургуудыг холих
     let shuffled = [...authImages].sort(() => 0.5 - Math.random());
     let leftImg = shuffled[0];
     let rightImg = shuffled[1];
     let centerImg = shuffled[2];
 
+    // CSS рүү зургуудыг илгээх
     authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), url('${centerImg}')`;
     
     const loginCard = document.getElementById('login-card');
@@ -94,23 +93,24 @@ function showAuthPage(type) {
     }
 }
 
-// 📦 INDEXEDDB INITIALIZATION
+// 📦 INDEXEDDB
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 3);
 
     request.onerror = function(event) {
         console.error("Database error: " + event.target.errorCode);
+        // Бааз гацсан ч зургийг харуулна
+        initAuthPage();
     };
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        console.log("IndexedDB successfully opened.");
+        initAuthPage(); // Бааз амжилттай нээгдвэл зургуудыг уншина
         checkLoginStatus();
     };
 
     request.onupgradeneeded = function(event) {
         let dbInstance = event.target.result;
-        
         if (!dbInstance.objectStoreNames.contains("users")) {
             dbInstance.createObjectStore("users", { keyPath: "username" });
         }
@@ -123,13 +123,22 @@ function initIndexedDB() {
     };
 }
 
-// 🔑 AUTH OPERATIONS (LOGIN & REGISTER)
+// 🔑 БҮРТГҮҮЛЭХ (REGISTER) - БҮРЭН ЗАСАВ
 function handleRegister(e) {
-    e.preventDefault();
+    if (e) e.preventDefault(); // Хуудас сэргэхээс хамгаална
+    
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
 
-    if(!u || !p) return;
+    if(!u || !p) {
+        alert("Please enter both username and password!");
+        return false;
+    }
+
+    if (!db) {
+        alert("Database is initializing, please try again in a second.");
+        return false;
+    }
 
     let transaction = db.transaction(["users"], "readwrite");
     let store = transaction.objectStore("users");
@@ -137,20 +146,33 @@ function handleRegister(e) {
 
     getRequest.onsuccess = function() {
         if (getRequest.result) {
-            alert("This identity username already exists in timeline.");
+            alert("This username already exists!");
         } else {
-            let newUser = { username: u, password: p, avatar: 'Designer.png' };
+            let newUser = { username: u, password: p, avatar: './Designer.png' };
             store.add(newUser);
-            alert("Identity Initialized! Proceed to authentication.");
+            alert("Identity Created! Please login now.");
             showAuthPage('login');
         }
     };
+    return false;
 }
 
+// 🔑 НЭВТРЭХ (LOGIN) - БҮРЭН ЗАСАВ
 function handleLogin(e) {
-    e.preventDefault();
+    if (e) e.preventDefault(); 
+    
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
+
+    if(!u || !p) {
+        alert("Please enter username and password!");
+        return false;
+    }
+
+    if (!db) {
+        alert("Database connection is building...");
+        return false;
+    }
 
     let transaction = db.transaction(["users"], "readonly");
     let store = transaction.objectStore("users");
@@ -162,9 +184,10 @@ function handleLogin(e) {
             localStorage.setItem('iknow_logged_user', currentUser.username);
             showMainApp();
         } else {
-            alert("Access Denied: Invalid Username or Password Matrix Key.");
+            alert("Access Denied: Invalid Username or Password Key.");
         }
     };
+    return false;
 }
 
 function handleLogout() {
@@ -177,7 +200,7 @@ function handleLogout() {
 
 function checkLoginStatus() {
     let loggedName = localStorage.getItem('iknow_logged_user');
-    if(loggedName) {
+    if(loggedName && db) {
         let transaction = db.transaction(["users"], "readonly");
         let store = transaction.objectStore("users");
         let request = store.get(loggedName);
@@ -210,7 +233,7 @@ function refreshProfileUI() {
     document.getElementById('profile-avatar').src = currentUser.avatar;
 }
 
-// 🔀 ЯНГ, СЭДЭВ ХҮҮДЭС СОЛИЛТ
+// 🔀 LANGUAGES & THEMES
 function updateLanguageUI() {
     let lang = translations[currentLang];
     document.getElementById('feed-btn').innerText = lang.feed;
@@ -256,8 +279,9 @@ function switchTab(tab) {
     if(tab === 'chat') document.getElementById('chats-btn').classList.add('active');
 }
 
-// 📝 ПОСТ, СЭТГЭГДЭЛ БИЧИХ КҮҮЛҮҮД
+// 📝 POSTS & COMMENTS
 function loadPostsFromDB() {
+    if (!db) return;
     let transaction = db.transaction(["posts"], "readonly");
     let store = transaction.objectStore("posts");
     let request = store.getAll();
@@ -307,6 +331,7 @@ function createPost() {
 
 function renderFeed(postsToRender) {
     const feedContainer = document.getElementById('feed-container');
+    if(!feedContainer) return;
     feedContainer.innerHTML = '';
 
     postsToRender.forEach(post => {
@@ -324,11 +349,11 @@ function renderFeed(postsToRender) {
         let deleteBtnHtml = (post.author === currentUser.username) ? `<button class="delete-btn-red" onclick="deletePost('${post.id}')">❌ Delete</button>` : '';
         let adminVerifyBtn = (currentUser.username.toLowerCase() === 'admin' && !post.isVerified) ? `<button onclick="verifyPost('${post.id}')" style="color:yellow; background:none; border:none; cursor:pointer;">✔️ Verify</button>` : '';
 
-        let commentsHtml = post.comments.map(c => `
+        let commentsHtml = post.comments ? post.comments.map(c => `
             <div style="font-size:12px; background:rgba(0,0,0,0.3); padding:4px; margin-top:3px; border-radius:4px;">
                 <strong>${c.author}:</strong> ${c.text}
             </div>
-        `).join('');
+        `).join('') : '';
 
         let card = document.createElement('div');
         card.className = `post-card ${tierClass}`;
@@ -377,6 +402,7 @@ function submitComment(postId) {
 
     let post = allPosts.find(p => p.id === postId);
     if(post) {
+        if(!post.comments) post.comments = [];
         post.comments.push({ author: currentUser.username, text: text });
         let transaction = db.transaction(["posts"], "readwrite");
         transaction.objectStore("posts").put(post);
@@ -414,7 +440,7 @@ function togglePostMenu(id) {
 }
 
 function deletePost(id) {
-    if(!confirm("Are you sure you want to completely incinerate this timeline post?")) return;
+    if(!confirm("Are you sure?")) return;
     let transaction = db.transaction(["posts"], "readwrite");
     transaction.objectStore("posts").delete(id);
     transaction.oncomplete = function() {
@@ -429,7 +455,7 @@ function archivePost(id) {
     transaction.objectStore("posts").delete(id);
     transaction.objectStore("archive").add(post);
     transaction.oncomplete = function() {
-        alert("Post secured safely in Archive Vault.");
+        alert("Post Archived Vault.");
         loadPostsFromDB();
     };
 }
@@ -451,7 +477,7 @@ function searchPosts() {
     renderFeed(matched);
 }
 
-// 🖼️ МЕДИА ФАЙЛУУД УНШИХ
+// 🖼️ MEDIA UPLOAD PREVIEW
 function handleFileSelect(event, type) {
     let file = event.target.files[0];
     if(!file) return;
@@ -481,13 +507,15 @@ function clearAttachedMedia() {
     document.getElementById('post-media-preview-box').style.display = 'none';
 }
 
-// 🤝 ХОЛБОГДСОН ИРГЭД (FRIENDS) БОЛОН ЧАТ
+// 🤝 CHAT SYSTEMS
 function loadOnlineCitizens() {
+    if(!db) return;
     let transaction = db.transaction(["users"], "readonly");
     let store = transaction.objectStore("users");
     store.getAll().onsuccess = function(e) {
         let citizens = e.target.result || [];
         let container = document.getElementById('friends-list-container');
+        if(!container) return;
         container.innerHTML = '';
 
         citizens.forEach(c => {
@@ -520,7 +548,7 @@ function sendFriendMessage() {
     box.scrollTop = box.scrollHeight;
 }
 
-// 🤖 AI BOT CHAT СИСТЕМ
+// 🤖 AI BOT
 function sendDirectMessage() {
     let input = document.getElementById('bot-input');
     let text = input.value.trim();
@@ -537,7 +565,7 @@ function sendDirectMessage() {
     }, 900);
 }
 
-// ⚙️ PROFILE MODAL SYSTEMS WITH HISTORY (ПРОФАЙЛ ТҮҮХТЭЙ ХЭСЭГ)
+// ⚙️ PROFILE SETTINGS & HISTORY
 function openProfileModal() {
     document.getElementById('profile-modal').style.display = 'flex';
     document.getElementById('modal-username').value = currentUser.username;
@@ -569,7 +597,6 @@ function saveProfileModal() {
 
     let updatedAvatar = modalAttachedAvatar || (textAvatar !== "Uploaded File Matrix" ? textAvatar : currentUser.avatar);
 
-    // Хуучин нэрийг устгаад шинээр баазад хадгалах
     let transaction = db.transaction(["users"], "readwrite");
     let store = transaction.objectStore("users");
     
@@ -589,18 +616,16 @@ function saveProfileModal() {
     };
 }
 
-// 📝 ПРОФАЙЛ ДОТОР ТҮҮХИЙГ УНШИЖ ХАРУУЛАХ
 function renderProfileHistory() {
     const postsBox = document.getElementById('profile-posts-history');
     const commentsBox = document.getElementById('profile-comments-history');
+    if(!postsBox || !commentsBox) return;
 
-    // Миний постууд шүүх
     const myPosts = allPosts.filter(p => p.author === currentUser.username);
     postsBox.innerHTML = myPosts.length ? myPosts.map(p => `
         <div style="border-bottom:1px solid #222; padding:4px 0; color:#fff;">⚡ ${p.text.substring(0, 40)}...</div>
     `).join('') : '<span style="color:#666;">Пост байхгүй байна.</span>';
 
-    // Миний сэтгэгдлүүд шүүх
     let myCommentsCount = 0;
     let commentsHtml = '';
     allPosts.forEach(p => {
