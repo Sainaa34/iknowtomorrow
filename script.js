@@ -2,7 +2,8 @@
 let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 let currentUser = null;
 let allPosts = [];
-// Translations Database
+
+// Translations Database (Хайнтыг "Search Timeline" буюу Англи болгов)
 const translations = {
     en: {
         feed: "Feed",
@@ -10,7 +11,7 @@ const translations = {
         friends: "Friends",
         chats: "Chats",
         profileSettings: "Profile Settings",
-        futurePlaceholder: "What will happen in the future? Share here... (#ai or ?alien)",
+        futurePlaceholder: "What will happen in the future? Share here...",
         imageBtn: "Image",
         videoBtn: "Video",
         postBtn: "Post",
@@ -39,7 +40,8 @@ const translations = {
         wrongCredentials: "Wrong username or password!",
         loginSuccess: "Login successful!",
         bannedWordAlert: "Your post contains banned keywords!",
-        logoutBtn: "Exit"
+        logoutBtn: "Exit",
+        searchLabel: "Search Timeline"
     },
     mn: {
         feed: "Тэжээл",
@@ -47,7 +49,7 @@ const translations = {
         friends: "Найзууд",
         chats: "Чат",
         profileSettings: "Профайл Тохиргоо",
-        futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц... (#ai эсвэл ?alien)",
+        futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
         imageBtn: "Зураг",
         videoBtn: "Видео",
         postBtn: "Нийтлэх",
@@ -67,7 +69,7 @@ const translations = {
         loginBtn: "Нэвтрэх",
         registerBtn: "Бүртгүүлэх",
         toggleToRegister: "Бүртгэлгүй юу? Энд бүртгүүлнэ үү",
-        toggleToLogin: "Акаунт байгаа юу? Энд нэвтрэнэ үү",
+        toggleToLogin: "Акаунт байгаа юу? Энд нэвтрэнү үү",
         guestBtn: "Зочноор нэвтрэх",
         googleBtn: "Google-ээр нэвтрэх",
         fillAllFields: "Бүх талбарыг бөглөнө үү!",
@@ -76,27 +78,19 @@ const translations = {
         wrongCredentials: "Хэрэглэгчийн нэр эсвэл нууц үг буруу байна!",
         loginSuccess: "Амжилттай нэвтэрлээ!",
         bannedWordAlert: "Таны постонд хориотой үг байна!",
-        logoutBtn: "Гарах"
+        logoutBtn: "Гарах",
+        searchLabel: "Search Timeline"
     }
 };
 
-// Бот болон хориотой үгсийн тохиргоо
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
-const secretKeywords = {
-    "cyborg": 20,
-    "matrix": 20,
-    "singularity": 30,
-    "timetravel": 30
-};
-// Хуудас ачаалагдахад ажиллах үндсэн хэсэг
+const secretKeywords = { "cyborg": 20, "matrix": 20, "singularity": 30 };
 document.addEventListener('DOMContentLoaded', () => {
-    // Хадгалагдсан хэлийг шалгаж идэвхжүүлэх
     const langBtn = document.getElementById('lang-btn');
     if (langBtn) {
         langBtn.innerText = currentLang === 'mn' ? 'English' : 'Монгол';
     }
     
-    // Хэрэглэгчийн сешн шалгах
     const savedUser = localStorage.getItem('iknow_current_user');
     if (savedUser) {
         try {
@@ -108,41 +102,32 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         showAuthPage('login');
     }
-
-    // Орчуулгыг анх удаа уншуулах
     applyTranslations();
 });
 
-// Хэл солих функц
 function switchLang() {
     currentLang = currentLang === 'mn' ? 'en' : 'mn';
     localStorage.setItem('iknow_lang', currentLang);
-    
     const langBtn = document.getElementById('lang-btn');
-    if (langBtn) {
-        langBtn.innerText = currentLang === 'mn' ? 'English' : 'Монгол';
-    }
-    
+    if (langBtn) langBtn.innerText = currentLang === 'mn' ? 'English' : 'Монгол';
     applyTranslations();
 }
-// Хуудасны бүх текстийг сонгосон хэл рүү хөрвүүлэх функц
+
 function applyTranslations() {
     const langData = translations[currentLang];
     if (!langData) return;
 
-    // ID-аар нь олж текстийг солих
     const ids = [
         'feed-btn', 'myposts-btn', 'friends-btn', 'chats-btn', 'profile-btn',
         'image-btn', 'video-btn', 'post-btn', 'predictions-title',
         'bot-title', 'send-btn', 'sync-title', 'sync-status-text',
         'login-title', 'reg-title', 'login-btn-text', 'reg-btn-text',
-        'toggle-reg', 'toggle-login', 'guest-btn', 'google-btn', 'exit-btn'
+        'toggle-reg', 'toggle-login', 'guest-btn', 'google-btn', 'exit-btn', 'search-text'
     ];
 
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            // Түлхүүр үгийг ID-аас хамаарч зөв оноох логик
             let key = id.replace('-btn', '').replace('-title', '').replace('-text', '').replace('toggle-', 'toggleTo');
             if (id === 'feed-btn') key = 'feed';
             if (id === 'myposts-btn') key = 'myPosts';
@@ -152,25 +137,22 @@ function applyTranslations() {
             if (id === 'post-btn') key = 'postBtn';
             if (id === 'send-btn') key = 'sendBtn';
             if (id === 'exit-btn') key = 'logoutBtn';
+            if (id === 'search-text') key = 'searchLabel';
             
             if (langData[key]) el.innerText = langData[key];
         }
     });
 
-    // Placeholder-уудыг солих
     const futureInput = document.getElementById('future-input');
     if (futureInput && langData.futurePlaceholder) futureInput.placeholder = langData.futurePlaceholder;
 
     const botInput = document.getElementById('bot-input');
     if (botInput && langData.botPlaceholder) botInput.placeholder = langData.botPlaceholder;
 }
-
-// Нэвтрэх болон Бүртгүүлэх хуудас солих функц
 function showAuthPage(page) {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
     const mainApp = document.getElementById('main-app');
-
     if (mainApp) mainApp.style.display = 'none';
 
     if (page === 'login') {
@@ -181,7 +163,7 @@ function showAuthPage(page) {
         if (registerCard) registerCard.style.display = 'block';
     }
 }
-// Шинээр бүртгэл үүсгэх функц
+
 function handleRegister(e) {
     if (e) e.preventDefault();
     const usernameInput = document.getElementById('reg-username')?.value.trim();
@@ -196,10 +178,7 @@ function handleRegister(e) {
     try {
         const rawData = localStorage.getItem('iknow_users_db');
         usersDb = rawData ? JSON.parse(rawData) : [];
-        if (!Array.isArray(usersDb)) usersDb = []; 
-    } catch (err) {
-        usersDb = [];
-    }
+    } catch (err) { usersDb = []; }
 
     const userExists = usersDb.find(u => u.username === usernameInput);
     if (userExists) {
@@ -207,21 +186,21 @@ function handleRegister(e) {
         return;
     }
 
+    // Шинэ хэрэглэгчид өгөгдмөл робот аватар өгнө
     const newUser = {
         username: usernameInput,
         password: passwordInput,
+        avatar: "https://robohash.org" + usernameInput + ".png?set=set4",
         predictions: [],
         syncPercentage: 0
     };
     
     usersDb.push(newUser);
     localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
-
-    alert(translations[currentLang].regSuccess || "Registration successful! Please login.");
+    alert(translations[currentLang].regSuccess || "Registration successful!");
     showAuthPage('login');
 }
 
-// Системд нэвтрэх функц
 function handleLogin(e) {
     if (e) e.preventDefault();
     const usernameInput = document.getElementById('login-username')?.value.trim();
@@ -236,39 +215,34 @@ function handleLogin(e) {
     try {
         const rawData = localStorage.getItem('iknow_users_db');
         usersDb = rawData ? JSON.parse(rawData) : [];
-        if (!Array.isArray(usersDb)) usersDb = [];
-    } catch (err) {
-        usersDb = [];
-    }
+    } catch (err) { usersDb = []; }
 
     const matchedUser = usersDb.find(u => u.username === usernameInput && u.password === passwordInput);
 
     if (matchedUser) {
         currentUser = matchedUser;
         localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
-        
         alert(translations[currentLang].loginSuccess || "Login successful!");
         showMainApp();
     } else {
-        alert(translations[currentLang].wrongCredentials || "Wrong username or password!");
+        alert(translations[currentLang].wrongCredentials || "Wrong credentials!");
     }
 }
-// Google аккаунтаар нэвтрэх симуляци
 function handleGoogleLogin() {
     currentUser = {
         username: "Google_User_" + Math.floor(Math.random() * 1000),
+        avatar: "https://robohash.org",
         predictions: [],
         syncPercentage: 10
     };
     localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
-    alert(translations[currentLang].loginSuccess || "Login successful!");
     showMainApp();
 }
 
-// Зочин горимоор нэвтрэх
 function enterAsGuest() {
     currentUser = {
         username: "Guest_" + Math.floor(Math.random() * 100),
+        avatar: "https://robohash.org",
         predictions: [],
         syncPercentage: 0
     };
@@ -276,7 +250,39 @@ function enterAsGuest() {
     showMainApp();
 }
 
-// Амжилттай нэвтэрсний дараа үндсэн аппликейшнийг харуулах
+// НЭР БОЛОН АВАТАР ЗУРАГ СОЛИХ ФУНКЦ
+function updateProfileSettings() {
+    const newName = prompt("Шинэ хэрэглэгчийн нэрээ оруулна уу:", currentUser.username);
+    const newAvatar = prompt("Шинэ Аватар зургийн URL хаяг оруулна уу (Хоосон орхивол өмнөх зураг хэвээр үлдэнэ):", currentUser.avatar);
+
+    if (!newName || newName.trim() === "") return;
+
+    let usersDb = [];
+    try {
+        const rawData = localStorage.getItem('iknow_users_db');
+        usersDb = rawData ? JSON.parse(rawData) : [];
+    } catch (err) { usersDb = []; }
+
+    // Хэрэглэгчдийн бааз доторх мэдээллийг шинэчлэх
+    usersDb = usersDb.map(u => {
+        if (u.username === currentUser.username) {
+            u.username = newName.trim();
+            if (newAvatar && newAvatar.trim() !== "") u.avatar = newAvatar.trim();
+        }
+        return u;
+    });
+
+    localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
+
+    // Одоогийн сешнийг шинэчлэх
+    currentUser.username = newName.trim();
+    if (newAvatar && newAvatar.trim() !== "") currentUser.avatar = newAvatar.trim();
+    localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
+
+    alert("Профайл амжилттай шинэчлэгдлээ!");
+    showMainApp();
+}
+
 function showMainApp() {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
@@ -286,57 +292,54 @@ function showMainApp() {
     if (registerCard) registerCard.style.display = 'none';
     if (mainApp) mainApp.style.display = 'block';
 
-    // Хэрэглэгчийн нэрийг профайл дээр гаргах
+    // Дэлгэц дээр нэр болон профайл аватарт зургийг нь зурах хэсэг
     const profileName = document.getElementById('profile-name');
-    if (profileName && currentUser) {
-        profileName.innerText = currentUser.username;
+    if (profileName && currentUser) profileName.innerText = currentUser.username;
+
+    // Хэрэв HTML дээр чинь #profile-avatar гэсэн img таг байвал зургийг нь солино
+    const profileAvatar = document.getElementById('profile-avatar');
+    if (profileAvatar && currentUser.avatar) {
+        profileAvatar.src = currentUser.avatar;
+        profileAvatar.style.width = "50px";
+        profileAvatar.style.height = "50px";
+        profileAvatar.style.borderRadius = "50%";
     }
 
-    // Киборг синхрон түвшинг шинэчлэх
     updateSyncUI();
-    
-    // Постуудыг ачаалж дэлгэцэнд зурах
     loadPosts();
 }
-// Постуудыг localStorage-оос ачаалах функц
 function loadPosts() {
     try {
         const rawPosts = localStorage.getItem('iknow_posts_db');
         allPosts = rawPosts ? JSON.parse(rawPosts) : [];
-    } catch (e) {
-        allPosts = [];
-    }
+    } catch (e) { allPosts = []; }
     renderPosts();
 }
 
-// Зураг эсвэл видео сонгоход урьдчилж харах функц
 let attachedMedia = null;
 function previewMedia(type) {
-    // Бодит амьдрал дээр файл сонгох цонх нээгдэнэ, энд симуляци хийв
     const mockUrl = prompt(type === 'image' ? "Enter image URL:" : "Enter video URL:");
     if (mockUrl) {
         attachedMedia = { type: type, url: mockUrl };
-        alert(`${type === 'image' ? 'Image' : 'Video'} attached successfully!`);
+        alert(`${type === 'image' ? 'Image' : 'Video'} attached!`);
     }
 }
 
-// Шинэ пост үүсгэх функц
 function createPost() {
     const inputEl = document.getElementById('future-input');
     const text = inputEl ? inputEl.value.trim() : "";
-
     if (!text && !attachedMedia) return;
 
-    // Хориотой үгс шалгах
     const hasBannedWord = bannedKeywords.some(word => text.toLowerCase().includes(word));
     if (hasBannedWord) {
-        alert(translations[currentLang].bannedWordAlert || "Your post contains banned keywords!");
+        alert(translations[currentLang].bannedWordAlert || "Banned keywords detected!");
         return;
     }
 
     const newPost = {
         id: 'post_' + Date.now(),
         author: currentUser ? currentUser.username : "Anonymous",
+        authorAvatar: currentUser ? currentUser.avatar : "https://robohash.org",
         text: text,
         media: attachedMedia,
         timestamp: new Date().toLocaleString(),
@@ -346,18 +349,14 @@ function createPost() {
 
     allPosts.unshift(newPost);
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
-
-    // Оролтын талбаруудыг цэвэрлэх
     if (inputEl) inputEl.value = "";
     attachedMedia = null;
-
     renderPosts();
 }
-// Постуудыг HTML бүтэц рүү хөрвүүлж харуулах функц
+
 function renderPosts() {
     const feedContainer = document.getElementById('feed-container');
     if (!feedContainer) return;
-
     feedContainer.innerHTML = "";
 
     allPosts.forEach(post => {
@@ -365,37 +364,40 @@ function renderPosts() {
         postEl.className = 'post-card';
         postEl.style = "background: #1a1a1a; margin: 15px 0; padding: 15px; border-radius: 8px; border: 1px solid #333;";
 
-        // Медиа (Зураг/Видео) хавсаргасан эсэхийг шалгах
         let mediaHtml = "";
         if (post.media) {
             if (post.media.type === 'image') {
-                mediaHtml = `<img src="${post.media.url}" style="width:100%; max-height:300px; object-fit:cover; margin-top:10px; border-radius:4px;" alt="Post Media">`;
+                mediaHtml = `<img src="${post.media.url}" style="width:100%; max-height:300px; object-fit:cover; margin-top:10px; border-radius:4px;">`;
             } else if (post.media.type === 'video') {
                 mediaHtml = `<video src="${post.media.url}" controls style="width:100%; max-height:300px; margin-top:10px; border-radius:4px;"></video>`;
             }
         }
 
-        // Сэтгэгдлийн жагсаалт үүсгэх
         let commentsHtml = "";
         post.comments.forEach(c => {
             commentsHtml += `<div style="font-size:12px; color:#aaa; margin-top:5px;"><strong>${c.author}:</strong> ${c.text}</div>`;
         });
 
-        // Постны дотоод HTML бүтэц
+        // Пост бүрийн хажууд тухайн хүний Аватар зураг харагдах логик
+        const avatarUrl = post.authorAvatar || "https://robohash.org";
+
         postEl.innerHTML = `
-            <div style="display:flex; justify-content:between; font-size:12px; color:#888;">
-                <strong>${post.author}</strong> <span>${post.timestamp}</span>
+            <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:#888; margin-bottom:10px;">
+                <img src="${avatarUrl}" style="width:30px; height:30px; border-radius:50%; background:#222;">
+                <div>
+                    <strong>${post.author}</strong><br>
+                    <span>${post.timestamp}</span>
+                </div>
             </div>
             <p style="margin: 10px 0; color:#fff;">${post.text}</p>
             ${mediaHtml}
-            <div style="margin-top:10px; display:flex; gap:15px; font-size:13px;">
+            <div style="margin-top:10px;">
                 <button onclick="votePost('${post.id}')" style="background:none; border:none; color:#ffcc00; cursor:pointer;">🔮 ${translations[currentLang].verifiedFuture || "Verified Future"} (${post.votes})</button>
             </div>
             <div style="margin-top:10px; border-top:1px solid #222; padding-top:10px;">
-                <div style="font-weight:bold; font-size:12px; color:#ffcc00; margin-bottom:5px;">${translations[currentLang].comments || "Comments"}:</div>
                 <div id="comments-${post.id}">${commentsHtml}</div>
                 <div style="display:flex; gap:5px; margin-top:5px;">
-                    <input id="comment-input-${post.id}" type="text" placeholder="${translations[currentLang].writeComment || "Write a comment..."}" style="flex:1; background:#222; border:1px solid #444; color:#fff; padding:5px; font-size:12px; border-radius:4px;">
+                    <input id="comment-input-${post.id}" type="text" placeholder="${translations[currentLang].writeComment || "Write..."}" style="flex:1; background:#222; border:1px solid #444; color:#fff; padding:5px; font-size:12px; border-radius:4px;">
                     <button onclick="addComment('${post.id}')" style="background:#ffcc00; border:none; color:#000; padding:5px 10px; font-size:12px; border-radius:4px; cursor:pointer;">+</button>
                 </div>
             </div>
@@ -403,7 +405,6 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 }
-// Постонд "Ирээдүй баталгаажсан" санал өгөх функц
 function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
     if (post) {
@@ -413,82 +414,60 @@ function votePost(postId) {
     }
 }
 
-// Постонд сэтгэгдэл үүсгэж нэмэх функц
 function addComment(postId) {
     const inputEl = document.getElementById(`comment-input-${postId}`);
     const text = inputEl ? inputEl.value.trim() : "";
-
     if (!text) return;
 
     const post = allPosts.find(p => p.id === postId);
     if (post) {
-        const newComment = {
+        post.comments.push({
             author: currentUser ? currentUser.username : "Anonymous",
             text: text
-        };
-        post.comments.push(newComment);
+        });
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
-        
         if (inputEl) inputEl.value = "";
         renderPosts();
     }
 }
-// Ирээдүйн роботтой чатлах функц
+
 function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
-
     if (!msg) return;
 
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer) return;
 
-    // Хэрэглэгчийн мессежийг чатанд нэмэх
     const userMsgEl = document.createElement('div');
-    userMsgEl.style = "text-align: right; color: #ffcc00; margin: 5px 0; font-size: 14px;";
+    userMsgEl.style = "text-align: right; color: #ffcc00; margin: 5px 0;";
     userMsgEl.innerHTML = `<strong>You:</strong> ${msg}`;
     chatContainer.appendChild(userMsgEl);
-
     if (inputEl) inputEl.value = "";
 
-    // Роботын хариу өгөх хэсэг
     setTimeout(() => {
         let botResponse = "Analyzing timeline... The future is still unwritten.";
         let matchedKeyword = null;
-
-        // Нууц үг ашигласан эсэхийг шалгах
         for (let key in secretKeywords) {
-            if (msg.toLowerCase().includes(key)) {
-                matchedKeyword = key;
-                break;
-            }
+            if (msg.toLowerCase().includes(key)) { matchedKeyword = key; break; }
         }
-
         if (matchedKeyword && currentUser) {
-            // Киборг синхрон хувийг нэмэх
             currentUser.syncPercentage = Math.min(100, (currentUser.syncPercentage || 0) + secretKeywords[matchedKeyword]);
             localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
             updateSyncUI();
-            botResponse = `⚡ [SECRET REVEALED] Cyborg connection stabilized! Core memory retrieved regarding: ${matchedKeyword.toUpperCase()}.`;
-        } else if (msg.toLowerCase().includes("hello") || msg.toLowerCase().includes("сайн уу")) {
-            botResponse = "Greetings, chrononaut. Ask me about the upcoming synthetic era.";
+            botResponse = `⚡ [SECRET] Core memory retrieved regarding: ${matchedKeyword.toUpperCase()}.`;
         }
-
         const botMsgEl = document.createElement('div');
-        botMsgEl.style = "text-align: left; color: #aaa; margin: 5px 0; font-size: 14px;";
+        botMsgEl.style = "text-align: left; color: #aaa; margin: 5px 0;";
         botMsgEl.innerHTML = `<strong>Future Bot:</strong> ${botResponse}`;
         chatContainer.appendChild(botMsgEl);
-
-        // Чатны цонхыг доош нь гүйлгэх
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }, 800);
 }
 
-// Киборг синхрон хувийг дэлгэцэнд шинэчлэх функц
 function updateSyncUI() {
     const syncLevelText = document.getElementById('sync-level-text');
     const syncFill = document.getElementById('sync-fill');
-    
     if (currentUser) {
         const percentage = currentUser.syncPercentage || 0;
         if (syncLevelText) syncLevelText.innerText = percentage + "%";
@@ -496,7 +475,6 @@ function updateSyncUI() {
     }
 }
 
-// Системээс гарах функц
 function handleLogout() {
     currentUser = null;
     localStorage.removeItem('iknow_current_user');
