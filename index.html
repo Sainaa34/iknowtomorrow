@@ -8,7 +8,7 @@
 </head>
 <body class="theme-cyber">
 
-    <!-- 🔐 AUTH PAGE (ЗААВАЛ БҮРТГҮҮЛЖ НЭВТРЭХ СИСТЕМ - GUEST-ИЙГ ХАСАВ) -->
+    <!-- 🔐 AUTH PAGE (ЗААВАЛ БҮРТГҮҮЛЖ НЭВТРЭХ СИСТЕМ) -->
     <div id="auth-container">
         <div id="login-card" class="auth-card">
             <h1>iKnowTomorrow</h1>
@@ -27,7 +27,7 @@
             <form onsubmit="handleRegister(event)">
                 <input id="reg-username" type="text" placeholder="Choose Username" required>
                 <input id="reg-password" type="password" placeholder="Create Access Key" required>
-                <button type="submit" class="cyber-btn">REGISTER NEW Identity</button>
+                <button type="submit" class="cyber-btn">REGISTER NEW IDENTITY</button>
             </form>
             <button onclick="showAuthPage('login')" class="toggle-link">Already have an account? Login here</button>
         </div>
@@ -40,7 +40,6 @@
                 <span class="logo-neon">iKnowTomorrow</span>
                 <span class="timeline-badge">⚡ CYBER TIMELINE</span>
             </div>
-            <!-- 🚪 EXIT ТОВЧИЙГ АЮУЛГҮЙ БАРУУН ДЭЭД БУЛАНД ШИЛЖҮҮЛЭВ -->
             <div class="header-actions">
                 <button id="theme-btn" onclick="toggleTheme()" class="theme-toggle-btn">🎨 Theme: Cyber</button>
                 <button id="lang-btn" onclick="switchLang()" class="lang-toggle-btn">English</button>
@@ -48,7 +47,7 @@
             </div>
         </header>
         <div class="app-layout">
-            <!-- 🎛️ SIDE NAV / PROFILE (БҮР ЦЭГЦТЭЙ БОЛГОЖ, EXIT-ИЙГ ХАСАВ) -->
+            <!-- 🎛️ SIDE NAV / PROFILE -->
             <aside class="sidebar">
                 <div class="profile-box">
                     <img id="profile-avatar" class="user-avatar-main" src="" alt="avatar">
@@ -57,14 +56,13 @@
                 </div>
 
                 <nav class="side-menu">
-                    <!-- Feed-ийг илүү ойлгомжтой Timeline болгов -->
                     <button class="menu-tab active" onclick="switchTab('feed')" id="feed-btn">Timeline</button>
                     <button class="menu-tab" onclick="switchTab('friends')" id="friends-btn">🤝 Friends & Chats</button>
                     <button class="menu-tab" onclick="switchTab('chat')" id="chats-btn">🤖 Future Bot</button>
                 </nav>
             </aside>
 
-            <!-- 📰 CENTRAL FEED & CONTENT -->
+            <!-- 📰 CENTRAL CONTENT AREA -->
             <main class="content-area">
                 
                 <!-- 🔍 SEARCH TIMELINE -->
@@ -72,12 +70,12 @@
                     <input id="search-input" type="text" placeholder="Search Timeline..." oninput="searchPosts()">
                 </div>
 
-                <!-- 📝 TAB: TIMELINE (ЗУРАГ ШУУД УРЬДЧИЛЖ ХАРДАГ ХАЙРЦАГТАЙ) -->
+                <!-- 📝 TAB: TIMELINE (ПОСТ ОРУУЛАХ БА УРЬДЧИЛЖ ХАРУУЛАХ ХАЙРЦАГ) -->
                 <div id="tab-feed" class="tab-content">
                     <div class="create-post-box">
                         <textarea id="future-input" placeholder="What will happen in the future? Share here..."></textarea>
                         
-                        <!-- 🖼️ ЗУРАГ УРЬДЧИЛЖ ХАРУУЛАХ ШИНЭ НЕОН ХАЙРЦАГ (PREVIEW CONTAINER) -->
+                        <!-- 🖼️ ЗУРАГ УРЬДЧИЛЖ ХАРУУЛАХ НЕОН ХАЙРЦАГ -->
                         <div id="post-media-preview-box" style="display: none; position: relative; margin-top: 5px; border: 1px solid var(--cyber-cyan); border-radius: 6px; overflow: hidden; max-height: 150px; background: #000;">
                             <img id="post-image-preview-img" style="width: 100%; height: 148px; object-fit: cover; display: none;">
                             <video id="post-video-preview-vid" style="width: 100%; height: 148px; object-fit: cover; display: none;" controls></video>
@@ -92,7 +90,8 @@
                             <button onclick="createPost()" class="post-submit-btn" id="post-btn">Post</button>
                         </div>
                     </div>
-                    <!-- Нийтлэлийн урсгал энд харагдана -->
+                    
+                    <!-- 🗂️ ПОСТУУДЫН УРСГАЛ -->
                     <div id="feed-container"></div>
                 </div>
                 <!-- 🤝 TAB: FRIENDS & REAL-TIME CHATS -->
