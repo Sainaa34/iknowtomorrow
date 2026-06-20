@@ -6,7 +6,7 @@ let allPosts = [];
 let deletedPostsArchive = [];
 let currentTab = 'feed';
 let selectedFriend = null;
-let db = null; // IndexedDB
+let db = null; // IndexedDB Баазыг удирдах хувьсагч
 
 // Translations Database
 const translations = {
@@ -16,7 +16,6 @@ const translations = {
         chats: "🤖 Future Bot",
         profileSettings: "⚙️ Profile Settings",
         futurePlaceholder: "What will happen in the future? Share here...",
-        botPlaceholder: "Ask Future Bot...",
         postBtn: "Post",
         verifiedFuture: "Ирээдүй биелсэн",
         writeComment: "Write a comment...",
@@ -31,7 +30,6 @@ const translations = {
         chats: "🤖 Ирээдүйн Бот",
         profileSettings: "⚙️ Профайл Тохиргоо",
         futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
-        botPlaceholder: "Ирээдүйн Ботноос асуух...",
         postBtn: "Нийтлэх",
         verifiedFuture: "Ирээдүй биелсэн",
         writeComment: "Сэтгэгдэл бичих...",
@@ -44,7 +42,7 @@ const translations = {
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
-// 💾 INDEXEDDB БААЗЫГ ЭХЛҮҮЛЭХ
+// 💾 ХИЗГААРГҮЙ БАГТААМЖТАЙ INDEXEDDB БААЗЫГ ЭХЛҮҮЛЭХ
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 1);
     request.onupgradeneeded = function(e) {
@@ -83,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     applyTranslations();
     initIndexedDB();
-    randomizeAuthImages(); // Ачаалагдах үед зургийг солих
+    randomizeAuthImages(); // Хуудас ачаалагдахад зургуудыг санамсаргүйгээр солино
 
-    // Дэлгэцийн хаана ч хамаагүй дарахад dropdown хаах
+    // Гадна талд дарахад унадаг цэсийг хаах хамгаалалт
     document.addEventListener('click', (e) => {
         if (!e.target.matches('.post-more-btn')) {
             document.querySelectorAll('.post-dropdown-menu').forEach(menu => {
@@ -233,6 +231,53 @@ function openProfileModal() {
         if (nameInput) nameInput.value = currentUser.username;
         if (avatarInput) avatarInput.value = currentUser.avatar || '';
         modal.style.display = 'flex';
+        renderProfileHistory(); // Модал нээгдэхэд түүхийг уншина
+    }
+}
+
+// 👤 ХЭРЭГЛЭГЧИЙН ПОСТ БОЛОН СЭТГЭГДЛИЙН ТҮҮХИЙГ ХАРУУЛАХ ФУНКЦ
+function renderProfileHistory() {
+    const postHistoryBox = document.getElementById('profile-posts-history');
+    const commentHistoryBox = document.getElementById('profile-comments-history');
+    
+    if (!currentUser) return;
+
+    // Өөрийн бичсэн постуудыг шүүх
+    if (postHistoryBox) {
+        postHistoryBox.innerHTML = "";
+        const myPosts = allPosts.filter(p => p.author === currentUser.username);
+        if (myPosts.length === 0) {
+            postHistoryBox.innerHTML = "<p style='font-size:12px; color:var(--text-gray);'>Та пост одоогоор нийтлээгүй байна.</p>";
+        } else {
+            myPosts.forEach(p => {
+                const item = document.createElement('div');
+                item.style.cssText = "padding:8px; border-bottom:1px solid #222; font-size:13px; color:#fff;";
+                item.innerHTML = `<strong>🔮 ${p.votes} санал:</strong> ${p.text.substring(0, 50)}${p.text.length > 50 ? '...' : ''}`;
+                postHistoryBox.appendChild(item);
+            });
+        }
+    }
+
+    // Өөрийн үлдээсэн сэтгэгдлүүдийг шүүх
+    if (commentHistoryBox) {
+        commentHistoryBox.innerHTML = "";
+        let commentCount = 0;
+        allPosts.forEach(p => {
+            if (p.comments) {
+                p.comments.forEach(c => {
+                    if (c.author === currentUser.username) {
+                        commentCount++;
+                        const item = document.createElement('div');
+                        item.style.cssText = "padding:8px; border-bottom:1px solid #222; font-size:13px; color:var(--text-gray);";
+                        item.innerHTML = `💬 <i>"${p.text.substring(0, 20)}..."</i> постон дээр: <span style='color:#fff;'>${c.text}</span>`;
+                        commentHistoryBox.appendChild(item);
+                    }
+                });
+            }
+        });
+        if (commentCount === 0) {
+            commentHistoryBox.innerHTML = "<p style='font-size:12px; color:var(--text-gray);'>Та сэтгэгдэл үлдээгээгүй байна.</p>";
+        }
     }
 }
 
@@ -781,7 +826,7 @@ function sendDirectMessage() {
     }, 600);
 }
 
-// 🎲 BACKGROUND IMAGES RANDOMIZER
+// 🎲 BACKGROUND IMAGES RANDOMIZER - ЗАДГАЙ ХОЛИГДДОГ БАЙСНЫГ ЗӨВ БОЛГОЖ 3 ТАЛД НЬ НӨХӨВ
 function randomizeAuthImages() {
     const authContainer = document.getElementById('auth-container');
     const authCard = document.querySelector('.auth-card');
@@ -794,19 +839,24 @@ function randomizeAuthImages() {
         'future, kids art, kids paint, happy tomorrow.png'
     ];
 
-    // Зургуудыг холих
+    // Зургуудын массивыг холих
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
-    // Индексээр нь салгаж авах (Массив чигээр нь хийж болохгүй)
+    // Зөвөөр 3 өөр зургийг индексээр нь салгаж авна
     const leftImg = shuffled[0];
     const rightImg = shuffled[1];
     const centerImg = shuffled[2];
 
+    // Ард талын хоосон зайг арилгаж 3 талаас нь дүүргэх тохиргоо
     authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), radial-gradient(circle at center, #051405 0%, #020502 100%)`;
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
-    authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover';
+    authContainer.style.backgroundSize = '35% 100%, 35% 100%, cover'; // Энд хэмжээг нь засаж заагуудыг нөхөв
+    
+    // Голын картын дэвсгэр зураг
     authCard.style.backgroundImage = `url('${centerImg}')`;
+    authCard.style.backgroundSize = 'cover';
+    authCard.style.backgroundPosition = 'center';
 }
 
 function handleLogout() {
