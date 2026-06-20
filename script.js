@@ -732,7 +732,7 @@ function handleLogout() {
 }
 
 function toggleLanguage() { switchLang(); }
-// 🎲 REFRESH ХИЙХ БОЛГОНД НЭВТРЭХ ХУУДАСНЫ ЗУРГУУДЫГ САНАМСАРГҮЙГЭЭР СОЛИХ СИСТЕМ
+// 🎲 REFRESH ХИЙХ БОЛГОНД БАРУУН, ЗҮҮН, ГОЛЫН ЗУРГИЙГ ЗЭРЭГ СОЛИХ СИСТЕМ
 function randomizeAuthImages() {
     const authContainer = document.getElementById('auth-container');
     const authCard = document.querySelector('.auth-card');
@@ -744,20 +744,21 @@ function randomizeAuthImages() {
         'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 'future, kids art, kids paint, happy tomorrow.png'
     ];
 
-    // Зургуудыг холих
+    // Зургуудыг холих (Shuffle)
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
-    // 🪐 Баруун, зүүн, голын зургуудыг тус тусад нь өөр өөрөөр сонгох (Индексээр)
+    // 🪐 Баруун, зүүн, голын зургуудыг тус тусад нь өөр өөрөөр сонгох
     const leftImg = shuffled[0];
     const rightImg = shuffled[1];
     const centerImg = shuffled[2];
 
-    // 📐 БҮХ ХАШИЛТ БОЛОН ҮСГИЙГ 100% ЗӨВ БОЛГОЖ ТҮГЖИВ
+    // Баруун, зүүн талын зургийг сунгаж харуулах
     authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
     authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover'; 
 
+    // 🎯 МАРТАГДСАН ГОЛЫН ЗУРГИЙГ ЭНД ЯГ ТАГ ЗӨВ ХАШИЛТ БОЛОН ТОМ ҮСЭГТЭЙ СУУЛГАВ!
     authCard.style.backgroundImage = "url('" + centerImg + "')";
 }
 
@@ -765,3 +766,4 @@ function randomizeAuthImages() {
 document.addEventListener('DOMContentLoaded', () => {
     randomizeAuthImages();
 });
+
