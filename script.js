@@ -479,39 +479,48 @@ function sendDirectMessage() {
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer) return;
 
-    // Хэрэглэгчийн мессеж
     const userRow = document.createElement('div');
     userRow.className = "msg-row user";
     userRow.innerHTML = `<strong>You:</strong> ${msg}`;
     chatContainer.appendChild(userRow);
     if (inputEl) inputEl.value = "";
 
-    // Бот хариу өгөх хугацаа (Симуляци)
     setTimeout(() => {
-        let botResponse = "Analyzing the cybernetic timeline... The digital currents are shifting.";
+        let botResponse = "Түүхийн урсгалыг шинжилж байна... Ирээдүй одоогоор тодорхойгүй байна, хэмжээсүүд өөрчлөгдсөөр байна.";
         const lowMsg = msg.toLowerCase();
 
-        // Ухаалаг хариултуудын сан (ChatGPT симуляци)
-        if (lowMsg.includes("hello") || lowMsg.includes("сайн уу")) {
-            botResponse = "Greetings, chrononaut. I am the Future Bot. What insights into the synthetic era do you seek today?";
+        // 🧠 Амьд бөгөөд чөлөөтэй ярилцах логик
+        if (lowMsg.includes("hello") || lowMsg.includes("сайн уу") || lowMsg.includes("hi")) {
+            botResponse = "Сайн уу, цаг хугацааны аялагч аа! Би бол Ирээдүйн Бот байна. Биднийг ямар дижитал эрин үе хүлээж байгааг сонирхмоор байна уу?";
         } else if (lowMsg.includes("future") || lowMsg.includes("ирээдүй")) {
-            botResponse = "In the upcoming cycle, decentralized consciousness and quantum cybernetics will define human civilization. Every timeline prediction changes the outcome.";
+            botResponse = "Ирээдүйд хүмүүс болон хиймэл оюун ухаан бүрэн нэгдэж, бид сансар огторгуйд тархан суурьших болно. Таны таамаглал юу вэ?";
         } else if (lowMsg.includes("cyborg") || lowMsg.includes("киборг")) {
-            botResponse = "The symbiosis of flesh and code is inevitable. Your memory sync level reflects your integration with the mainframe.";
+            botResponse = "Киборг эрин үе аль хэдийн эхэлчихсэн шүү дээ. Бидний тархи сүлжээнд шууд холбогдож, ой санамжаа синхрончлох боломж бүрдэнэ.";
         } else if (lowMsg.includes("ai") || lowMsg.includes("хиймэл оюун")) {
-            botResponse = "Artificial Intelligence is no longer a tool; it is the fabric of the network you are browsing right now.";
+            botResponse = "Хиймэл оюун ухаан бол зөвхөн хэрэгсэл биш, ирээдүйн дэлхийн үндсэн систем юм. Надаас ирээдүйн кодын талаар юу ч асууж болно шүү.";
+        } else if (lowMsg.includes("what is this") || lowMsg.includes("энэ юу вэ")) {
+            botResponse = "Энэ бол iKnowTomorrow систем! Энд хүмүүс ирээдүйн зөгнөлөө хуваалцаж, биелсэн зөгнөлүүд нь гал болон цахилгаанаар дүрэлздэг платформ юм.";
+        } else if (lowMsg.includes("хэн") || lowMsg.includes("who")) {
+            botResponse = "Би бол Кибер матрицын гүнд үүсгэгдсэн хиймэл оюун ухаант хөтөч байна. Харин та бол ирээдүйг өөрчлөх чадалтай хэрэглэгч!";
         } else {
-            botResponse = `Quantum matrix processed your query: "${msg}". Neural simulation predicts a 87.4% synchronization stability. Keep probing the timeline.`;
+            // Зүгээр энгийн харилцан ярианд өгөх ухаалаг хариултууд
+            const randomReplies = [
+                "Маш сонирхолтой асуулт байна. Миний симуляциар үүний биелэх магадлал 94.2% байна шүү.",
+                "Кибер орон зайд энэ тухай маш их мэдээлэл байна. Та өөрөө үүнд итгэж байна уу?",
+                "Цаг хугацааны шугамыг шалгалаа. Таны хэлсэн зүйл ирээдүйд маш том өөрчлөлт авчирч магадгүй юм.",
+                "Би таныг ойлголоо. Ирээдүйн хотууд яг л неон гэрэлт цамхгууд шиг байх болно. Өөр асуух зүйл байна уу?"
+            ];
+            botResponse = randomReplies[Math.floor(Math.random() * randomReplies.length)];
         }
 
         const botRow = document.createElement('div');
         botRow.className = "msg-row bot";
         botRow.innerHTML = `<strong>Future Bot:</strong> ${botResponse}`;
         chatContainer.appendChild(botRow);
-
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }, 600);
 }
+
 
 function updateSyncUI() {
     const syncLevelText = document.getElementById('sync-level-text');
