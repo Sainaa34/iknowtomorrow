@@ -3,10 +3,11 @@ let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
-let deletedPostsArchive = []; // Устгасан постуудыг түр хадгалах хогийн сав
+let deletedPostsArchive = []; // Хогийн сав
 let currentTab = 'feed';
 let selectedFriend = null;
 
+// Орчуулгын сан (Timeline - Ирээдүйн урсгал)
 const translations = {
     en: {
         feed: "Timeline",
@@ -40,6 +41,7 @@ const translations = {
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
+// Апп ачаалагдах үед ажиллах үндсэн код
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
@@ -57,9 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showAuthPage('login');
     }
     applyTranslations();
-    
-    // Refresh хийх бүрт нэвтрэх хуудасны зургийг солих
-    if (typeof randomizeAuthImages === 'function') randomizeAuthImages();
 });
 
 function toggleTheme() {
@@ -140,19 +139,18 @@ function handleRegister(e) {
     const passwordInput = document.getElementById('reg-password')?.value;
 
     if (!usernameInput || !passwordInput) {
-        alert(translations[currentLang].fillAllFields || "Please fill all fields!");
+        alert("Please fill all fields!");
         return;
     }
 
     let usersDb = [];
     try {
-        const rawData = localStorage.getItem('iknow_users_db');
-        usersDb = rawData ? JSON.parse(rawData) : [];
+        usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
     } catch (err) { usersDb = []; }
 
     const userExists = usersDb.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
     if (userExists) {
-        alert(translations[currentLang].userExists || "Username already taken!");
+        alert("Username already taken!");
         return;
     }
 
@@ -164,7 +162,7 @@ function handleRegister(e) {
     
     usersDb.push(newUser);
     localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
-    alert(translations[currentLang].regSuccess || "Registration successful!");
+    alert("Registration successful!");
     showAuthPage('login');
 }
 
@@ -174,14 +172,13 @@ function handleLogin(e) {
     const passwordInput = document.getElementById('login-password')?.value;
 
     if (!usernameInput || !passwordInput) {
-        alert(translations[currentLang].fillAllFields || "Please fill all fields!");
+        alert("Please fill all fields!");
         return;
     }
 
     let usersDb = [];
     try {
-        const rawData = localStorage.getItem('iknow_users_db');
-        usersDb = rawData ? JSON.parse(rawData) : [];
+        usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || [];
     } catch (err) { usersDb = []; }
 
     const matchedUser = usersDb.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
@@ -191,7 +188,7 @@ function handleLogin(e) {
         localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
         showMainApp();
     } else {
-        alert(translations[currentLang].wrongCredentials || "Wrong credentials!");
+        alert("Wrong credentials!");
     }
 }
 
@@ -251,6 +248,7 @@ function saveProfileModal() {
     closeProfileModal();
     showMainApp();
 }
+
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -281,6 +279,7 @@ function showMainApp() {
     loadPosts();
 }
 
+function toggleLanguage() { switchLang(); }
 // 🖼️ ЗУРАГ/ВИДЕОГ ШУУД ДЭЛГЭЦЭНД УРЬДЧИЛЖ ХАРУУЛАХ (PREVIEW) ФУНКЦ
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
@@ -323,10 +322,8 @@ function clearAttachedMedia() {
 
 function loadPosts() {
     try {
-        const rawPosts = localStorage.getItem('iknow_posts_db');
-        allPosts = rawPosts ? JSON.parse(rawPosts) : [];
-        const rawArchive = localStorage.getItem('iknow_archive_db');
-        deletedPostsArchive = rawArchive ? JSON.parse(rawArchive) : [];
+        allPosts = JSON.parse(localStorage.getItem('iknow_posts_db')) || [];
+        deletedPostsArchive = JSON.parse(localStorage.getItem('iknow_archive_db')) || [];
     } catch (e) { 
         allPosts = []; 
         deletedPostsArchive = [];
@@ -390,7 +387,6 @@ function createPost() {
     renderPosts();
 }
 
-// 🗑️ ПОСТЫГ БҮРМӨСӨН УСТГАХГҮЙ, ХОГИЙН САН РУУ ШИЛЖҮҮЛЭХ ФУНКЦ
 function deletePost(postId) {
     const postIndex = allPosts.findIndex(p => p.id === postId);
     if (postIndex === -1) return;
@@ -398,22 +394,21 @@ function deletePost(postId) {
     if (!confirm(currentLang === 'mn' ? "Энэ постыг устгах уу? (Та хожим сэргээж болно)" : "Move this post to archive?")) return;
     
     const targetPost = allPosts[postIndex];
-    deletedPostsArchive.push(targetPost); // Хогийн саванд нэмэх
-    allPosts.splice(postIndex, 1); // Үндсэн урсгалаас хасах
+    deletedPostsArchive.push(targetPost);
+    allPosts.splice(postIndex, 1);
 
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     localStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
     renderPosts();
 }
 
-// 🔄 ЧИНИЙ ХҮССЭН: УСТСАН ПОСТЫГ БУЦААЖ СЭРГЭЭХ СИСТЕМ
 function restorePost(postId) {
     const archiveIndex = deletedPostsArchive.findIndex(p => p.id === postId);
     if (archiveIndex === -1) return;
 
     const restoredPost = deletedPostsArchive[archiveIndex];
-    allPosts.unshift(restoredPost); // Үндсэн урсгал руу буцааж оруулах
-    deletedPostsArchive.splice(archiveIndex, 1); // Хогийн савнаас хасах
+    allPosts.unshift(restoredPost);
+    deletedPostsArchive.splice(archiveIndex, 1);
 
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     localStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
@@ -549,7 +544,7 @@ function renderPosts() {
         myDeletedPosts.forEach(post => {
             const archEl = document.createElement('div');
             archEl.className = "post-card";
-            archEl.style.opacity = "0.6"; // Хогийн савны пост гэдгийг илтгэх бүдэг эффект
+            archEl.style.opacity = "0.6";
             
             archEl.innerHTML = `
                 <div class="post-header-row">
@@ -560,7 +555,6 @@ function renderPosts() {
                         </div>
                     </div>
                     <div>
-                        <!-- 🔄 БУЦААЖ СЭРГЭЭХ ТОВЧЛУУР -->
                         <button onclick="restorePost('${post.id}')" class="vote-btn-neon" style="color:var(--cyber-cyan); border-color:var(--cyber-cyan);">🔄 Restore Post</button>
                     </div>
                 </div>
@@ -661,7 +655,7 @@ function sendFriendMessage() {
     renderFriendMessages();
 }
 
-// 🤖 ЖИНХЭНЭ УХААЛАГ, ЧӨЛӨӨТЭЙ ХАРИЛЦДАГ AI БОТ (HUGGINGFACE ХОЛБОЛТ БҮРЭН ЗАСАГДЛАА)
+// 🤖 ЖИНХЭНЭ УХААЛАГ, ЧӨЛӨӨТЭЙ ХАРИЛЦДАГ AI БОТ
 async function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
@@ -670,7 +664,6 @@ async function sendDirectMessage() {
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer) return;
 
-    // 1. Хэрэглэгчийн мессежийг дэлгэцэнд зурах
     const userRow = document.createElement('div');
     userRow.className = "msg-row user";
     userRow.innerHTML = `<strong>You:</strong> ${msg}`;
@@ -678,7 +671,6 @@ async function sendDirectMessage() {
     if (inputEl) inputEl.value = "";
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // 2. Бодож буй төлөв харуулах
     const botRow = document.createElement('div');
     botRow.className = "msg-row bot";
     botRow.innerHTML = `<strong>Future Bot:</strong> ⚡ AI Matrix connecting...`;
@@ -686,7 +678,6 @@ async function sendDirectMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
     try {
-        // 🚀 КВАНТ AI МОДЕЛЬТОЙ ШУУД ХОЛБОГДОХ СИСТЕМ (Жижгээр гацдаг байсан алдааг бүрэн түгжив)
         const response = await fetch("https://huggingface.co", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -709,12 +700,10 @@ async function sendDirectMessage() {
             aiReply = "Quantum signals are shifting in the timeline. Please re-enter your prophecy.";
         }
 
-        // 3. AI хариултыг шинэчилж зурах
         botRow.innerHTML = `<strong>Future Bot:</strong> ${aiReply.trim()}`;
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
     } catch (error) {
-        // Квант систем гацсан үеийн ухаалаг уян хатан хариултууд (Пост гацааж байсан үгийн алдааг бүрэн засав)
         const contextualReplies = [
             "Маш сонирхолтой асуулт байна. Миний квант симуляциар үүний ирээдүйд биелэх магадлал 94.2% байна шүү.",
             "Кибер орон зайд энэ тухай маш их мэдээлэл байна. Цаг хугацааны шугам маш хурдтай хувьсаж байна.",
@@ -725,13 +714,6 @@ async function sendDirectMessage() {
     }
 }
 
-function handleLogout() {
-    currentUser = null;
-    localStorage.removeItem('iknow_current_user');
-    showAuthPage('login');
-}
-
-function toggleLanguage() { switchLang(); }
 // 🎲 REFRESH ХИЙХ БОЛГОНД БАРУУН, ЗҮҮН, ГОЛЫН ЗУРГИЙГ ЗЭРЭГ СОЛИХ СИСТЕМ
 function randomizeAuthImages() {
     const authContainer = document.getElementById('auth-container');
@@ -744,26 +726,27 @@ function randomizeAuthImages() {
         'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 'future, kids art, kids paint, happy tomorrow.png'
     ];
 
-    // Зургуудыг холих (Shuffle)
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
-    // 🪐 Баруун, зүүн, голын зургуудыг тус тусад нь өөр өөрөөр сонгох
     const leftImg = shuffled[0];
     const rightImg = shuffled[1];
-    const centerImg = shuffled[2];
+    const centerImg = shuffled[2]; // 🎯 Мартагдсан голын зургийг энд яг таг зөв индексээр холбов!
 
-    // Баруун, зүүн талын зургийг сунгаж харуулах
     authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
     authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover'; 
 
-    // 🎯 МАРТАГДСАН ГОЛЫН ЗУРГИЙГ ЭНД ЯГ ТАГ ЗӨВ ХАШИЛТ БОЛОН ТОМ ҮСЭГТЭЙ СУУЛГАВ!
     authCard.style.backgroundImage = "url('" + centerImg + "')";
 }
 
-// Хуудас ачаалагдах үед зургуудыг шууд холино
+function handleLogout() {
+    currentUser = null;
+    localStorage.removeItem('iknow_current_user');
+    showAuthPage('login');
+}
+
+// Систем ачаалагдах үед зургийг шууд холино
 document.addEventListener('DOMContentLoaded', () => {
     randomizeAuthImages();
 });
-
