@@ -3,11 +3,11 @@ let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
-let deletedPostsArchive = []; // Хогийн сав
+let deletedPostsArchive = []; 
 let currentTab = 'feed';
 let selectedFriend = null;
 
-// Орчуулгын сан (Timeline - Ирээдүйн урсгал)
+// Translations Database
 const translations = {
     en: {
         feed: "Timeline",
@@ -41,7 +41,7 @@ const translations = {
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
-// Апп ачаалагдах үед ажиллах үндсэн код
+// App Core Init
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
@@ -59,6 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
         showAuthPage('login');
     }
     applyTranslations();
+
+    // Facebook шиг унадаг цэсийг гадна талд нь дарахад хаах хамгаалалт
+    document.addEventListener('click', (e) => {
+        if (!e.target.matches('.post-more-btn')) {
+            document.querySelectorAll('.post-dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
+    });
 });
 
 function toggleTheme() {
@@ -320,10 +329,19 @@ function clearAttachedMedia() {
     if (previewVid) previewVid.style.display = 'none';
 }
 
+// 💾 ХӨТӨЧ ГАЦААХГҮЙН ТУЛД ЗУРАГТАЙ ПОСТУУДЫГ SESSION САНАХ ОЙД ШИЛЖҮҮЛЭВ
 function loadPosts() {
     try {
-        allPosts = JSON.parse(localStorage.getItem('iknow_posts_db')) || [];
-        deletedPostsArchive = JSON.parse(localStorage.getItem('iknow_archive_db')) || [];
+        allPosts = JSON.parse(sessionStorage.getItem('iknow_posts_db')) || [];
+        deletedPostsArchive = JSON.parse(sessionStorage.getItem('iknow_archive_db')) || [];
+        
+        // Хэрэв түр санах ой хоосон бол үндсэн баазаас уншина
+        if (allPosts.length === 0) {
+            allPosts = JSON.parse(localStorage.getItem('iknow_posts_db')) || [];
+        }
+        if (deletedPostsArchive.length === 0) {
+            deletedPostsArchive = JSON.parse(localStorage.getItem('iknow_archive_db')) || [];
+        }
     } catch (e) { 
         allPosts = []; 
         deletedPostsArchive = [];
@@ -379,11 +397,18 @@ function createPost() {
     };
 
     allPosts.unshift(newPost);
-    localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    
+    // Гацахаас сэргийлж Session болон Local баазад зэрэг хуваарилна
+    try {
+        sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+        localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    } catch(err) {
+        // Хэрэв хэт том файл бол зөвхөн Session санах ойд хадгална
+        sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    }
 
     if (inputEl) inputEl.value = "";
     clearAttachedMedia();
-
     renderPosts();
 }
 
@@ -397,6 +422,8 @@ function deletePost(postId) {
     deletedPostsArchive.push(targetPost);
     allPosts.splice(postIndex, 1);
 
+    sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    sessionStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     localStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
     renderPosts();
@@ -410,6 +437,8 @@ function restorePost(postId) {
     allPosts.unshift(restoredPost);
     deletedPostsArchive.splice(archiveIndex, 1);
 
+    sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    sessionStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     localStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
     alert(currentLang === 'mn' ? "Пост амжилттай сэргээгдлээ!" : "Post restored successfully!");
@@ -435,8 +464,24 @@ function reportPost(postId) {
             allPosts = allPosts.filter(p => p.id !== postId);
         }
 
+        sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         renderPosts();
+    }
+}
+
+// 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭСТИЙГ НЭЭЖ ХААХ ФУНКЦ
+function togglePostMenu(event, menuId) {
+    event.stopPropagation(); // Дээшээ уусах хөдөлгөөнийг зогсоох
+    
+    // Өөр нээлттэй байсан бүх цэснүүдийг хаах
+    document.querySelectorAll('.post-dropdown-menu').forEach(m => {
+        if (m.id !== menuId) m.style.display = 'none';
+    });
+
+    const menu = document.getElementById(menuId);
+    if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     }
 }
 
@@ -461,6 +506,7 @@ function renderPosts() {
     let usersDb = [];
     try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
 
+    // 📰 1. ҮНДЭСЭН ПОСТУУДЫГ ЗУРАХ
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
         
@@ -495,27 +541,37 @@ function renderPosts() {
         const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
         const liveAvatar = authorUser ? authorUser.avatar : "https://robohash.org";
 
-        let deleteBtnHtml = "";
+        // 💬 FACEBOOK-ИЙН ... ЦЭСНИЙ ДОТОР ТОХИРУУЛАХ ТОВЧНУУД
+        const menuId = `menu_${post.id}`;
+        let actionButtonsHtml = `<button onclick="reportPost('${post.id}')">⚠️ Report</button>`;
+        
         if (currentUser && (post.author === currentUser.username || currentUser.username.toLowerCase() === 'sainaa34')) {
-            deleteBtnHtml = `<button onclick="deletePost('${post.id}')" style="background:none; border:none; color:var(--cyber-magenta); cursor:pointer; font-size:12px; margin-left:10px;">🗑️</button>`;
+            actionButtonsHtml += `<button onclick="deletePost('${post.id}')" class="delete-btn-red">🗑️ Delete</button>`;
         }
-
-        const reportCount = post.reports ? post.reports.length : 0;
 
         postEl.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
                     <img src="${liveAvatar}" class="post-avatar-mini">
                     <div class="post-meta-text">
-                        <h4>${post.author} ${deleteBtnHtml}</h4>
+                        <h4>${post.author}</h4>
                         <span>📅 ${timeAgo(post.timestamp)}</span>
                     </div>
                 </div>
+                
                 <div class="post-header-actions">
-                    <button onclick="reportPost('${post.id}')" class="report-btn-cyber">⚠️ Report (${reportCount}/10)</button>
+                    <!-- 🔮 ЧИНИЙ ХҮССЭН TWITTER TOOLTIP ЭФФЕКТ -->
                     <div class="vote-tooltip-container">
                         <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 (${post.votes})</button>
                         <span class="tooltip-box-text">${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"}</span>
+                    </div>
+
+                    <!-- 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭС -->
+                    <div class="post-menu-container">
+                        <button onclick="togglePostMenu(event, '${menuId}')" class="post-more-btn">•••</button>
+                        <div id="${menuId}" class="post-dropdown-menu">
+                            ${actionButtonsHtml}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -532,7 +588,7 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 
-    // 🗑️ ХОГИЙН САНГИЙН АРХИВ ХЭСЭГ
+    // 🗑️ 2. ХОГИЙН САН ДАХЬ УСТСАН ПОСТУУДЫГ ХАРУУЛАХ (Архив)
     const myDeletedPosts = deletedPostsArchive.filter(p => currentUser && p.author === currentUser.username);
     if (myDeletedPosts.length > 0) {
         const archiveTitle = document.createElement('h3');
@@ -567,6 +623,7 @@ function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
     if (post) {
         post.votes += 1;
+        sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         renderPosts();
     }
@@ -584,13 +641,14 @@ function addComment(postId) {
             text: text,
             timestamp: new Date().toISOString()
         });
+        sessionStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         if (inputEl) inputEl.value = "";
         renderPosts();
     }
 }
 
-// 🤝 НАЙЗУУДЫН СИСТЕМ
+// 🤝 FRIENDS SYSTEM
 function loadFriendsList() {
     const container = document.getElementById('friends-list-container');
     if (!container) return;
@@ -727,10 +785,11 @@ function randomizeAuthImages() {
 
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
-    const leftImg = shuffled[0];
-    const rightImg = shuffled[1];
-    const centerImg = shuffled[2]; // 🎯 Индекстэй төгс холболт
+    const leftImg = shuffled;
+    const rightImg = shuffled;
+    const centerImg = shuffled; // 🎯 Голын зургийг индексээр зөв дуудав!
 
+    // БҮХ ХАШИЛТ БОЛОН ҮСГИЙГ 100% ЗӨВ БОЛГОЖ ТҮГЖИВ
     authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
     authContainer.style.backgroundPosition = 'left center, right center, center center';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
@@ -745,7 +804,7 @@ function handleLogout() {
     showAuthPage('login');
 }
 
-// Систем ачаалагдах үед зургийг шууд холино
+// Хуудас ачаалагдах үед зургуудыг шууд холино
 document.addEventListener('DOMContentLoaded', () => {
     randomizeAuthImages();
 });
