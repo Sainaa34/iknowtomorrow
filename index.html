@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="mn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iKnowTomorrow - Cyber Timeline</title>
+    <title>iKnowTomorrow - Quantum Timeline</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-cyber">
@@ -11,114 +11,102 @@
     <div id="auth-container">
         <div id="login-card" class="auth-card">
             <h1>iKnowTomorrow</h1>
-            <p class="subtitle">🛸 FUTURE CITIZEN LOGIN SYSTEM</p>
-            <form onsubmit="handleLogin(event)">
-                <input id="login-username" type="text" placeholder="Username" required>
-                <input id="login-password" type="password" placeholder="Access Key (Password)" required>
-                <button type="submit" class="cyber-btn">LOGIN</button>
+            <div class="subtitle">ENTER QUANTUM MATRIX</div>
+            <form id="login-form" onsubmit="return handleLogin(event)">
+                <input type="text" id="login-username" placeholder="Identity Username" required autocomplete="off">
+                <input type="password" id="login-password" placeholder="Matrix Password Access Key" required>
+                <button type="submit" class="cyber-btn">AUTHENTICATE</button>
             </form>
-            <button onclick="showAuthPage('register')" class="toggle-link">Don't have an account? Register here</button>
+            <button class="toggle-link" onclick="showAuthPage('register')">Initialize New Identity Profile ➔</button>
         </div>
 
         <div id="register-card" class="auth-card" style="display: none;">
-            <h1>Create Account</h1>
-            <p class="subtitle">⚡ INITIALIZE NEW IDENTITY</p>
-            <form onsubmit="handleRegister(event)">
-                <input id="reg-username" type="text" placeholder="Choose Username" required>
-                <input id="reg-password" type="password" placeholder="Create Access Key" required>
-                <button type="submit" class="cyber-btn">REGISTER NEW IDENTITY</button>
+            <h1>Initialize Identity</h1>
+            <div class="subtitle">CREATE TIMELINE ANCHOR</div>
+            <form id="register-form" onsubmit="return handleRegister(event)">
+                <input type="text" id="reg-username" placeholder="Choose Username" required autocomplete="off">
+                <input type="password" id="reg-password" placeholder="Create Password Access Key" required>
+                <button type="submit" class="cyber-btn">INITIALIZE MATRIX</button>
             </form>
-            <button onclick="showAuthPage('login')" class="toggle-link">Already have an account? Login here</button>
+            <button class="toggle-link" onclick="showAuthPage('login')">⬅️ Return to Authentication</button>
         </div>
     </div>
 
     <div id="main-app" style="display: none;">
         <header class="cyber-header">
-            <div class="header-left">
-                <span class="logo-neon">iKnowTomorrow</span>
-                <span class="timeline-badge">⚡ CYBER TIMELINE</span>
-            </div>
+            <div class="logo-neon">iKnowTomorrow <span class="timeline-badge">v3.0.QT</span></div>
             <div class="header-actions">
-                <button id="theme-btn" onclick="toggleTheme()" class="theme-toggle-btn">🎨 Theme: Cyber</button>
-                <button id="lang-btn" onclick="switchLang()" class="lang-toggle-btn">English</button>
-                <button onclick="handleLogout()" class="exit-top-btn">🚪 Exit</button>
+                <button id="lang-btn" class="lang-toggle-btn" onclick="switchLang()">English</button>
+                <button id="theme-btn" class="theme-toggle-btn" onclick="toggleTheme()">🎨 Theme: CYBER</button>
+                <button class="exit-top-btn" onclick="handleLogout()">🚪 Exit</button>
             </div>
         </header>
 
         <div class="app-layout">
             <aside class="sidebar">
                 <div class="profile-box">
-                    <img id="profile-avatar" class="user-avatar-main" src="" alt="avatar">
-                    <h3 id="profile-name">Connecting...</h3>
-                    <button onclick="openProfileModal()" class="edit-profile-btn">⚙️ Profile Settings</button>
+                    <img id="profile-avatar" class="user-avatar-main" src="Designer.png" alt="Avatar">
+                    <h3 id="profile-name">Citizen_Unknown</h3>
+                    <button class="edit-profile-btn" onclick="openProfileModal()">⚙️ Profile Settings</button>
                 </div>
                 <nav class="side-menu">
-                    <button class="menu-tab active" onclick="switchTab('feed')" id="feed-btn">Timeline</button>
-                    <button class="menu-tab" onclick="switchTab('friends')" id="friends-btn">🤝 Friends & Chats</button>
-                    <button class="menu-tab" onclick="switchTab('chat')" id="chats-btn">🤖 Future Bot</button>
+                    <button id="feed-btn" class="menu-tab active" onclick="switchTab('feed')">Timeline</button>
+                    <button id="friends-btn" class="menu-tab" onclick="switchTab('friends')">🤝 Friends & Chats</button>
+                    <button id="chats-btn" class="menu-tab" onclick="switchTab('chat')">🤖 Future Bot</button>
                 </nav>
             </aside>
 
             <main class="main-content">
+                <div class="search-wrapper">
+                    <input type="text" id="search-input" placeholder="Search Timeline..." oninput="searchPosts()">
+                </div>
+
                 <div id="tab-feed" class="tab-content">
-                    <div class="search-wrapper">
-                        <input type="text" id="search-input" placeholder="Search Timeline..." oninput="searchPosts()">
-                    </div>
-                    
                     <div class="create-post-card">
                         <textarea id="future-input" placeholder="What will happen in the future? Share here..."></textarea>
                         
-                        <div id="post-media-preview-box" style="display: none; position: relative; margin-bottom: 10px;">
-                            <img id="post-image-preview-img" style="max-height: 200px; display: none; border-radius: 6px;">
-                            <video id="post-video-preview-vid" style="max-height: 200px; display: none; border-radius: 6px;" controls></video>
-                            <button onclick="clearAttachedMedia()" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">X</button>
+                        <div id="post-media-preview-box" style="display:none; margin-bottom:10px; position:relative;">
+                            <img id="post-image-preview-img" style="max-height:150px; display:none; border-radius:6px;" src="">
+                            <video id="post-video-preview-vid" style="max-height:150px; display:none; border-radius:6px;" controls></video>
+                            <button onclick="clearAttachedMedia()" style="position:absolute; top:5px; left:5px; background:red; color:#fff; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">X</button>
                         </div>
 
                         <div class="post-actions-row">
                             <div class="media-upload-btns">
-                                <label class="upload-btn">
-                                    🖼️ Image <input type="file" accept="image/*" onchange="handleFileSelect(event, 'image')" style="display: none;">
-                                </label>
-                                <label class="upload-btn">
-                                    🎥 Video <input type="file" accept="video/*" onchange="handleFileSelect(event, 'video')" style="display: none;">
-                                </label>
+                                <label class="upload-btn">🖼️ Image <input type="file" accept="image/*" style="display:none;" onchange="handleFileSelect(event, 'image')"></label>
+                                <label class="upload-btn">📹 Video <input type="file" accept="video/*" style="display:none;" onchange="handleFileSelect(event, 'video')"></label>
                             </div>
-                            <button id="post-btn" onclick="createPost()" class="post-submit-btn">Post</button>
+                            <button id="post-btn" class="post-submit-btn" onclick="createPost()">Post</button>
                         </div>
                     </div>
-
                     <div id="feed-container"></div>
                 </div>
 
                 <div id="tab-friends" class="tab-content" style="display: none;">
                     <div class="friends-layout">
                         <div class="friends-sidebar">
-                            <h3>🌐 Online Citizens</h3>
+                            <h3>Timeline Partners</h3>
                             <div id="friends-list-container"></div>
                         </div>
                         <div class="friends-chat-area">
-                            <h3 id="active-chat-partner">💬 Select a partner to start sync</h3>
+                            <h4 id="active-chat-partner">💬 Select a partner to synchronize link...</h4>
                             <div id="friends-chat-messages" class="chat-messages-box"></div>
                             <div class="chat-input-row">
-                                <input type="text" id="friends-chat-input" placeholder="Type a secure message..." onkeypress="if(event.key === 'Enter') sendFriendMessage()">
-                                <button onclick="sendFriendMessage()" class="chat-send-btn">Send</button>
+                                <input type="text" id="friends-chat-input" placeholder="Type encrypted message...">
+                                <button class="chat-send-btn" onclick="sendFriendMessage()">➔</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-chat" class="tab-content" style="display: none;">
-                    <div class="bot-chat-wrapper">
-                        <h2 id="bot-title">Future Bot 🤖</h2>
-                        <div id="chat-container" class="chat-messages-box">
-                            <div class="msg-row bot">
-                                <strong>Future Bot:</strong> Quantum connection established. Ask me anything about the future timelines.
-                            </div>
-                        </div>
-                        <div class="chat-input-row">
-                            <input type="text" id="bot-input" placeholder="Ask Future Bot..." onkeypress="if(event.key === 'Enter') sendDirectMessage()">
-                            <button id="send-btn" onclick="sendDirectMessage()" class="chat-send-btn">Send</button>
-                        </div>
+                    <h2 id="bot-title">Future Bot 🤖</h2>
+                    <div id="chat-container" class="chat-messages-box" style="height:350px;">
+                        <div class="msg-row bot"><strong>Future Bot:</strong> Quantum temporal grid active. Ask me about your tomorrow.</div>
+                    </div>
+                    <div class="chat-input-row">
+                        <input type="text" id="bot-input" placeholder="Query the timeline...">
+                        <button id="send-btn" class="chat-send-btn" onclick="sendDirectMessage()">Send</button>
                     </div>
                 </div>
             </main>
@@ -127,36 +115,39 @@
 
     <div id="profile-modal" class="cyber-modal-overlay" style="display: none;">
         <div class="cyber-modal-card">
-            <h2>Timeline Identity Sync</h2>
+            <h2>Identity Calibration</h2>
+            <hr style="border:1px solid #222; margin:15px 0;">
             <div class="modal-form-group">
-                <label>Change Username:</label>
+                <label>Change Alias Name</label>
                 <input type="text" id="modal-username">
             </div>
             <div class="modal-form-group">
-                <label>Avatar URL (or upload below):</label>
+                <label>Avatar Matrix Link (URL or upload file below)</label>
                 <input type="text" id="modal-avatar">
+                <input type="file" id="modal-avatar-file" accept="image/*" style="margin-top:5px; font-size:12px;" onchange="handleAvatarFile(event)">
             </div>
-            <div class="modal-form-group">
-                <label class="upload-btn" style="display: inline-block; text-align: center;">
-                    📤 Upload Avatar File
-                    <input type="file" accept="image/*" onchange="handleAvatarFile(event)" style="display: none;">
-                </label>
+            
+            <div style="text-align:left; margin-top:15px;">
+                <h4 style="color:var(--cyber-cyan); font-size:13px; margin-bottom:5px;">Timeline Archives Logs</h4>
+                <div style="display:flex; gap:10px; font-size:12px;">
+                    <div style="flex:1;">
+                        <strong>Your Posts:</strong>
+                        <div id="profile-posts-history" style="max-height:80px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:5px; border-radius:4px;"></div>
+                    </div>
+                    <div style="flex:1;">
+                        <strong>Your Comments:</strong>
+                        <div id="profile-comments-history" style="max-height:80px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:5px; border-radius:4px;"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="profile-history-section" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: left;">
-                <h3 style="color: var(--cyber-cyan); font-size: 14px; margin-bottom: 10px;">📝 Миний нийтэлсэн постууд:</h3>
-                <div id="profile-posts-history" style="max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.4); border: 1px solid #222; border-radius: 4px; padding: 5px; font-size: 13px;"></div>
-
-                <h3 style="color: var(--cyber-magenta); font-size: 14px; margin-top: 15px; margin-bottom: 10px;">💬 Миний бичсэн сэтгэгдлүүд:</h3>
-                <div id="profile-comments-history" style="max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.4); border: 1px solid #222; border-radius: 4px; padding: 5px; font-size: 13px;"></div>
-            </div>
-
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button onclick="saveProfileModal()" class="cyber-btn">Save Settings</button>
-                <button onclick="closeProfileModal()" class="cyber-btn" style="background: #333; border-color: #555;">Cancel</button>
+            <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+                <button class="cyber-btn" style="width:120px; margin:0;" onclick="saveProfileModal()">SYNC MATRIX</button>
+                <button class="cyber-btn" style="width:120px; margin:0; background:#333;" onclick="closeProfileModal()">ABORT</button>
             </div>
         </div>
     </div>
 
+    <script src="script.js"></script>
 </body>
 </html>
