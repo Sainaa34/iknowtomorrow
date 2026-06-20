@@ -47,12 +47,13 @@ body {
     min-height: 100vh;
     padding: 20px;
     position: relative;
-    /* 🌌 Хуучин хар ногоон фоныг бүрмөсөн устгаж, тас хар сансар болгов */
-    background: #000000 !important; 
+    /* 🪐 Хар өнгийг тунгалаг (transparent) болгосноор арын 4 зураг шууд нэвт гарч ирнэ! */
+    background: transparent !important; 
     background-attachment: fixed;
     background-size: cover;
     overflow: hidden;
 }
+
 
 
 .auth-card {
