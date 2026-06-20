@@ -1,10 +1,48 @@
-// 🪐 GLOBAL STATE / ДАТА ХАДГАЛАХ ХЭСЭГ
+// Global State Variables
+let currentLang = localStorage.getItem('iknow_lang') || 'en';
+let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
-let posts = JSON.parse(localStorage.getItem('cyber_posts')) || [];
-let users = JSON.parse(localStorage.getItem('cyber_users')) || [];
-let activeChatPartner = null;
+let allPosts = [];
+let deletedPostsArchive = [];
+let currentTab = 'feed';
+let selectedFriend = null;
+let db = null; // IndexedDB Баазыг удирдах хувьсагч
 
-// 🖼️ НЭВТРЭХ ХҮҮДЭСНИЙ 3 ТАЛЫН ЗУРГУУД
+// Translations Database
+const translations = {
+    en: {
+        feed: "Timeline",
+        friends: "🤝 Friends & Chats",
+        chats: "🤖 Future Bot",
+        profileSettings: "⚙️ Profile Settings",
+        futurePlaceholder: "What will happen in the future? Share here...",
+        postBtn: "Post",
+        verifiedFuture: "Ирээдүй биелсэн",
+        writeComment: "Write a comment...",
+        botTitle: "Future Bot 🤖",
+        sendBtn: "Send",
+        bannedWordAlert: "Your post contains banned keywords!",
+        searchLabel: "Search Timeline...",
+        exitBtn: "🚪 Exit"
+    },
+    mn: {
+        feed: "Таймлайн",
+        friends: "🤝 Түншүүд ба Чат",
+        chats: "🤖 Ирээдүйн Бот",
+        profileSettings: "⚙️ Профайл Тохиргоо",
+        futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
+        postBtn: "Нийтлэх",
+        verifiedFuture: "Ирээдүй биелсэн",
+        writeComment: "Сэтгэгдэл үлдээх...",
+        botTitle: "Ирээдүйн Бот 🤖",
+        sendBtn: "Илгээх",
+        bannedWordAlert: "Таны бичвэрт хориотой үг байна!",
+        searchLabel: "Таймлайнаас хайх...",
+        exitBtn: "🚪 Гарах"
+    }
+};
+
+// 🖼️ НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУД
 const authImages = [
     'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
     'Designer (4).png', 'Designer (5).png', 'Designer (6).png',
@@ -12,34 +50,38 @@ const authImages = [
     'Designer (10).png', 'Designer.png'
 ];
 
-// 🔄 ХҮҮДЭС АЧААЛАГДАХАД АЖИЛЛАХ
+// Media Upload Variables
+let attachedMedia = null; 
+let attachedMediaType = null; 
+let modalAttachedAvatar = null;
+
+// Banned words list (Цензур)
+const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "яахуу", "пизда"];
+
+// 🔄 Window Load Event
 window.onload = function() {
+    initIndexedDB();
     initAuthPage();
-    checkLoginStatus();
 };
 
-// 🔐 НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУДЫГ ОНООХ
+// 🔐 НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ
 function initAuthPage() {
     const authContainer = document.getElementById('auth-container');
     if (!authContainer) return;
 
-    // Санамсаргүй 3 өөр зураг сонгох
     let shuffled = [...authImages].sort(() => 0.5 - Math.random());
     let leftImg = shuffled[0];
     let rightImg = shuffled[1];
     let centerImg = shuffled[2];
 
-    // CSS рүү зургуудыг зөв дарааллаар илгээх
     authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), url('${centerImg}')`;
     
-    // Голын картыг тод харуулах арын зураг
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
     if (loginCard) loginCard.style.backgroundImage = `url('${centerImg}')`;
     if (registerCard) registerCard.style.backgroundImage = `url('${centerImg}')`;
 }
 
-// 🔀 НЭВТРЭХ БОЛОН БҮРТГҮҮЛЭХ ХЭСГИЙГ СОЛИХ
 function showAuthPage(type) {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
@@ -52,285 +94,455 @@ function showAuthPage(type) {
     }
 }
 
-// 📝 БҮРТГҮҮЛЭХ ФУНКЦ
-function handleRegister(e) {
-    e.preventDefault();
-    const username = document.getElementById('reg-username').value.trim();
-    const password = document.getElementById('reg-password').value;
+// 📦 INDEXEDDB INITIALIZATION
+function initIndexedDB() {
+    const request = indexedDB.open("iKnowTomorrowDB", 3);
 
-    if (!username || !password) return alert('Мэдээллээ бүрэн бөглөнө үү!');
-    if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-        return alert('Энэ нэр аль хэдийн бүртгэгдсэн байна!');
-    }
-
-    const newUser = {
-        username: username,
-        password: password,
-        avatar: 'Designer.png' // default avatar
+    request.onerror = function(event) {
+        console.error("Database error: " + event.target.errorCode);
     };
 
-    users.push(newUser);
-    localStorage.setItem('cyber_users', JSON.stringify(users));
-    alert('Амжилттай бүртгэгдлээ! Одоо нэвтэрч орно уу.');
-    showAuthPage('login');
+    request.onsuccess = function(event) {
+        db = event.target.result;
+        console.log("IndexedDB successfully opened.");
+        checkLoginStatus();
+    };
+
+    request.onupgradeneeded = function(event) {
+        let dbInstance = event.target.result;
+        
+        if (!dbInstance.objectStoreNames.contains("users")) {
+            dbInstance.createObjectStore("users", { keyPath: "username" });
+        }
+        if (!dbInstance.objectStoreNames.contains("posts")) {
+            dbInstance.createObjectStore("posts", { keyPath: "id" });
+        }
+        if (!dbInstance.objectStoreNames.contains("archive")) {
+            dbInstance.createObjectStore("archive", { keyPath: "id" });
+        }
+    };
 }
 
-// 🔑 НЭВТРЭХ ФУНКЦ
+// 🔑 AUTH OPERATIONS (LOGIN & REGISTER)
+function handleRegister(e) {
+    e.preventDefault();
+    const u = document.getElementById('reg-username').value.trim();
+    const p = document.getElementById('reg-password').value;
+
+    if(!u || !p) return;
+
+    let transaction = db.transaction(["users"], "readwrite");
+    let store = transaction.objectStore("users");
+    let getRequest = store.get(u);
+
+    getRequest.onsuccess = function() {
+        if (getRequest.result) {
+            alert("This identity username already exists in timeline.");
+        } else {
+            let newUser = { username: u, password: p, avatar: 'Designer.png' };
+            store.add(newUser);
+            alert("Identity Initialized! Proceed to authentication.");
+            showAuthPage('login');
+        }
+    };
+}
+
 function handleLogin(e) {
     e.preventDefault();
-    const username = document.getElementById('login-username').value.trim();
-    const password = document.getElementById('login-password').value;
+    const u = document.getElementById('login-username').value.trim();
+    const p = document.getElementById('login-password').value;
 
-    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+    let transaction = db.transaction(["users"], "readonly");
+    let store = transaction.objectStore("users");
+    let request = store.get(u);
 
-    if (user) {
-        currentUser = user;
-        localStorage.setItem('cyber_current_user', JSON.stringify(currentUser));
-        showMainApp();
-    } else {
-        alert('Хэрэглэгчийн нэр эсвэл нууц үг буруу байна!');
-    }
+    request.onsuccess = function() {
+        if(request.result && request.result.password === p) {
+            currentUser = request.result;
+            localStorage.setItem('iknow_logged_user', currentUser.username);
+            showMainApp();
+        } else {
+            alert("Access Denied: Invalid Username or Password Matrix Key.");
+        }
+    };
 }
 
-// 🚪 ГАРАХ ФУНКЦ
 function handleLogout() {
     currentUser = null;
-    localStorage.removeItem('cyber_current_user');
+    localStorage.removeItem('iknow_logged_user');
     document.getElementById('main-app').style.display = 'none';
     document.getElementById('auth-container').style.display = 'flex';
     initAuthPage();
 }
 
-// 🛡️ НЭВТРЭСЭН ЭСЭХИЙГ ШАЛГАХ
 function checkLoginStatus() {
-    const savedUser = localStorage.getItem('cyber_current_user');
-    if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        showMainApp();
+    let loggedName = localStorage.getItem('iknow_logged_user');
+    if(loggedName) {
+        let transaction = db.transaction(["users"], "readonly");
+        let store = transaction.objectStore("users");
+        let request = store.get(loggedName);
+        request.onsuccess = function() {
+            if(request.result) {
+                currentUser = request.result;
+                showMainApp();
+            } else {
+                showAuthPage('login');
+            }
+        };
     } else {
-        document.getElementById('auth-container').style.display = 'flex';
-        document.getElementById('main-app').style.display = 'none';
+        showAuthPage('login');
     }
 }
 
-// 🛸 ҮНДСЭН АПП-ЫГ ХАРУУЛАХ
 function showMainApp() {
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-app').style.display = 'block';
-    
-    // Профайл шинэчлэх
-    document.getElementById('profile-name').innerText = currentUser.username;
-    document.getElementById('profile-avatar').src = currentUser.avatar;
-    
-    renderFeed();
-    renderFriends();
+
+    applyTheme(currentTheme);
+    updateLanguageUI();
+    refreshProfileUI();
+    loadPostsFromDB();
+    loadOnlineCitizens();
 }
 
-// 📑 ТАБ СОЛИХ
-function switchTab(tabName) {
+function refreshProfileUI() {
+    document.getElementById('profile-name').innerText = currentUser.username;
+    document.getElementById('profile-avatar').src = currentUser.avatar;
+}
+
+// 🔀 ЯНГ, СЭДЭВ ХҮҮДЭС СОЛИЛТ
+function updateLanguageUI() {
+    let lang = translations[currentLang];
+    document.getElementById('feed-btn').innerText = lang.feed;
+    document.getElementById('friends-btn').innerText = lang.friends;
+    document.getElementById('chats-btn').innerText = lang.chats;
+    document.getElementById('future-input').placeholder = lang.futurePlaceholder;
+    document.getElementById('post-btn').innerText = lang.postBtn;
+    document.getElementById('bot-title').innerText = lang.botTitle;
+    document.getElementById('send-btn').innerText = lang.sendBtn;
+    document.getElementById('search-input').placeholder = lang.searchLabel;
+}
+
+function switchLang() {
+    currentLang = currentLang === 'en' ? 'mn' : 'en';
+    localStorage.setItem('iknow_lang', currentLang);
+    document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'English' : 'Монгол';
+    updateLanguageUI();
+}
+
+function toggleTheme() {
+    if(currentTheme === 'cyber') currentTheme = 'matrix';
+    else if(currentTheme === 'matrix') currentTheme = 'dark';
+    else currentTheme = 'cyber';
+
+    localStorage.setItem('iknow_theme', currentTheme);
+    applyTheme(currentTheme);
+}
+
+function applyTheme(theme) {
+    document.body.className = 'theme-' + theme;
+    let btn = document.getElementById('theme-btn');
+    if(btn) btn.innerText = "🎨 Theme: " + theme.toUpperCase();
+}
+
+function switchTab(tab) {
+    currentTab = tab;
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.menu-tab').forEach(el => el.classList.remove('active'));
 
-    if (tabName === 'feed') {
-        document.getElementById('tab-feed').style.display = 'block';
-        document.getElementById('feed-btn').classList.add('active');
-    } else if (tabName === 'friends') {
-        document.getElementById('tab-friends').style.display = 'block';
-        document.getElementById('friends-btn').classList.add('active');
-    } else if (tabName === 'chat') {
-        document.getElementById('tab-chat').style.display = 'block';
-        document.getElementById('chats-btn').classList.add('active');
-    }
+    document.getElementById('tab-' + tab).style.display = 'block';
+    if(tab === 'feed') document.getElementById('feed-btn').classList.add('active');
+    if(tab === 'friends') document.getElementById('friends-btn').classList.add('active');
+    if(tab === 'chat') document.getElementById('chats-btn').classList.add('active');
 }
 
-// ✍️ ПОСТ УСТГАХ СИСТЕМ
-function createPost() {
-    const text = document.getElementById('future-input').value.trim();
-    if (!text) return alert('Пост хоосон байж болохгүй!');
+// 📝 ПОСТ, СЭТГЭГДЭЛ БИЧИХ КҮҮЛҮҮД
+function loadPostsFromDB() {
+    let transaction = db.transaction(["posts"], "readonly");
+    let store = transaction.objectStore("posts");
+    let request = store.getAll();
+    request.onsuccess = function() {
+        allPosts = request.result || [];
+        allPosts.sort((a,b) => b.timestamp - a.timestamp);
+        renderFeed(allPosts);
+    };
+}
 
-    const newPost = {
-        id: 'post_' + Date.now(),
+function createPost() {
+    const textInput = document.getElementById('future-input');
+    let text = textInput.value;
+
+    if(!text && !attachedMedia) return;
+
+    let hasBanned = bannedKeywords.some(word => text.toLowerCase().includes(word));
+    if(hasBanned) {
+        alert(translations[currentLang].bannedWordAlert);
+        return;
+    }
+
+    let newPost = {
+        id: "post_" + Date.now(),
         author: currentUser.username,
         avatar: currentUser.avatar,
         text: text,
-        time: 'Just now',
+        media: attachedMedia,
+        mediaType: attachedMediaType,
+        timestamp: Date.now(),
         votes: 0,
         voters: [],
-        comments: []
+        comments: [],
+        isVerified: false
     };
 
-    posts.unshift(newPost);
-    localStorage.setItem('cyber_posts', JSON.stringify(posts));
-    document.getElementById('future-input').value = '';
-    renderFeed();
+    let transaction = db.transaction(["posts"], "readwrite");
+    let store = transaction.objectStore("posts");
+    store.add(newPost);
+
+    transaction.oncomplete = function() {
+        textInput.value = '';
+        clearAttachedMedia();
+        loadPostsFromDB();
+    };
 }
 
-// 🔄 ТАЙМЛАЙН ХАРУУЛАХ (RENDER)
-function renderFeed(filterData = null) {
-    const container = document.getElementById('feed-container');
-    container.innerHTML = '';
-    const displayPosts = filterData || posts;
+function renderFeed(postsToRender) {
+    const feedContainer = document.getElementById('feed-container');
+    feedContainer.innerHTML = '';
 
-    displayPosts.forEach(post => {
-        let tierClass = 'tier-electric';
-        if (post.votes >= 10) tierClass = 'tier-matrix';
-        else if (post.votes >= 5) tierClass = 'tier-fire';
+    postsToRender.forEach(post => {
+        let tierClass = "tier-electric";
+        if(post.votes >= 10) tierClass = "tier-matrix";
+        else if(post.votes >= 5) tierClass = "tier-fire";
 
-        // Өөрийнх нь пост мөн бол устгах товч харуулах
-        let deleteBtnHtml = post.author === currentUser.username ? 
-            `<button class="delete-btn-red" onclick="deletePost('${post.id}')">❌ Устгах</button>` : '';
+        let mediaHtml = '';
+        if(post.media) {
+            if(post.mediaType === 'image') mediaHtml = `<div class="post-media-content"><img src="${post.media}"></div>`;
+            else if(post.mediaType === 'video') mediaHtml = `<div class="post-media-content"><video src="${post.media}" controls></video></div>`;
+        }
+
+        let verifyBadge = post.isVerified ? `<span style="color:var(--cyber-yellow); font-size:11px; margin-left:5px;">👁️ ${translations[currentLang].verifiedFuture}</span>` : '';
+        let deleteBtnHtml = (post.author === currentUser.username) ? `<button class="delete-btn-red" onclick="deletePost('${post.id}')">❌ Delete</button>` : '';
+        let adminVerifyBtn = (currentUser.username.toLowerCase() === 'admin' && !post.isVerified) ? `<button onclick="verifyPost('${post.id}')" style="color:yellow; background:none; border:none; cursor:pointer;">✔️ Verify</button>` : '';
 
         let commentsHtml = post.comments.map(c => `
-            <div style="font-size:12px; margin-top:5px; background:rgba(255,255,255,0.05); padding:5px; border-radius:4px;">
+            <div style="font-size:12px; background:rgba(0,0,0,0.3); padding:4px; margin-top:3px; border-radius:4px;">
                 <strong>${c.author}:</strong> ${c.text}
             </div>
         `).join('');
 
-        const card = document.createElement('div');
+        let card = document.createElement('div');
         card.className = `post-card ${tierClass}`;
         card.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
                     <img class="post-avatar-mini" src="${post.avatar}">
                     <div class="post-meta-text">
-                        <h4>${post.author}</h4>
-                        <span>${post.time}</span>
+                        <h4>${post.author} ${verifyBadge}</h4>
+                        <span>${new Date(post.timestamp).toLocaleTimeString()}</span>
                     </div>
                 </div>
                 <div class="post-header-actions">
-                    <button class="vote-btn-neon" onclick="votePost('${post.id}')">⚡ Sync (${post.votes})</button>
+                    <div class="vote-tooltip-container">
+                        <button class="vote-btn-neon" onclick="votePost('${post.id}')">⚡ Sync (${post.votes})</button>
+                        <div class="tooltip-box-text">${post.voters ? post.voters.join(', ') : 'No syncs'}</div>
+                    </div>
                     <div class="post-menu-container">
                         <button class="post-more-btn" onclick="togglePostMenu('${post.id}')">⋮</button>
                         <div id="menu-${post.id}" class="post-dropdown-menu">
                             ${deleteBtnHtml}
-                            <button onclick="alert('Timeline Synced!')">🔗 Share</button>
+                            ${adminVerifyBtn}
+                            <button onclick="archivePost('${post.id}')">📂 Archive</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="post-main-text">${post.text}</div>
+            ${mediaHtml}
             <div class="comments-section">
-                ${commentsHtml}
+                <div id="comments-list-${post.id}">${commentsHtml}</div>
                 <div class="comment-input-row">
-                    <input id="reply-${post.id}" type="text" placeholder="Write a comment...">
-                    <button class="comment-add-btn" onclick="addComment('${post.id}')">➔</button>
+                    <input id="reply-input-${post.id}" type="text" placeholder="${translations[currentLang].writeComment}">
+                    <button class="comment-add-btn" onclick="submitComment('${post.id}')">➔</button>
                 </div>
             </div>
         `;
-        container.appendChild(card);
+        feedContainer.appendChild(card);
     });
 }
 
-function togglePostMenu(id) {
-    const menu = document.getElementById(`menu-${id}`);
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
+function submitComment(postId) {
+    const input = document.getElementById(`reply-input-${postId}`);
+    let text = input.value.trim();
+    if(!text) return;
 
-function deletePost(id) {
-    if (confirm('Энэ постыг устгах уу?')) {
-        posts = posts.filter(p => p.id !== id);
-        localStorage.setItem('cyber_posts', JSON.stringify(posts));
-        renderFeed();
+    let post = allPosts.find(p => p.id === postId);
+    if(post) {
+        post.comments.push({ author: currentUser.username, text: text });
+        let transaction = db.transaction(["posts"], "readwrite");
+        transaction.objectStore("posts").put(post);
+        transaction.oncomplete = function() {
+            input.value = '';
+            loadPostsFromDB();
+        };
     }
 }
 
-function votePost(id) {
-    const post = posts.find(p => p.id === id);
-    if (!post.voters) post.voters = [];
-    
-    if (post.voters.includes(currentUser.username)) {
+function votePost(postId) {
+    let post = allPosts.find(p => p.id === postId);
+    if(!post) return;
+
+    if(!post.voters) post.voters = [];
+
+    if(post.voters.includes(currentUser.username)) {
         post.votes--;
         post.voters = post.voters.filter(v => v !== currentUser.username);
     } else {
         post.votes++;
         post.voters.push(currentUser.username);
     }
-    localStorage.setItem('cyber_posts', JSON.stringify(posts));
-    renderFeed();
+
+    let transaction = db.transaction(["posts"], "readwrite");
+    transaction.objectStore("posts").put(post);
+    transaction.oncomplete = function() {
+        loadPostsFromDB();
+    };
 }
 
-function addComment(id) {
-    const input = document.getElementById(`reply-${id}`);
-    const text = input.value.trim();
-    if (!text) return;
-
-    const post = posts.find(p => p.id === id);
-    post.comments.push({
-        author: currentUser.username,
-        text: text
-    });
-
-    localStorage.setItem('cyber_posts', JSON.stringify(posts));
-    input.value = '';
-    renderFeed();
+function togglePostMenu(id) {
+    let menu = document.getElementById("menu-" + id);
+    if(menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
-// 🔍 ХАЙЛТ СИСТЕМ
+function deletePost(id) {
+    if(!confirm("Are you sure you want to completely incinerate this timeline post?")) return;
+    let transaction = db.transaction(["posts"], "readwrite");
+    transaction.objectStore("posts").delete(id);
+    transaction.oncomplete = function() {
+        loadPostsFromDB();
+    };
+}
+
+function archivePost(id) {
+    let post = allPosts.find(p => p.id === id);
+    if(!post) return;
+    let transaction = db.transaction(["posts", "archive"], "readwrite");
+    transaction.objectStore("posts").delete(id);
+    transaction.objectStore("archive").add(post);
+    transaction.oncomplete = function() {
+        alert("Post secured safely in Archive Vault.");
+        loadPostsFromDB();
+    };
+}
+
+function verifyPost(id) {
+    let post = allPosts.find(p => p.id === id);
+    if(!post) return;
+    post.isVerified = true;
+    let transaction = db.transaction(["posts"], "readwrite");
+    transaction.objectStore("posts").put(post);
+    transaction.oncomplete = function() {
+        loadPostsFromDB();
+    };
+}
+
 function searchPosts() {
-    const query = document.getElementById('search-input').value.toLowerCase();
-    const filtered = posts.filter(p => p.text.toLowerCase().includes(query) || p.author.toLowerCase().includes(query));
-    renderFeed(filtered);
+    let val = document.getElementById('search-input').value.toLowerCase();
+    let matched = allPosts.filter(p => p.text.toLowerCase().includes(val) || p.author.toLowerCase().includes(val));
+    renderFeed(matched);
 }
 
-// 🤝 ХОЛБОГДСОН ИРГЭД (FRIENDS)
-function renderFriends() {
-    const container = document.getElementById('friends-list-container');
-    container.innerHTML = '';
-    
-    users.forEach(u => {
-        if (u.username === currentUser.username) return;
-        const row = document.createElement('div');
-        row.className = `friend-item-row ${activeChatPartner === u.username ? 'active' : ''}`;
-        row.onclick = () => startChat(u.username);
-        row.innerHTML = `
-            <img class="friend-avatar-mini" src="${u.avatar}">
-            <span>${u.username}</span>
-        `;
-        container.appendChild(row);
-    });
+// 🖼️ МЕДИА ФАЙЛУУД УНШИХ
+function handleFileSelect(event, type) {
+    let file = event.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        attachedMedia = e.target.result;
+        attachedMediaType = type;
+
+        document.getElementById('post-media-preview-box').style.display = 'block';
+        let imgTag = document.getElementById('post-image-preview-img');
+        let vidTag = document.getElementById('post-video-preview-vid');
+
+        if(type === 'image') {
+            imgTag.src = attachedMedia; imgTag.style.display = 'block';
+            vidTag.style.display = 'none';
+        } else {
+            vidTag.src = attachedMedia; vidTag.style.display = 'block';
+            imgTag.style.display = 'none';
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
-function startChat(name) {
-    activeChatPartner = name;
+function clearAttachedMedia() {
+    attachedMedia = null; attachedMediaType = null;
+    document.getElementById('post-media-preview-box').style.display = 'none';
+}
+
+// 🤝 ХОЛБОГДСОН ИРГЭД (FRIENDS) БОЛОН ЧАТ
+function loadOnlineCitizens() {
+    let transaction = db.transaction(["users"], "readonly");
+    let store = transaction.objectStore("users");
+    store.getAll().onsuccess = function(e) {
+        let citizens = e.target.result || [];
+        let container = document.getElementById('friends-list-container');
+        container.innerHTML = '';
+
+        citizens.forEach(c => {
+            if(c.username === currentUser.username) return;
+            let div = document.createElement('div');
+            div.className = "friend-item-row" + (selectedFriend === c.username ? " active" : "");
+            div.onclick = () => selectCitizenToChat(c.username);
+            div.innerHTML = `<img class="friend-avatar-mini" src="${c.avatar}"> <span>${c.username}</span>`;
+            container.appendChild(div);
+        });
+    };
+}
+
+function selectCitizenToChat(name) {
+    selectedFriend = name;
     document.getElementById('active-chat-partner').innerText = `💬 Syncing with ${name}`;
-    renderFriends();
-    // Хуурамч чат түүх ачаалах
-    const msgBox = document.getElementById('friends-chat-messages');
-    msgBox.innerHTML = `<div class="msg-row friend-msg"><strong>${name}:</strong> Secure connection built. Say something.</div>`;
+    loadOnlineCitizens();
+    let box = document.getElementById('friends-chat-messages');
+    box.innerHTML = `<div class="msg-row friend-msg"><strong>${name}:</strong> Quantum link stable. Message encryption active.</div>`;
 }
 
 function sendFriendMessage() {
-    const input = document.getElementById('friends-chat-input');
-    const text = input.value.trim();
-    if (!text || !activeChatPartner) return;
+    let input = document.getElementById('friends-chat-input');
+    let text = input.value.trim();
+    if(!text || !selectedFriend) return;
 
-    const msgBox = document.getElementById('friends-chat-messages');
-    msgBox.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${text}</div>`;
+    let box = document.getElementById('friends-chat-messages');
+    box.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${text}</div>`;
     input.value = '';
-    msgBox.scrollTop = msgBox.scrollHeight;
+    box.scrollTop = box.scrollHeight;
 }
 
-// 🤖 FUTURE BOT CHAT
+// 🤖 AI BOT CHAT СИСТЕМ
 function sendDirectMessage() {
-    const input = document.getElementById('bot-input');
-    const text = input.value.trim();
-    if (!text) return;
+    let input = document.getElementById('bot-input');
+    let text = input.value.trim();
+    if(!text) return;
 
-    const container = document.getElementById('chat-container');
-    container.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${text}</div>`;
+    let box = document.getElementById('chat-container');
+    box.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${text}</div>`;
     input.value = '';
+    box.scrollTop = box.scrollHeight;
 
     setTimeout(() => {
-        container.innerHTML += `<div class="msg-row bot"><strong>Future Bot:</strong> Timeline analysis complete. In 2040, your action will trigger quantum leap.</div>`;
-        container.scrollTop = container.scrollHeight;
-    }, 1000);
+        box.innerHTML += `<div class="msg-row bot"><strong>Future Bot:</strong> Processing temporal timeline calculations... Your outcome seems bright.</div>`;
+        box.scrollTop = box.scrollHeight;
+    }, 900);
 }
 
-// ⚙️ PROFILE MODAL SYSTEMS WITH HISTORY
+// ⚙️ PROFILE MODAL SYSTEMS WITH HISTORY (ПРОФАЙЛ ТҮҮХТЭЙ ХЭСЭГ)
 function openProfileModal() {
     document.getElementById('profile-modal').style.display = 'flex';
     document.getElementById('modal-username').value = currentUser.username;
     document.getElementById('modal-avatar').value = currentUser.avatar;
+    modalAttachedAvatar = null;
     renderProfileHistory();
 }
 
@@ -338,23 +550,43 @@ function closeProfileModal() {
     document.getElementById('profile-modal').style.display = 'none';
 }
 
+function handleAvatarFile(e) {
+    let file = e.target.files[0];
+    if(!file) return;
+    let r = new FileReader();
+    r.onload = function(evt) {
+        modalAttachedAvatar = evt.target.result;
+        document.getElementById('modal-avatar').value = "Uploaded File Matrix";
+    };
+    r.readAsDataURL(file);
+}
+
 function saveProfileModal() {
-    const newName = document.getElementById('modal-username').value.trim();
-    const newAvatar = document.getElementById('modal-avatar').value.trim();
+    let newName = document.getElementById('modal-username').value.trim();
+    let textAvatar = document.getElementById('modal-avatar').value.trim();
 
-    if (!newName) return alert('Username cannot be empty!');
+    if(!newName) return;
 
+    let updatedAvatar = modalAttachedAvatar || (textAvatar !== "Uploaded File Matrix" ? textAvatar : currentUser.avatar);
+
+    // Хуучин нэрийг устгаад шинээр баазад хадгалах
+    let transaction = db.transaction(["users"], "readwrite");
+    let store = transaction.objectStore("users");
+    
+    store.delete(currentUser.username);
+    
     currentUser.username = newName;
-    currentUser.avatar = newAvatar || 'Designer.png';
+    currentUser.avatar = updatedAvatar;
 
-    // Update main array
-    users = users.map(u => u.username === currentUser.username ? currentUser : u);
-    localStorage.setItem('cyber_users', JSON.stringify(users));
-    localStorage.setItem('cyber_current_user', JSON.stringify(currentUser));
+    store.put(currentUser);
 
-    alert('Identity Profile Synced!');
-    closeProfileModal();
-    showMainApp();
+    transaction.oncomplete = function() {
+        localStorage.setItem('iknow_logged_user', currentUser.username);
+        alert("Identity Matrix Re-calibrated!");
+        closeProfileModal();
+        refreshProfileUI();
+        loadPostsFromDB();
+    };
 }
 
 // 📝 ПРОФАЙЛ ДОТОР ТҮҮХИЙГ УНШИЖ ХАРУУЛАХ
@@ -363,7 +595,7 @@ function renderProfileHistory() {
     const commentsBox = document.getElementById('profile-comments-history');
 
     // Миний постууд шүүх
-    const myPosts = posts.filter(p => p.author === currentUser.username);
+    const myPosts = allPosts.filter(p => p.author === currentUser.username);
     postsBox.innerHTML = myPosts.length ? myPosts.map(p => `
         <div style="border-bottom:1px solid #222; padding:4px 0; color:#fff;">⚡ ${p.text.substring(0, 40)}...</div>
     `).join('') : '<span style="color:#666;">Пост байхгүй байна.</span>';
@@ -371,29 +603,15 @@ function renderProfileHistory() {
     // Миний сэтгэгдлүүд шүүх
     let myCommentsCount = 0;
     let commentsHtml = '';
-    posts.forEach(p => {
-        p.comments.forEach(c => {
-            if (c.author === currentUser.username) {
-                myCommentsCount++;
-                commentsHtml += `<div style="border-bottom:1px solid #222; padding:4px 0; color:#fff;">💬 ${c.text.substring(0, 40)}... <small style="color:var(--cyber-cyan)">(${p.author}-ий постон дээр)</small></div>`;
-            }
-        });
+    allPosts.forEach(p => {
+        if(p.comments) {
+            p.comments.forEach(c => {
+                if (c.author === currentUser.username) {
+                    myCommentsCount++;
+                    commentsHtml += `<div style="border-bottom:1px solid #222; padding:4px 0; color:#fff;">💬 ${c.text.substring(0, 40)}... <small style="color:var(--cyber-cyan)">(${p.author}-ий постон дээр)</small></div>`;
+                }
+            });
+        }
     });
     commentsBox.innerHTML = myCommentsCount ? commentsHtml : '<span style="color:#666;">Сэтгэгдэл байхгүй байна.</span>';
-}
-
-// 🎨 СЭДЭВ СОЛИХ (THEME TOGGLE)
-function toggleTheme() {
-    const body = document.body;
-    const btn = document.getElementById('theme-btn');
-    if (body.classList.contains('theme-cyber')) {
-        body.className = 'theme-matrix';
-        btn.innerText = '🎨 Theme: Matrix';
-    } else if (body.classList.contains('theme-matrix')) {
-        body.className = 'theme-dark';
-        btn.innerText = '🎨 Theme: Dark';
-    } else {
-        body.className = 'theme-cyber';
-        btn.innerText = '🎨 Theme: Cyber';
-    }
 }
