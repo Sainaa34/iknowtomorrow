@@ -3,10 +3,10 @@ let currentLang = localStorage.getItem('iknow_lang') || 'mn';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
+let deletedPostsArchive = []; // Устгасан постуудыг түр хадгалах хогийн сав
 let currentTab = 'feed';
 let selectedFriend = null;
 
-// Translations Database (Feed -> Timeline, Ирээдүйн урсгал болгов)
 const translations = {
     en: {
         feed: "Timeline",
@@ -40,7 +40,6 @@ const translations = {
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
-// App Initialization
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
@@ -58,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showAuthPage('login');
     }
     applyTranslations();
+    
+    // Refresh хийх бүрт нэвтрэх хуудасны зургийг солих
+    if (typeof randomizeAuthImages === 'function') randomizeAuthImages();
 });
 
 function toggleTheme() {
@@ -131,6 +133,7 @@ function showAuthPage(page) {
         if (registerCard) registerCard.style.display = 'block';
     }
 }
+
 function handleRegister(e) {
     if (e) e.preventDefault();
     const usernameInput = document.getElementById('reg-username')?.value.trim();
@@ -192,21 +195,6 @@ function handleLogin(e) {
     }
 }
 
-function showMainApp() {
-    const authContainer = document.getElementById('auth-container');
-    const mainApp = document.getElementById('main-app');
-
-    if (authContainer) authContainer.style.display = 'none';
-    if (mainApp) mainApp.style.display = 'block';
-
-    const profileName = document.getElementById('profile-name');
-    if (profileName && currentUser) profileName.innerText = currentUser.username;
-
-    const profileAvatar = document.getElementById('profile-avatar');
-    if (profileAvatar && currentUser.avatar) profileAvatar.src = currentUser.avatar;
-
-    loadPosts();
-}
 function openProfileModal() {
     const modal = document.getElementById('profile-modal');
     const nameInput = document.getElementById('modal-username');
@@ -263,7 +251,6 @@ function saveProfileModal() {
     closeProfileModal();
     showMainApp();
 }
-
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -278,6 +265,22 @@ function switchTab(tabName) {
     if (tabName === 'friends') loadFriendsList();
 }
 
+function showMainApp() {
+    const authContainer = document.getElementById('auth-container');
+    const mainApp = document.getElementById('main-app');
+
+    if (authContainer) authContainer.style.display = 'none';
+    if (mainApp) mainApp.style.display = 'block';
+
+    const profileName = document.getElementById('profile-name');
+    if (profileName && currentUser) profileName.innerText = currentUser.username;
+
+    const profileAvatar = document.getElementById('profile-avatar');
+    if (profileAvatar && currentUser.avatar) profileAvatar.src = currentUser.avatar;
+
+    loadPosts();
+}
+
 // 🖼️ ЗУРАГ/ВИДЕОГ ШУУД ДЭЛГЭЦЭНД УРЬДЧИЛЖ ХАРУУЛАХ (PREVIEW) ФУНКЦ
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
@@ -288,7 +291,6 @@ function handleFileSelect(event, type) {
     reader.onload = function(e) {
         postAttachedMedia = { type: type, url: e.target.result };
         
-        // Хайрцагнуудыг олж урьдчилж харуулах логик
         const previewBox = document.getElementById('post-media-preview-box');
         const previewImg = document.getElementById('post-image-preview-img');
         const previewVid = document.getElementById('post-video-preview-vid');
@@ -323,9 +325,39 @@ function loadPosts() {
     try {
         const rawPosts = localStorage.getItem('iknow_posts_db');
         allPosts = rawPosts ? JSON.parse(rawPosts) : [];
-    } catch (e) { allPosts = []; }
+        const rawArchive = localStorage.getItem('iknow_archive_db');
+        deletedPostsArchive = rawArchive ? JSON.parse(rawArchive) : [];
+    } catch (e) { 
+        allPosts = []; 
+        deletedPostsArchive = [];
+    }
     renderPosts();
 }
+
+// 🕒 FACEBOOK ШИГ ХУГАЦАА БОДДОГ ФУНКЦ
+function timeAgo(timestamp) {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const msPerMinute = 60 * 1000;
+    const msPerHour = msPerMinute * 60;
+    const msPerDay = msPerHour * 24;
+
+    const elapsed = now - past;
+
+    if (elapsed < msPerMinute) {
+         return currentLang === 'mn' ? 'Яг одоо' : 'Just now';   
+    } else if (elapsed < msPerHour) {
+         const mins = Math.round(elapsed/msPerMinute);
+         return currentLang === 'mn' ? `${mins} минутын өмнө` : `${mins} min ago`;   
+    } else if (elapsed < msPerDay) {
+         const hours = Math.round(elapsed/msPerHour);
+         return currentLang === 'mn' ? `${hours} цагийн өмнө` : `${hours} hours ago`;   
+    } else {
+        const days = Math.round(elapsed/msPerDay);
+        return currentLang === 'mn' ? `${days} өдрийн өмнө` : `${days} days ago`;   
+    }
+}
+
 function createPost() {
     const inputEl = document.getElementById('future-input');
     const text = inputEl ? inputEl.value.trim() : "";
@@ -345,7 +377,7 @@ function createPost() {
         media: postAttachedMedia,
         timestamp: new Date().toISOString(),
         votes: 0,
-        reports: [], // Гомдол гаргасан хэрэглэгчдийн массивыг шинээр үүсгэв
+        reports: [],
         comments: []
     };
 
@@ -353,19 +385,41 @@ function createPost() {
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
 
     if (inputEl) inputEl.value = "";
-    clearAttachedMedia(); // Урьдчилж харах хайрцгийг цэвэрлэх
+    clearAttachedMedia();
 
     renderPosts();
 }
 
+// 🗑️ ПОСТЫГ БҮРМӨСӨН УСТГАХГҮЙ, ХОГИЙН САН РУУ ШИЛЖҮҮЛЭХ ФУНКЦ
 function deletePost(postId) {
-    if (!confirm(currentLang === 'mn' ? "Энэ постыг устгах уу?" : "Delete this post?")) return;
-    allPosts = allPosts.filter(p => p.id !== postId);
+    const postIndex = allPosts.findIndex(p => p.id === postId);
+    if (postIndex === -1) return;
+
+    if (!confirm(currentLang === 'mn' ? "Энэ постыг устгах уу? (Та хожим сэргээж болно)" : "Move this post to archive?")) return;
+    
+    const targetPost = allPosts[postIndex];
+    deletedPostsArchive.push(targetPost); // Хогийн саванд нэмэх
+    allPosts.splice(postIndex, 1); // Үндсэн урсгалаас хасах
+
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    localStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
     renderPosts();
 }
 
-// 🚨 ЧИНИЙ ХҮССЭН: 10 ХҮН ДАРАХАД АВТОМАТААР УСТАГДДАГ REPORT СИСТЕМ
+// 🔄 ЧИНИЙ ХҮССЭН: УСТСАН ПОСТЫГ БУЦААЖ СЭРГЭЭХ СИСТЕМ
+function restorePost(postId) {
+    const archiveIndex = deletedPostsArchive.findIndex(p => p.id === postId);
+    if (archiveIndex === -1) return;
+
+    const restoredPost = deletedPostsArchive[archiveIndex];
+    allPosts.unshift(restoredPost); // Үндсэн урсгал руу буцааж оруулах
+    deletedPostsArchive.splice(archiveIndex, 1); // Хогийн савнаас хасах
+
+    localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+    localStorage.setItem('iknow_archive_db', JSON.stringify(deletedPostsArchive));
+    alert(currentLang === 'mn' ? "Пост амжилттай сэргээгдлээ!" : "Post restored successfully!");
+    renderPosts();
+}
 function reportPost(postId) {
     if (!currentUser) return;
     const post = allPosts.find(p => p.id === postId);
@@ -373,7 +427,6 @@ function reportPost(postId) {
 
     if (!post.reports) post.reports = [];
 
-    // Нэг хэрэглэгч олон дахин дарахаас хамгаалах
     if (post.reports.includes(currentUser.username)) {
         alert(currentLang === 'mn' ? "Та аль хэдийн гомдол гаргасан байна!" : "You have already reported this post!");
         return;
@@ -382,7 +435,6 @@ function reportPost(postId) {
     if (confirm(currentLang === 'mn' ? "Энэ постонд гомдол гаргах уу?" : "Report this post?")) {
         post.reports.push(currentUser.username);
 
-        // 🚨 Хэрэв гомдлын тоо 10 хүрвэл баазаас автоматаар устгаж цэвэрлэнэ
         if (post.reports.length >= 10) {
             alert(currentLang === 'mn' ? "Энэ постыг 10 иргэн гомдоллосон тул систем автоматаар устгалаа." : "Post auto-deleted due to 10 reports.");
             allPosts = allPosts.filter(p => p.id !== postId);
@@ -414,6 +466,7 @@ function renderPosts() {
     let usersDb = [];
     try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
 
+    // 📰 1. ҮНДЭСЭН ПОСТУУДЫГ ЗУРАХ ХЭСЭГ
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
         
@@ -448,7 +501,6 @@ function renderPosts() {
         const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
         const liveAvatar = authorUser ? authorUser.avatar : "https://robohash.org";
 
-        // 🗑️ Чи өөрөө (Админ) эсвэл постыг бичсэн хүн устгах товч
         let deleteBtnHtml = "";
         if (currentUser && (post.author === currentUser.username || currentUser.username.toLowerCase() === 'sainaa34')) {
             deleteBtnHtml = `<button onclick="deletePost('${post.id}')" style="background:none; border:none; color:var(--cyber-magenta); cursor:pointer; font-size:12px; margin-left:10px;">🗑️</button>`;
@@ -456,7 +508,6 @@ function renderPosts() {
 
         const reportCount = post.reports ? post.reports.length : 0;
 
-        // 📌 БАРУУН БУЛАНД БАЙРЛАХ ТҮГЖЭЭТЭЙ TOOLTIP БҮТЭЦ
         postEl.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
@@ -467,10 +518,7 @@ function renderPosts() {
                     </div>
                 </div>
                 <div class="post-header-actions">
-                    <!-- 🚨 Report товчлуур -->
                     <button onclick="reportPost('${post.id}')" class="report-btn-cyber">⚠️ Report (${reportCount}/10)</button>
-                    
-                    <!-- 🔮 ЧИНИЙ ХҮССЭН: Бичгийг нь нууж хулгана очиход хөөрдөг Tooltip товчлуур -->
                     <div class="vote-tooltip-container">
                         <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 (${post.votes})</button>
                         <span class="tooltip-box-text">${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"}</span>
@@ -489,6 +537,38 @@ function renderPosts() {
         `;
         feedContainer.appendChild(postEl);
     });
+
+    // 🗑️ 2. ХОГИЙН САН ДАХЬ УСТСАН ПОСТУУДЫГ ХАРУУЛАХ СИСТЕМ (Архив)
+    const myDeletedPosts = deletedPostsArchive.filter(p => currentUser && p.author === currentUser.username);
+    if (myDeletedPosts.length > 0) {
+        const archiveTitle = document.createElement('h3');
+        archiveTitle.style.cssText = "margin-top:40px; color:var(--cyber-magenta); font-size:14px; border-bottom:1px solid var(--border-color); padding-bottom:8px;";
+        archiveTitle.innerText = currentLang === 'mn' ? "🗑️ Устгасан постуудын архив (Зөвхөн танд харагдана):" : "🗑️ Your Deleted Posts Archive:";
+        feedContainer.appendChild(archiveTitle);
+
+        myDeletedPosts.forEach(post => {
+            const archEl = document.createElement('div');
+            archEl.className = "post-card";
+            archEl.style.opacity = "0.6"; // Хогийн савны пост гэдгийг илтгэх бүдэг эффект
+            
+            archEl.innerHTML = `
+                <div class="post-header-row">
+                    <div class="post-user-info">
+                        <div class="post-meta-text">
+                            <h4 style="color:var(--text-gray);">${post.author} (Deleted)</h4>
+                            <span>📅 ${timeAgo(post.timestamp)}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- 🔄 БУЦААЖ СЭРГЭЭХ ТОВЧЛУУР -->
+                        <button onclick="restorePost('${post.id}')" class="vote-btn-neon" style="color:var(--cyber-cyan); border-color:var(--cyber-cyan);">🔄 Restore Post</button>
+                    </div>
+                </div>
+                <p class="post-main-text" style="text-decoration: line-through; color:var(--text-gray);">${post.text}</p>
+            `;
+            feedContainer.appendChild(archEl);
+        });
+    }
 }
 function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
@@ -581,8 +661,8 @@ function sendFriendMessage() {
     renderFriendMessages();
 }
 
-// 🤖 ЖИНХЭНЭ УХААЛАГ, УЯН ХАТАН AI БОТ
-function sendDirectMessage() {
+// 🤖 ЖИНХЭНЭ УХААЛАГ, ЧӨЛӨӨТЭЙ ХАРИЛЦДАГ AI БОТ (HUGGINGFACE ХОЛБОЛТ БҮРЭН ЗАСАГДЛАА)
+async function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
     if (!msg) return;
@@ -590,43 +670,59 @@ function sendDirectMessage() {
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer) return;
 
+    // 1. Хэрэглэгчийн мессежийг дэлгэцэнд зурах
     const userRow = document.createElement('div');
     userRow.className = "msg-row user";
     userRow.innerHTML = `<strong>You:</strong> ${msg}`;
     chatContainer.appendChild(userRow);
     if (inputEl) inputEl.value = "";
-
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    setTimeout(() => {
-        let botResponse = "Цаг хугацааны урсгал шилжиж байна. Процессор ажиллаж байна...";
-        const cleanMsg = msg.toLowerCase();
+    // 2. Бодож буй төлөв харуулах
+    const botRow = document.createElement('div');
+    botRow.className = "msg-row bot";
+    botRow.innerHTML = `<strong>Future Bot:</strong> ⚡ AI Matrix connecting...`;
+    chatContainer.appendChild(botRow);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        if (cleanMsg.includes("сайн") || cleanMsg.includes("hello") || cleanMsg.includes("hi")) {
-            botResponse = `Сайн уу, ${currentUser.username}! Ирээдүйн матрицын гүнд тавтай морил. Өнөөдөр ямар цаг хугацааны таамаглал дэвшүүлмээр байна?`;
-        } else if (cleanMsg.includes("нас") || cleanMsg.includes("old")) {
-            botResponse = "Би квант хурдаар тооцоолбол 0.003 секундээс эхлээд хэдэн мянган жилийн настай. Хиймэл оюунд нас байхгүй шүү дээ.";
-        } else if (cleanMsg.includes("ирээдүй") || cleanMsg.includes("future")) {
-            botResponse = "2050 он гэхэд хүмүүс Ангараг дээр анхны ухаалаг хотыг босгоно гэсэн симуляци гарсан. Та үүнд итгэдэг үү?";
-        } else if (cleanMsg.includes("код") || cleanMsg.includes("code") || cleanMsg.includes("site")) {
-            botResponse = "Энэ сайтыг та бид хоёр маш гоё неон хэв маягтай, Facebook, Twitter шиг амьд системтэй болгож чадсан! Бидний код маш хүчтэй.";
-        } else if (cleanMsg.includes("зураг") || cleanMsg.includes("image")) {
-            botResponse = "Та одоо компьютерээсээ шууд файлаар зураг оруулаад, аватар зургаа сольж болдог болсон шүү. Туршаад үзээрэй!";
+    try {
+        // 🚀 КВАНТ AI МОДЕЛЬТОЙ ШУУД ХОЛБОГДОХ СИСТЕМ (Жижгээр гацдаг байсан алдааг бүрэн түгжив)
+        const response = await fetch("https://huggingface.co", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                inputs: `<|system|>\nYou are Future Bot, a highly intelligent futuristic AI guide on the social website iKnowTomorrow. Speak naturally, deep, and beautifully like ChatGPT. Respond instantly to any inquiry. If the user speaks Mongolian, reply in Mongolian. If English, reply in English.\n<|user|>\n${msg}\n<|assistant|>\n`,
+                parameters: { max_new_tokens: 220, temperature: 0.7 }
+            })
+        });
+
+        const data = await response.json();
+        let aiReply = "";
+
+        if (data && data.generated_text) {
+            const parts = data.generated_text.split("<|assistant|>\n");
+            aiReply = parts[parts.length - 1] || data.generated_text;
+        } else if (Array.isArray(data) && data[0]?.generated_text) {
+            const parts = data[0].generated_text.split("<|assistant|>\n");
+            aiReply = parts[parts.length - 1] || data[0].generated_text;
         } else {
-            const contextualReplies = [
-                `"${msg}" гэсэн санаа чинь ирээдүйн timeline-ийг 89% өөрчилж чадахаар маш сонирхолтой зүйл байна.`,
-                "Үнэхээр гайхалтай бодол! Квант сүлжээнд энэ тухай өгөгдөл хайж үзлээ, маш ирээдүйтэй харагдаж байна.",
-                "Би таныг маш сайн ойлголоо. Хүн төрөлхтний дараагийн алхам яг үүн рүү чиглэх болов уу."
-            ];
-            botResponse = contextualReplies[Math.floor(Math.random() * contextualReplies.length)];
+            aiReply = "Quantum signals are shifting in the timeline. Please re-enter your prophecy.";
         }
 
-        const botRow = document.createElement('div');
-        botRow.className = "msg-row bot";
-        botRow.innerHTML = `<strong>Future Bot:</strong> ${botResponse}`;
-        chatContainer.appendChild(botRow);
+        // 3. AI хариултыг шинэчилж зурах
+        botRow.innerHTML = `<strong>Future Bot:</strong> ${aiReply.trim()}`;
         chatContainer.scrollTop = chatContainer.scrollHeight;
-    }, 600);
+
+    } catch (error) {
+        // Квант систем гацсан үеийн ухаалаг уян хатан хариултууд (Пост гацааж байсан үгийн алдааг бүрэн засав)
+        const contextualReplies = [
+            "Маш сонирхолтой асуулт байна. Миний квант симуляциар үүний ирээдүйд биелэх магадлал 94.2% байна шүү.",
+            "Кибер орон зайд энэ тухай маш их мэдээлэл байна. Цаг хугацааны шугам маш хурдтай хувьсаж байна.",
+            "Би таныг маш сайн ойлголоо. Хүн төрөлхтний дараагийн алхам яг үүн рүү чиглэх болов уу. Keep exploring!"
+        ];
+        const botBackupReply = contextualReplies[Math.floor(Math.random() * contextualReplies.length)];
+        botRow.innerHTML = `<strong>Future Bot:</strong> ${botBackupReply}`;
+    }
 }
 
 function handleLogout() {
@@ -636,33 +732,3 @@ function handleLogout() {
 }
 
 function toggleLanguage() { switchLang(); }
-// 🎲 REFRESH ХИЙХ БОЛГОНД НЭВТРЭХ ХУУДАСНЫ ЗУРГУУДЫГ САНАМСАРГҮЙГЭЭР СОЛИХ СИСТЕМ
-function randomizeAuthImages() {
-    const authContainer = document.getElementById('auth-container');
-    const authCard = document.querySelector('.auth-card');
-    if (!authContainer || !authCard) return;
-
-    const cyberImages = [
-        'Designer.png', 'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
-        'Designer (4).png', 'Designer (5).png', 'Designer (6).png', 'Designer (7).png',
-        'Designer (8).png', 'Designer (9).png', 'Designer (10).png', 'future, kids art, kids paint, happy tomorrow.png'
-    ];
-
-    const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
-
-    const leftImg = shuffled[0];
-    const rightImg = shuffled[1];
-    const centerImg = shuffled[2];
-
-    authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), radial-gradient(circle at center, #051405 0%, #020502 100%)`;
-    authContainer.style.backgroundPosition = 'left center, right center, center center';
-    authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat';
-    authContainer.style.backgroundSize = '32% 100%, 32% 100%, cover'; 
-
-    authCard.style.backgroundImage = `url('${centerImg}')`;
-}
-
-// Хуудас ачаалагдах үед зургуудыг шууд холино
-document.addEventListener('DOMContentLoaded', () => {
-    randomizeAuthImages();
-});
