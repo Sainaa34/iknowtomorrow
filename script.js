@@ -487,3 +487,182 @@ function deletePost(id) {
 }
 
 function archivePost(id) {
+let post = allPosts.find(p => p.id === id);
+    if(!post) return;
+    post.isVerified = true;
+    let transaction = db.transaction(["posts"], "readwrite");
+    transaction.objectStore("posts").put(post);
+    transaction.oncomplete = function() {
+        loadPostsFromDB();
+    };
+}
+
+function searchPosts() {
+    let val = document.getElementById('search-input').value.toLowerCase();
+    let matched = allPosts.filter(p => p.text.toLowerCase().includes(val) || p.author.toLowerCase().includes(val));
+    renderFeed(matched);
+}
+
+// 🖼️ MEDIA PREVIEW
+function handleFileSelect(event, type) {
+    let file = event.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        attachedMedia = e.target.result;
+        attachedMediaType = type;
+
+        document.getElementById('post-media-preview-box').style.display = 'block';
+        let imgTag = document.getElementById('post-image-preview-img');
+        let vidTag = document.getElementById('post-video-preview-vid');
+
+        if(type === 'image') {
+            imgTag.src = attachedMedia; imgTag.style.display = 'block';
+            vidTag.style.display = 'none';
+        } else {
+            vidTag.src = attachedMedia; vidTag.style.display = 'block';
+            imgTag.style.display = 'none';
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearAttachedMedia() {
+    attachedMedia = null; attachedMediaType = null;
+    document.getElementById('post-media-preview-box').style.display = 'none';
+}
+
+// 🤝 CHAT SYSTEMS
+function loadOnlineCitizens() {
+    if(!db) return;
+    let transaction = db.transaction(["users"], "readonly");
+    let store = transaction.objectStore("users");
+    store.getAll().onsuccess = function(e) {
+        let citizens = e.target.result || [];
+        let container = document.getElementById('friends-list-container');
+        if(!container) return;
+        container.innerHTML = '';
+
+        citizens.forEach(c => {
+            if(c.username === currentUser.username) return;
+            let div = document.createElement('div');
+            div.className = "friend-item-row" + (selectedFriend === c.username ? " active" : "");
+            div.onclick = () => selectCitizenToChat(c.username);
+            div.innerHTML = `<img class="friend-avatar-mini" src="${c.avatar}"> <span>${c.username}</span>`;
+            container.appendChild(div);
+        });
+    };
+}
+
+function selectCitizenToChat(name) {
+    selectedFriend = name;
+    document.getElementById('active-chat-partner').innerText = `💬 Syncing with ${name}`;
+    loadOnlineCitizens();
+    let box = document.getElementById('friends-chat-messages');
+    box.innerHTML = `<div class="msg-row friend-msg"><strong>${name}:</strong> Quantum link stable. Message encryption active.</div>`;
+}
+
+function sendFriendMessage() {
+    let input = document.getElementById('friends-chat-input');
+    let text = input.value.trim();
+    if(!text || !selectedFriend) return;
+
+    let box = document.getElementById('friends-chat-messages');
+    box.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${text}</div>`;
+    input.value = '';
+    box.scrollTop = box.scrollHeight;
+}
+
+// 🤖 AI BOT
+function sendDirectMessage() {
+    let input = document.getElementById('bot-input');
+    let text = input.value.trim();
+    if(!text) return;
+
+    let box = document.getElementById('chat-container');
+    box.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${text}</div>`;
+    input.value = '';
+    box.scrollTop = box.scrollHeight;
+
+    setTimeout(() => {
+        box.innerHTML += `<div class="msg-row bot"><strong>Future Bot:</strong> Processing temporal timeline calculations... Your outcome seems bright.</div>`;
+        box.scrollTop = box.scrollHeight;
+    }, 900);
+}
+
+// ⚙️ PROFILE SETTINGS
+function openProfileModal() {
+    document.getElementById('profile-modal').style.display = 'flex';
+    document.getElementById('modal-username').value = currentUser.username;
+    document.getElementById('modal-avatar').value = currentUser.avatar;
+    modalAttachedAvatar = null;
+    renderProfileHistory();
+}
+
+function closeProfileModal() {
+    document.getElementById('profile-modal').style.display = 'none';
+}
+
+function handleAvatarFile(e) {
+    let file = e.target.files[0];
+    if(!file) return;
+    let r = new FileReader();
+    r.onload = function(evt) {
+        modalAttachedAvatar = evt.target.result;
+        document.getElementById('modal-avatar').value = "Uploaded File Matrix";
+    };
+    r.readAsDataURL(file);
+}
+
+function saveProfileModal() {
+    let newName = document.getElementById('modal-username').value.trim();
+    let textAvatar = document.getElementById('modal-avatar').value.trim();
+
+    if(!newName) return;
+
+    let updatedAvatar = modalAttachedAvatar || (textAvatar !== "Uploaded File Matrix" ? textAvatar : currentUser.avatar);
+
+    let transaction = db.transaction(["users"], "readwrite");
+    let store = transaction.objectStore("users");
+    
+    store.delete(currentUser.username);
+    
+    currentUser.username = newName;
+    currentUser.avatar = updatedAvatar;
+
+    store.put(currentUser);
+
+    transaction.oncomplete = function() {
+        localStorage.setItem('iknow_logged_user', currentUser.username);
+        alert("Identity Matrix Re-calibrated!");
+        closeProfileModal();
+        refreshProfileUI();
+        loadPostsFromDB();
+    };
+}
+
+function renderProfileHistory() {
+    const postsBox = document.getElementById('profile-posts-history');
+    const commentsBox = document.getElementById('profile-comments-history');
+    if(!postsBox || !commentsBox) return;
+
+    const myPosts = allPosts.filter(p => p.author === currentUser.username);
+    postsBox.innerHTML = myPosts.length ? myPosts.map(p => `
+        <div style="border-bottom:1px solid #222; padding:4px 0; color:#fff;">⚡ ${p.text.substring(0, 40)}...</div>
+    `).join('') : '<span style="color:#666;">Пост байхгүй байна.</span>';
+
+    let myCommentsCount = 0;
+    let commentsHtml = '';
+    allPosts.forEach(p => {
+        if(p.comments) {
+            p.comments.forEach(c => {
+                if (c.author === currentUser.username) {
+                    myCommentsCount++;
+                    commentsHtml += `<div style="border-bottom:1px solid #222; padding:4px 0; color:#fff;">💬 ${c.text.substring(0, 40)}... <small style="color:var(--cyber-cyan)">(${p.author}-ий постон дээр)</small></div>`;
+                }
+            });
+        }
+    });
+    commentsBox.innerHTML = myCommentsCount ? commentsHtml : '<span style="color:#666;">Сэтгэгдэл байхгүй байна.</span>';
+}
