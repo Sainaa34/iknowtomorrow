@@ -97,11 +97,11 @@ body {
     font-size: 0.95rem;
     outline: none;
 }
-
 .auth-card input:focus, .create-post-box textarea:focus, .chat-input-bar input:focus, .modal-form-group input:focus {
     border-color: var(--cyber-cyan);
     box-shadow: 0 0 10px var(--cyber-glow);
 }
+
 .cyber-btn {
     width: 100%;
     background: linear-gradient(90deg, var(--cyber-cyan), var(--cyber-magenta));
@@ -120,12 +120,6 @@ body {
 .cyber-btn:hover {
     box-shadow: 0 0 15px var(--cyber-glow);
     transform: translateY(-1px);
-}
-
-.cyber-btn.guest {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-white);
 }
 
 .toggle-link {
@@ -147,7 +141,7 @@ body {
     letter-spacing: 1px;
 }
 
-/* 🛸 MAIN APP HEADER & LAYOUT */
+/* 🛸 MAIN APP HEADER & LAYOUT WITH TOP EXIT */
 .cyber-header {
     display: flex;
     justify-content: space-between;
@@ -178,6 +172,7 @@ body {
 
 .header-actions {
     display: flex;
+    align-items: center;
     gap: 10px;
 }
 
@@ -193,6 +188,25 @@ body {
 
 .theme-toggle-btn:hover, .lang-toggle-btn:hover {
     border-color: var(--cyber-cyan);
+}
+
+/* 🚪 БАРУУН ДЭЭД БУЛАНГИЙН АЮУЛГҮЙ EXIT ТОВЧИЙН ДИЗАЙН */
+.exit-top-btn {
+    background: rgba(255, 0, 127, 0.1);
+    border: 1px solid rgba(255, 0, 127, 0.3);
+    color: var(--cyber-magenta);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.exit-top-btn:hover {
+    background: var(--cyber-magenta);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
 }
 
 .app-layout {
@@ -245,6 +259,7 @@ body {
     border-color: var(--cyber-cyan);
     color: var(--cyber-cyan);
 }
+
 .side-menu {
     display: flex;
     flex-direction: column;
@@ -273,23 +288,6 @@ body {
 .menu-tab.active {
     border-left: 3px solid var(--cyber-cyan);
 }
-
-.exit-btn-cyber {
-    background: transparent;
-    border: 1px solid rgba(255, 0, 127, 0.15);
-    color: var(--cyber-magenta);
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.85rem;
-}
-
-.exit-btn-cyber:hover {
-    background: rgba(255, 0, 127, 0.05);
-    box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
-}
-
 /* 📰 CENTRAL AREA & POST GENERATION */
 .content-area {
     flex: 1;
@@ -329,6 +327,8 @@ body {
     padding: 0;
     margin: 0;
     font-size: 1rem;
+    color: #fff;
+    outline: none;
 }
 
 .post-actions {
@@ -370,7 +370,8 @@ body {
     cursor: pointer;
     font-size: 0.85rem;
 }
-/* 🔮 TIMELINE POST CARD & SHATALAL REAL EFFECTS */
+
+/* 🔮 TIMELINE POST CARD & SHATALAL EFFECTS */
 .post-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -382,47 +383,40 @@ body {
     overflow: hidden;
 }
 
-/* 🔥 50+ Санал: Жинхэнэ Неон Галт Эффект */
 .post-card.tier-fire {
     border-color: var(--cyber-orange);
     animation: neonFireGlow 2s infinite alternate;
 }
 
-/* ⚡ 500+ Санал: Кибер Цахилгаанжсан Аянгын Эффект */
 .post-card.tier-electric {
     border-color: var(--cyber-cyan);
     animation: neonLightningPulse 1s infinite alternate;
 }
 
-/* 🪐 5000+ Санал: Matrix Асар хүчтэй Супер Гэрэлтэлт */
 .post-card.tier-matrix {
     border-color: #ff00ff;
     animation: neonMatrixHyper 1.5s infinite linear;
 }
 
-/* 🔥 Галт Анимацийн код */
 @keyframes neonFireGlow {
-    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3), inset 0 0 4px rgba(255, 69, 0, 0.1); }
-    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8), inset 0 0 12px rgba(255, 69, 0, 0.3); }
+    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3); }
+    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8); }
 }
 
-/* ⚡ Цахилгаан Анимацийн код */
 @keyframes neonLightningPulse {
     0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); transform: scale(1); }
     100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.9); transform: scale(1.005); }
 }
 
-/* 🪐 Matrix Анимацийн код */
 @keyframes neonMatrixHyper {
     0% { box-shadow: 0 0 15px #ff00ff; filter: hue-rotate(0deg); }
     50% { box-shadow: 0 0 35px #00ffff; }
     100% { box-shadow: 0 0 15px #ff00ff; filter: hue-rotate(360deg); }
 }
 
-/* 📌 ПОСТНЫ БҮТЭЦ: БАРУУН БУЛАНД ЖИЖИГХЭН САНАЛ ХУРААХ */
 .post-header-row {
     display: flex;
-    justify-content: space-between; /* Зүүн талд нэр, баруун буланд санал хураах товч */
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
 }
@@ -450,7 +444,6 @@ body {
     font-size: 0.7rem;
     color: var(--text-gray);
 }
-
 .post-main-text {
     font-size: 0.98rem;
     line-height: 1.45;
@@ -467,22 +460,81 @@ body {
     border: 1px solid var(--border-color);
 }
 
-/* 🔮 БАРУУН БУЛАНГИЙН ЖИЖИГХЭН САНАЛ ӨГӨХ ТОВЧ */
+/* 📊 ПОСТНЫ БАРУУН ДЭЭД ХЭСЭГТ БАЙРЛАХ ТОВЧНУУД */
+.post-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 🔮 ЧИНИЙ ХҮССЭН TWITTER/FACEBOOK ШИГ ХӨӨРДӨГ TOOLTIP ЭФФЕКТ */
+.vote-tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
 .vote-btn-neon {
     background: #14141e;
     border: 1px solid var(--border-color);
     color: var(--cyber-yellow);
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     transition: all 0.2s;
 }
 
 .vote-btn-neon:hover {
     border-color: var(--cyber-yellow);
+    background: rgba(255, 204, 0, 0.05);
+}
+
+/* 🎈 Хулгана очиход гарч ирэх бүдгэвтэр неон бичиг (Tooltip Text) */
+.vote-tooltip-container .tooltip-box-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgba(13, 13, 18, 0.95);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%; /* Дээшээ хөөрч гарах байрлал */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    font-size: 0.75rem;
+    border: 1px solid var(--cyber-yellow);
     box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
+    pointer-events: none; /* Хулганы хөдөлгөөнд саад болохгүй */
+}
+
+/* 🔥 Хулгана ирэхэд Tooltip-ийг харуулах хэсэг */
+.vote-tooltip-container:hover .tooltip-box-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(-3px); /* Үл мэдэг дээшээ хөөрөх хөдөлгөөн */
+}
+
+/* 🚨 REPORT (ГОМДОЛЛОХ) ТОВЧНЫ ДИЗАЙН */
+.report-btn-cyber {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-gray);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.report-btn-cyber:hover {
+    color: #ff3333;
+    border-color: rgba(255, 51, 51, 0.2);
+    background: rgba(255, 51, 51, 0.05);
 }
 /* 💬 COMMENTS LOG SYSTEM */
 .comments-section {
@@ -662,7 +714,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* 👤 MODALPOPUP INTERFACE */
+/* 👤 MODAL POPUP INTERFACE */
 .cyber-modal-overlay {
     position: fixed;
     top: 0;
