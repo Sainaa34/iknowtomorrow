@@ -22,70 +22,81 @@ const translations = {
 };
 
 let currentLang = localStorage.getItem('iknow_lang') || 'mn';
-let attachedMediaBase64 = "", attachedMediaType = "", selectedTagFilter = "", globalSearchQuery = "", messageCount = 0, isHeadacheMode = false, headacheTimeout = null;
+let attachedMediaBase64 = ""; let attachedMediaType = ""; 
+let selectedTagFilter = ""; let globalSearchQuery = "";
 
-const secretKeywords = ["2026", "хөлөг", "тархи", "сансар", "зүүд", "хиймэл", "энерги", "цаг хугацаа", "сайнаа"], bannedKeywords = ["porn", "порно", "секс", "sex", "казино", "casino", "мөрийтэй", "1xbet"], allAvailableTags = ["ai", "aliens", "dreams", "future", "technology"];
+const secretKeywords = ["2026", "хөлөг", "тархи", "сансар", "зүүд", "хиймэл", "энерги", "цаг хугацаа", "сайнаа"];
+const bannedKeywords = ["porn", "порно", "секс", "sex", "казино", "casino", "мөрийтэй", "1xbet", "pussy", "dick", "хөх", "боожгой"];
+const allAvailableTags = ["ai", "aliens", "dreams", "future", "technology", "cyborg", "space"];
+
+let messageCount = 0; let isHeadacheMode = false; let headacheTimeout = null;
 
 const initialFriends = [
     { id: "amaraa", name: "Amaraa [Cyber-Medic]", isFriend: false, avatar: "https://placeholder.com" },
-    { id: "zorigoo", name: "Zorigoo [Alien Hunter]", isFriend: false, avatar: "https://placeholder.com" }
+    { id: "zorigoo", name: "Zorigoo [Alien Hunter]", isFriend: false, avatar: "https://placeholder.com" },
+    { id: "unknown", name: "Unknown Cyborg", isFriend: false, avatar: "https://placeholder.com" }
 ];
-// ЖИНХЭНЭ АККАУНТ СИСТЕМ (SIGN UP / LOGIN)
+// 🔒 ЖИНХЭНЭ АККАУНТ СИСТЕМ (ХУУЧИН СИСТЕМТЭЙ ТӨГС ХОЛБОГДОВ)
 let currentUser = localStorage.getItem('iknow_current_user') || "";
 
 function checkAuth() {
+    const overlay = document.getElementById('authOverlay');
     if (!currentUser) {
-        // Хэрэв нэвтрээгүй бол дэлгэцийг бүрэн хааж нэвтрэх цонх гаргана
-        document.body.innerHTML = `
-            <div style="background:#12161a; color:#fff; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans',sans-serif;">
-                <div style="background:#1a1f26; border:1px solid #ffb703; padding:30px; border-radius:16px; box-shadow:0 0 20px rgba(255,183,3,0.15); width:320px; text-align:center;">
-                    <h1 style="font-family:'Fredoka',cursive; color:#ffb703; margin:0 0 10px 0; font-size:1.8rem;">iknowtomorrow</h1>
-                    <p style="font-size:0.85rem; color:#a0a5b0; margin-bottom:25px;">🔒 ИРЭЭДҮЙН ИРГЭНИЙ НЭВТРЭХ СҮЛЖЭЕ</p>
-                    
-                    <input type="text" id="authUsername" placeholder="Иргэний нэр (Username)" style="width:100%; padding:10px 15px; margin-bottom:12px; background:#12161a; border:1px solid #242b35; border-radius:8px; color:#fff; box-sizing:border-box; outline:none;">
-                    <input type="password" id="authPassword" placeholder="Нууц үг (Password)" style="width:100%; padding:10px 15px; margin-bottom:20px; background:#12161a; border:1px solid #242b35; border-radius:8px; color:#fff; box-sizing:border-box; outline:none;">
-                    
-                    <button onclick="handleLogin()" style="width:100%; background:#ffb703; color:#000; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; margin-bottom:10px;">НЭВТРЭХ / LOGIN</button>
-                    <button onclick="handleSignUp()" style="width:100%; background:transparent; color:#ffb703; border:1px solid #ffb703; padding:11px; border-radius:8px; font-weight:bold; cursor:pointer;">ШИНЭЭР БҮРТГҮҮЛЭХ</button>
-                </div>
-            </div>`;
+        if (overlay) overlay.style.display = 'flex';
         return false;
     }
+    if (overlay) overlay.style.display = 'none';
     return true;
 }
 
 function handleSignUp() {
     const u = document.getElementById('authUsername').value.trim();
     const p = document.getElementById('authPassword').value.trim();
-    if(!u || !p) { alert("Нэр нууц үгээ оруулна уу, андаа!"); return; }
     
-    let users = JSON.parse(localStorage.getItem('iknow_users_db')) || {};
-    if(users[u]) { alert("Энэ нэр аль хэдийн бүртгэгдсэн байна!"); return; }
+    if (!u || !p) {
+        alert("Нэр болон нууц үгээ оруулна уу, андаа!");
+        return;
+    }
     
-    users[u] = p;
-    localStorage.setItem('iknow_users_db', JSON.stringify(users));
-    alert("🎉 Амжилттай бүртгэгдлээ! Одоо нэвтрэх товчийг дараарай.");
+    let usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || {};
+    
+    if (usersDb[u]) {
+        alert("🚨 Энэ иргэний нэр аль хэдийн бүртгэгдсэн байна! Өөр нэр сонгоно уу.");
+        return;
+    }
+    
+    usersDb[u] = p;
+    localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
+    alert("🎉 Амжилттай бүртгэгдлээ, андаа! Одоо нэр, нууц үгээрээ НЭВТРЭХ товчийг дарж орно уу.");
 }
 
 function handleLogin() {
     const u = document.getElementById('authUsername').value.trim();
     const p = document.getElementById('authPassword').value.trim();
-    let users = JSON.parse(localStorage.getItem('iknow_users_db')) || {"Sainaa": "1234"};
     
-    if(users[u] && users[u] === p) {
+    if (!u || !p) {
+        alert("Нэр болон нууц үгээ оруулна уу!");
+        return;
+    }
+    
+    let usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || { "Sainaa": "1234" };
+    
+    if (usersDb[u] && usersDb[u] === p) {
         localStorage.setItem('iknow_current_user', u);
-        location.reload(); // Хуудсыг шинэчилж нэвтрүүлнэ
+        alert(`🔮 Тавтай морил, Иргэн ${u}! Системд нэвтэрч байна...`);
+        location.reload();
     } else {
-        alert("Нэр эсвэл нууц үг буруу байна, андаа!");
+        alert("🚨 Уучлаарай, нэр эсвэл нууц үг буруу байна, андаа!");
     }
 }
 
 function logoutAction() {
-    localStorage.removeItem('iknow_current_user');
-    location.reload();
+    if (confirm("Системээс гарах уу, андаа?")) {
+        localStorage.removeItem('iknow_current_user');
+        location.reload();
+    }
 }
 document.addEventListener('DOMContentLoaded', () => {
-    // Нэвтрэлт шалгах логик
     if (!checkAuth()) return;
     
     updateLanguageUI();
@@ -98,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadOnlineStatus();
     loadCustomSiteTheme();
     
-    // Системийн нэрийг нэвтэрсэн хэрэглэгчээр солих
     document.getElementById('sidebarName').innerText = currentUser;
     document.getElementById('profileName').innerText = currentUser;
     if(document.getElementById('currentUserLabel')) {
@@ -146,7 +156,6 @@ function updateLanguageUI() {
     document.getElementById('themeSelectLabel').innerText = t.themeSelectLabel;
     document.getElementById('globalSearchInput').placeholder = t.globalSearchPlaceholder;
     
-    // 🔮 Ирээдүйг зөгнөгч магистрын үгийг орчуулгад бүрэн холбов!
     document.getElementById('profileTitleText').innerText = t.profileTitleText;
     
     renderFriendsList();
@@ -211,10 +220,9 @@ function createPost() {
     }
     if(!content && !attachedMediaBase64) return;
 
-    // Пост оруулахад user-ийг currentUser (нэвтэрсэн хүн) болгов!
     const newPost = { 
         id: Date.now(), 
-        user: currentUser, 
+        user: currentUser, // Пост оруулагчийг нэвтэрсэн хэрэглэгчээр хадгална
         content: content, 
         timestamp: Date.now(), 
         reactions: { likes: [], wows: [], omgs: [] }, 
@@ -300,7 +308,7 @@ function triggerSpecialEffect(id, type) {
     const idx = posts.findIndex(p => p.id === id);
     if (idx !== -1) {
         if (!posts[idx].effects) posts[idx].effects = { fulfilled: 0, confirmed: 0, sight: 0 };
-        posts[idx].effects[type] += 1;
+        posts[idx].effects[type] += 1; // Туршилтын горимд 1 хүн хязгааргүй нэмж дарж болно
         localStorage.setItem('iknow_posts', JSON.stringify(posts));
         renderPosts();
     }
@@ -506,7 +514,6 @@ function loadChats() {
     const cm = document.getElementById('chatMessages');
     if (!cm || !p) return;
     cm.innerHTML = '';
-    
     if (document.getElementById('robotSyncPanel')) {
         document.getElementById('robotSyncPanel').style.display = p.includes("Bot") ? "block" : "none";
     }
@@ -531,6 +538,10 @@ function sendDirectMessage() {
     const p = document.getElementById('chatPartner').value;
     let all = JSON.parse(localStorage.getItem('iknow_chats')) || {};
     
+    if (bannedKeywords.some(word => txt.toLowerCase().includes(word))) {
+        alert("Хууль бус үг илгээж болохгүй!");
+        return;
+    }
     if (!all[p]) all[p] = [];
     all[p].push({ sender: 'me', text: txt });
     localStorage.setItem('iknow_chats', JSON.stringify(all));
@@ -601,9 +612,7 @@ function updateSyncUI() {
     if (fill) fill.style.width = percentage + "%";
 }
 
-function loadCustomSiteTheme() {
-    applySiteCustomTheme();
-}
+function loadCustomSiteTheme() { applySiteCustomTheme(); }
 
 function applySiteCustomTheme() {
     const theme = document.getElementById('siteThemeSelect')?.value || localStorage.getItem('iknow_site_theme') || 'default';
