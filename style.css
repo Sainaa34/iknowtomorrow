@@ -56,8 +56,46 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(rgba(5, 5, 8, 0.85), rgba(5, 5, 8, 0.85)), url('https://unsplash.com') no-repeat center center/cover;
     padding: 20px;
+    position: relative;
+    overflow: hidden;
+    /* 🌌 Цаана нь харагдах үндсэн неон гүн ногоон суурь өнгө */
+    background: radial-gradient(circle at center, #081a08 0%, #030703 100%);
+}
+
+/* 🪐 ЧИНИЙ ОРУУЛСАН БҮХ ЗУРГУУДЫГ ХАДНЫ ЦААС ШИГ ЭВЛҮҮЛЖ ХАРУУЛАХ СҮЛЖЭЭ (CSS GRID) */
+#auth-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    /* 🪐 Чиний GitHub-д оруулсан яг тэр нэрнүүдээр 12 зургийг давхарлаж уяв */
+    background-image: 
+        url('Designer.png'), url('Designer (1).png'), url('Designer (2).png'), url('Designer (3).png'),
+        url('Designer (4).png'), url('Designer (5).png'), url('Designer (6).png'), url('Designer (7).png'),
+        url('Designer (8).png'), url('Designer (9).png'), url('Designer (10).png'), url('future, kids art, kids paint, happy tomorrow.png');
+    
+    /* Зургуудыг дэлгэц дүүрэн байнга давтаж, мозайк шиг жижиг хэсгүүдээр харуулна */
+    background-repeat: repeat;
+    /* Жижиг зургуудын харагдах хэмжээ (Зургуудыг жижиг неон тэмдэг шиг гоё харагдуулна) */
+    background-size: 160px auto; 
+    /* 🌟 Зургуудыг тас хар харагдуулахгүй, дээрээс нь неон ногоон манан татаж уусгах эффект */
+    opacity: 0.25; 
+    filter: saturate(1.2) contrast(1.1);
+    pointer-events: none;
+}
+
+/* 🔐 Голын нэвтрэх хайрцаг нь ард талын зургууддаа дарагдахгүй, тод гадаргуу дээр гарах хамгаалалт */
+.auth-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(5, 15, 5, 0.92); /* Ард талын зургийг үл мэдэг нэвт харуулна (Blur) */
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--cyber-cyan);
+    box-shadow: 0 0 35px rgba(0, 255, 102, 0.2);
 }
 
 .auth-card {
