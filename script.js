@@ -2,8 +2,6 @@
 let currentLang = localStorage.getItem('iknow_lang') || 'en';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
-let allPosts = [];
-let db = null; 
 
 // Translations Database
 const translations = {
@@ -13,143 +11,92 @@ const translations = {
 
 const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "пизда"];
 
-// 🔄 Window Load
+// 🔄 Window Load - Шууд ажиллана, бааз хүлээхгүй
 window.onload = function() {
-    initIndexedDB();
+    setupFormListeners();
     setupPasswordToggles();
+    checkLoginStatus();
 };
 
-// Цонх солих функц (Давхцлыг арилгана)
 function showAuthPage(type) {
-    const loginCard = document.getElementById('login-card');
-    const registerCard = document.getElementById('register-card');
-    
-    if (type === 'register') {
-        if(loginCard) loginCard.style.display = 'none';
-        if(registerCard) registerCard.style.display = 'block';
-    } else {
-        if(loginCard) loginCard.style.display = 'block';
-        if(registerCard) registerCard.style.display = 'none';
-    }
-}
-
-// 📦 INDEXEDDB СУУРИЛУУЛАХ БОЛОН ШАЛГАХ
-function initIndexedDB() {
-    const request = indexedDB.open("iKnowTomorrowDB", 3);
-    
-    request.onerror = function() {
-        showAuthPage('login');
-    };
-
-    request.onsuccess = function(e) {
-        db = e.target.result;
-        setupFormListeners(); 
-        
-        let loggedName = localStorage.getItem('iknow_logged_user');
-        if(loggedName) {
-            let tx = db.transaction(["users"], "readonly");
-            tx.objectStore("users").get(loggedName).onsuccess = function(event) {
-                if(event.target.result) {
-                    currentUser = event.target.result;
-                    showMainApp();
-                } else { 
-                    showAuthPage('login'); 
-                }
-            };
-        } else { 
-            showAuthPage('login'); 
-        }
-    };
-    
-    request.onupgradeneeded = function(e) {
-        let dbInstance = e.target.result;
-        if (!dbInstance.objectStoreNames.contains("users")) dbInstance.createObjectStore("users", { keyPath: "username" });
-        if (!dbInstance.objectStoreNames.contains("posts")) dbInstance.createObjectStore("posts", { keyPath: "id" });
-    };
+    document.getElementById('login-card').style.display = type === 'register' ? 'none' : 'block';
+    document.getElementById('register-card').style.display = type === 'register' ? 'block' : 'none';
 }
 
 // 🎮 ФОРМ СОНСОХ ХЭСЭГ
 function setupFormListeners() {
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-
-    if(loginForm) {
-        loginForm.onsubmit = function(e) {
-            e.preventDefault();
-            handleLogin();
-        };
-    }
-    if(registerForm) {
-        registerForm.onsubmit = function(e) {
-            e.preventDefault();
-            handleRegister();
-        };
-    }
+    document.getElementById('login-form').onsubmit = function(e) {
+        e.preventDefault();
+        handleLogin();
+    };
+    document.getElementById('register-form').onsubmit = function(e) {
+        e.preventDefault();
+        handleRegister();
+    };
 }
 
 // 👀 PASSWORD TOGGLE
 function setupPasswordToggles() {
-    const toggleLogin = document.getElementById('toggleLoginPassword');
-    const toggleReg = document.getElementById('toggleRegPassword');
-
-    if(toggleLogin) {
-        toggleLogin.onclick = function() {
-            let input = document.getElementById('login-password');
-            input.type = input.type === 'password' ? 'text' : 'password';
-            this.classList.toggle('fa-eye-slash');
-        };
-    }
-    if(toggleReg) {
-        toggleReg.onclick = function() {
-            let input = document.getElementById('reg-password');
-            input.type = input.type === 'password' ? 'text' : 'password';
-            this.classList.toggle('fa-eye-slash');
-        };
-    }
+    document.getElementById('toggleLoginPassword').onclick = function() {
+        let input = document.getElementById('login-password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+        this.classList.toggle('fa-eye-slash');
+    };
+    document.getElementById('toggleRegPassword').onclick = function() {
+        let input = document.getElementById('reg-password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+        this.classList.toggle('fa-eye-slash');
+    };
 }
 
-// 🔑 БҮРТГҮҮЛЭХ
+// 🔑 БҮРТГҮҮЛЭХ (localStorage ашиглав)
 function handleRegister() {
-    if(!db) return;
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
     if(!u || !p) return;
 
-    let tx = db.transaction(["users"], "readwrite");
-    let store = tx.objectStore("users");
+    let users = JSON.parse(localStorage.getItem('iknow_users') || '{}');
     
-    store.get(u).onsuccess = function(e) {
-        if(e.target.result) {
-            alert("Username already exists!");
-        } else {
-            store.add({ username: u, password: p, avatar: 'Designer.png' }).onsuccess = function() {
-                alert("Registration Successful!");
-                document.getElementById('register-form').reset();
-                showAuthPage('login');
-            };
-        }
-    };
+    if(users[u]) {
+        alert("Username already exists!");
+    } else {
+        users[u] = { username: u, password: p, avatar: 'Designer.png' };
+        localStorage.setItem('iknow_users', JSON.stringify(users));
+        alert("Registration Successful!");
+        document.getElementById('register-form').reset();
+        showAuthPage('login');
+    }
 }
 
-// 🔑 НЭВТРЭХ
+// 🔑 НЭВТРЭХ (localStorage ашиглав)
 function handleLogin() {
-    if(!db) return;
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
     if(!u || !p) return;
 
-    let tx = db.transaction(["users"], "readonly");
-    tx.objectStore("users").get(u).onsuccess = function(e) {
-        let user = e.target.result;
-        if(user && user.password === p) {
-            currentUser = user;
-            localStorage.setItem('iknow_logged_user', u);
-            document.getElementById('login-form').reset();
-            showMainApp();
-        } else {
-            alert("Invalid Username or Password!");
-        }
-    };
+    let users = JSON.parse(localStorage.getItem('iknow_users') || '{}');
+    let user = users[u];
+
+    if(user && user.password === p) {
+        currentUser = user;
+        localStorage.setItem('iknow_logged_user', u);
+        document.getElementById('login-form').reset();
+        showMainApp();
+    } else {
+        alert("Invalid Username or Password!");
+    }
+}
+
+function checkLoginStatus() {
+    let loggedName = localStorage.getItem('iknow_logged_user');
+    let users = JSON.parse(localStorage.getItem('iknow_users') || '{}');
+    
+    if(loggedName && users[loggedName]) {
+        currentUser = users[loggedName];
+        showMainApp();
+    } else {
+        showAuthPage('login');
+    }
 }
 
 function handleLogout() {
@@ -167,7 +114,7 @@ function showMainApp() {
     updateLanguageUI();
     document.getElementById('profile-name').innerText = currentUser.username;
     document.getElementById('profile-avatar').src = currentUser.avatar;
-    loadPostsFromDB();
+    renderFeed();
 }
 
 // 🔀 LANG & THEME
@@ -202,31 +149,27 @@ function switchTab(tab) {
     document.getElementById(tab + '-btn').classList.add('active');
 }
 
-// 📝 POSTS SYSTEM
-function loadPostsFromDB() {
-    if (!db) return;
-    db.transaction(["posts"], "readonly").objectStore("posts").getAll().onsuccess = function(e) {
-        allPosts = e.target.result || [];
-        allPosts.sort((a,b) => b.timestamp - a.timestamp);
-        renderFeed(allPosts);
-    };
-}
-
+// 📝 POSTS SYSTEM (localStorage)
 function createPost() {
     const input = document.getElementById('future-input');
     if(!input.value) return;
     if(bannedKeywords.some(w => input.value.toLowerCase().includes(w))) { alert(translations[currentLang].bannedWordAlert); return; }
 
-    let newPost = { id: "post_" + Date.now(), author: currentUser.username, avatar: currentUser.avatar, text: input.value, timestamp: Date.now(), comments: [] };
+    let posts = JSON.parse(localStorage.getItem('iknow_posts') || '[]');
+    let newPost = { id: "post_" + Date.now(), author: currentUser.username, avatar: currentUser.avatar, text: input.value, timestamp: Date.now() };
     
-    db.transaction(["posts"], "readwrite").objectStore("posts").add(newPost).onsuccess = function() {
-        input.value = ''; loadPostsFromDB();
-    };
+    posts.unshift(newPost);
+    localStorage.setItem('iknow_posts', JSON.stringify(posts));
+    input.value = ''; 
+    renderFeed();
 }
 
-function renderFeed(posts) {
+function renderFeed() {
     const container = document.getElementById('feed-container');
     if(!container) return; container.innerHTML = '';
+    
+    let posts = JSON.parse(localStorage.getItem('iknow_posts') || '[]');
+    
     posts.forEach(p => {
         let card = document.createElement('div');
         card.className = "post-card tier-electric";
@@ -248,7 +191,12 @@ function renderFeed(posts) {
 }
 
 function deletePost(id) {
-    if(confirm("Delete post?")) db.transaction(["posts"], "readwrite").objectStore("posts").delete(id).onsuccess = () => loadPostsFromDB();
+    if(confirm("Delete post?")) {
+        let posts = JSON.parse(localStorage.getItem('iknow_posts') || '[]');
+        posts = posts.filter(p => p.id !== id);
+        localStorage.setItem('iknow_posts', JSON.stringify(posts));
+        renderFeed();
+    }
 }
 
 // 🤖 AI BOT
