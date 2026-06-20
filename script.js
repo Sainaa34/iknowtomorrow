@@ -653,9 +653,10 @@ function randomizeAuthImages() {
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
     // Зүүн, баруун, голын зургуудыг санамсаргүйгээр хуваарилах
-    const leftImg = shuffled[0];
-    const rightImg = shuffled[1];
-    const centerImg = shuffled[2];
+    const leftImg = shuffled;
+    const rightImg = shuffled;
+    const centerImg = shuffled;
+
 
     // CSS стилийг динамикаар шууд шахаж өгөх
     authContainer.style.backgroundImage = `url('${leftImg}'), url('${rightImg}'), radial-gradient(circle at center, #051405 0%, #020502 100%)`;
