@@ -3,69 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iKnowTomorrow - International Cyber Timeline</title>
+    <title>iKnowTomorrow - Cyber Timeline</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-cyber">
 
-    <!-- 🔐 AUTHENTICATION INTERFACE (Facebook & Twitter Hybrid Style) -->
+    <!-- 🔐 AUTH PAGE (GLOBAL CITIZEN LOGIN SYSTEM) -->
     <div id="auth-container">
-        <!-- LOGIN SECTION -->
         <div id="login-card" class="auth-card">
             <h1>iKnowTomorrow</h1>
             <p class="subtitle">🛸 GLOBAL TIMELINE CITIZEN LOGIN</p>
             <form onsubmit="handleLogin(event)">
-                
-                
-                <!-- 👁️ ЧИНИЙ ХҮССЭН: НУУЦ ҮГИЙГ ХАРЖ, НУУЖ БОЛДОГ УХААЛАГ НҮД -->
+                <input id="login-username" type="text" placeholder="Username" required>
                 <div class="password-wrapper" style="position: relative; width: 100%;">
                     <input id="login-password" type="password" placeholder="Temporal Access Key (Password)" required style="width: 100%; padding-right: 40px;">
                     <span class="password-toggle-eye" onclick="togglePasswordVisibility('login-password')" style="position: absolute; right: 12px; top: 12px; cursor: pointer; color: var(--cyber-cyan); font-size: 14px; user-select: none;">👁️</span>
                 </div>
-
-                <button type="submit" class="cyber-btn">ACCESS TIMELINE</button>
+                <button type="submit" class="cyber-btn">LOGIN</button>
             </form>
-            <button onclick="showAuthPage('register')" class="toggle-link">Initialize New Identity? Register Here</button>
+            <button onclick="showAuthPage('register')" class="toggle-link">Don't have an account? Register here</button>
         </div>
 
-        <!-- REGISTER SECTION -->
         <div id="register-card" class="auth-card" style="display: none;">
-            <h1>Create Quantum Profile</h1>
-            <p class="subtitle">⚡ CHOOSE YOUR SOCIAL IDENTITY</p>
+            <h1>Create Account</h1>
+            <p class="subtitle">⚡ INITIALIZE NEW IDENTITY</p>
             <form onsubmit="handleRegister(event)">
-                <input id="reg-username" type="text" placeholder="Create Unique Username" required>
-                
-                <!-- 👁️ БҮРТГҮҮЛЭХ ХЭСЭГТ МӨН ИЖИЛХЭН НУУЦ ҮГ ХАРАХ ТОГТОЛЦОО СУУЛГАВ -->
+                <input id="reg-username" type="text" placeholder="Choose Username" required>
                 <div class="password-wrapper" style="position: relative; width: 100%;">
                     <input id="reg-password" type="password" placeholder="Create Access Key" required style="width: 100%; padding-right: 40px;">
                     <span class="password-toggle-eye" onclick="togglePasswordVisibility('reg-password')" style="position: absolute; right: 12px; top: 12px; cursor: pointer; color: var(--cyber-cyan); font-size: 14px; user-select: none;">👁️</span>
                 </div>
-
-                <button type="submit" class="cyber-btn">GENERATE CYBER IDENTITY</button>
+                <button type="submit" class="cyber-btn">REGISTER NEW IDENTITY</button>
             </form>
-            <button onclick="showAuthPage('login')" class="toggle-link">Already Synced? Return to Login</button>
+            <button onclick="showAuthPage('login')" class="toggle-link">Already have an account? Login here</button>
         </div>
     </div>
 
-    <!-- 🛸 MAIN GLOBAL TIMELINE APPLICATION -->
+    <!-- 🛸 MAIN APPLICATION -->
     <div id="main-app" style="display: none;">
         <header class="cyber-header">
             <div class="header-left">
                 <span class="logo-neon">iKnowTomorrow</span>
-                <span class="timeline-badge">⚡ GLOBAL NETWORK</span>
+                <span class="timeline-badge">⚡ CYBER TIMELINE</span>
             </div>
             <div class="header-actions">
                 <button id="theme-btn" onclick="toggleTheme()" class="theme-toggle-btn">🎨 Theme: Cyber</button>
                 <button id="lang-btn" onclick="switchLang()" class="lang-toggle-btn">English</button>
-                <button onclick="handleLogout()" class="exit-top-btn">🚪 Exit Network</button>
+                <button onclick="handleLogout()" class="exit-top-btn">🚪 Exit</button>
             </div>
         </header>
         <div class="app-layout">
-            <!-- 🎛️ SIDE NAV / GLOBAL PROFILE -->
+            <!-- 🎛️ SIDE NAV / PROFILE -->
             <aside class="sidebar">
                 <div class="profile-box">
                     <img id="profile-avatar" class="user-avatar-main" src="" alt="avatar">
-                    <h3 id="profile-name">Connecting Network...</h3>
+                    <h3 id="profile-name">Connecting...</h3>
                     <button onclick="openProfileModal()" class="edit-profile-btn">⚙️ Profile Settings</button>
                 </div>
 
@@ -76,65 +68,65 @@
                 </nav>
             </aside>
 
-            <!-- 📰 CENTRAL NETWORK FEED -->
+            <!-- 📰 CENTRAL CONTENT AREA -->
             <main class="content-area">
                 
-                <!-- 🔍 GLOBAL SEARCH -->
+                <!-- 🔍 SEARCH TIMELINE -->
                 <div class="search-wrapper">
-                    <input id="search-input" type="text" placeholder="Search Global Network Timeline..." oninput="searchPosts()">
+                    <input id="search-input" type="text" placeholder="Search Timeline..." oninput="searchPosts()">
                 </div>
 
-                <!-- 📝 TAB: TIMELINE & MULTIMEDIA PREVIEW -->
+                <!-- 📝 TAB: TIMELINE (ПОСТ ОРУУЛАХ БА УРЬДЧИЛЖ ХАРУУЛАХ ХАЙРЦАГ) -->
                 <div id="tab-feed" class="tab-content">
                     <div class="create-post-box">
-                        <textarea id="future-input" placeholder="What will happen in the future? Share with international citizens..."></textarea>
+                        <textarea id="future-input" placeholder="What will happen in the future? Share here..."></textarea>
                         
-                        <!-- 🖼️ ЧИНИЙ ХҮССЭН: ЗУРАГ/ВИДЕОГ ШУУД ЖИЖГЭЭР УРЬДЧИЛЖ ХАРУУЛАХ НЕОН ХАЙРЦАГ -->
-                        <div id="post-media-preview-box" style="display: none; position: relative; margin-top: 5px; border: 2px solid var(--cyber-cyan); border-radius: 8px; overflow: hidden; max-height: 180px; background: #000; box-shadow: 0 0 15px var(--cyber-glow);">
-                            <img id="post-image-preview-img" style="width: 100%; height: 176px; object-fit: contain; display: none;">
-                            <video id="post-video-preview-vid" style="width: 100%; height: 176px; object-fit: contain; display: none;" controls></video>
-                            <button onclick="clearAttachedMedia()" style="position: absolute; top: 8px; right: 8px; background: var(--cyber-magenta); border: none; color: #fff; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; font-size: 12px; box-shadow: 0 0 8px rgba(255,0,127,0.5);">X</button>
+                        <!-- 🖼️ ЗУРАГ УРЬДЧИЛЖ ХАРУУЛАХ НЕОН ХАЙРЦАГ -->
+                        <div id="post-media-preview-box" style="display: none; position: relative; margin-top: 5px; border: 2px solid var(--cyber-cyan); border-radius: 6px; overflow: hidden; max-height: 150px; background: #000;">
+                            <img id="post-image-preview-img" style="width: 100%; height: 148px; object-fit: cover; display: none;">
+                            <video id="post-video-preview-vid" style="width: 100%; height: 148px; object-fit: cover; display: none;" controls></video>
+                            <button onclick="clearAttachedMedia()" style="position: absolute; top: 5px; right: 5px; background: rgba(255,0,127,0.8); border: none; color: #fff; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; font-size: 11px;">X</button>
                         </div>
 
                         <div class="post-actions">
                             <div class="media-attach-btns">
-                                <label class="action-mini">📷 Upload Image <input type="file" id="post-image-file" accept="image/*" style="display:none;" onchange="handleFileSelect(event, 'image')"></label>
-                                <label class="action-mini">🎥 Upload Video <input type="file" id="post-video-file" accept="video/*" style="display:none;" onchange="handleFileSelect(event, 'video')"></label>
+                                <label class="action-mini">📷 Image <input type="file" id="post-image-file" accept="image/*" style="display:none;" onchange="handleFileSelect(event, 'image')"></label>
+                                <label class="action-mini">🎥 Video <input type="file" id="post-video-file" accept="video/*" style="display:none;" onchange="handleFileSelect(event, 'video')"></label>
                             </div>
-                            <button onclick="createPost()" class="post-submit-btn" id="post-btn">Publish Prophecy</button>
+                            <button onclick="createPost()" class="post-submit-btn" id="post-btn">Post</button>
                         </div>
                     </div>
                     
-                    <!-- 🗂️ GLOBAL POSTS CONTAINER -->
+                    <!-- 🗂️ ПОСТУУДЫН УРСГАЛ -->
                     <div id="feed-container"></div>
                 </div>
-                <!-- 🤝 TAB: FRIENDS & GLOBAL CHATS -->
+                <!-- 🤝 TAB: FRIENDS & REAL-TIME CHATS -->
                 <div id="tab-friends" class="tab-content" style="display: none;">
                     <div class="friends-layout">
                         <div class="friends-list-box">
-                            <h4>🌍 Online Network Citizens</h4>
+                            <h4>🌍 Online Citizens</h4>
                             <div id="friends-list-container"></div>
                         </div>
                         <div class="friends-chat-box">
-                            <h4 id="active-chat-partner">Select a network user to engage chat</h4>
+                            <h4 id="active-chat-partner">Select a citizen to chat</h4>
                             <div id="friends-chat-messages" class="cyber-chat-messages"></div>
                             <div class="chat-input-bar">
-                                <input id="friends-chat-input" type="text" placeholder="Transmit direct encrypted message..." onkeypress="if(event.key === 'Enter') sendFriendMessage()">
-                                <button onclick="sendFriendMessage()" class="chat-send-btn">Transmit</button>
+                                <input id="friends-chat-input" type="text" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendFriendMessage()">
+                                <button onclick="sendFriendMessage()" class="chat-send-btn">Send</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 🤖 TAB: FUTURE BOT INTERFACE -->
+                <!-- 🤖 TAB: FUTURE BOT -->
                 <div id="tab-chat" class="tab-content" style="display: none;">
                     <div class="chat-header-box">
                         <h3 id="bot-title">Future Bot 🤖</h3>
-                        <p class="bot-desc">Global Quantum Matrix AI System. 100% English Enabled.</p>
+                        <p class="bot-desc">Ask anything about the future. Real AI Matrix.</p>
                     </div>
                     <div id="chat-container" class="cyber-chat-messages"></div>
                     <div class="chat-input-bar">
-                        <input id="bot-input" type="text" placeholder="Interrogate the AI Matrix about the future..." onkeypress="if(event.key === 'Enter') sendDirectMessage()">
+                        <input id="bot-input" type="text" placeholder="Ask about the future..." onkeypress="if(event.key === 'Enter') sendDirectMessage()">
                         <button onclick="sendDirectMessage()" class="chat-send-btn" id="send-btn">Send</button>
                     </div>
                 </div>
@@ -148,17 +140,17 @@
         <div class="cyber-modal-card">
             <h2>Timeline Identity Sync</h2>
             <div class="modal-form-group">
-                <label>Cyber Identity Name:</label>
+                <label>Cyber Name:</label>
                 <input id="modal-username" type="text">
             </div>
             <div class="modal-form-group">
-                <label>Avatar Photo Data:</label>
+                <label>Avatar URL / File Path:</label>
                 <input id="modal-avatar" type="text" placeholder="https://image-link.com">
                 <input type="file" id="avatar-file-input" accept="image/*" style="margin-top:5px; font-size:12px;" onchange="handleAvatarFile(event)">
             </div>
             <div class="modal-modal-actions">
                 <button onclick="closeProfileModal()" class="modal-btn close">Cancel</button>
-                <button onclick="saveProfileModal()" class="modal-btn save">Sync Profile Data</button>
+                <button onclick="saveProfileModal()" class="modal-btn save">Sync Data</button>
             </div>
         </div>
     </div>
