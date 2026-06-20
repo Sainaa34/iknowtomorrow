@@ -42,7 +42,7 @@ const translations = {
     }
 };
 
-// 🖼️ ЗУРГУУДЫГ ЗӨВ ХАРУУЛАХ САНАМСАРГҮЙ СОНГОЛТЫН МАССИВ
+// 🖼️ ЗУРГУУДЫН САНАМСАРГҮЙ МАССИВ
 const authImages = [
     'Designer (1).png', 'Designer (2).png', 'Designer (3).png',
     'Designer (4).png', 'Designer (5).png', 'Designer (6).png',
@@ -59,10 +59,10 @@ const bannedKeywords = ["altsgar", "golog", "pizda", "зда", "лайн", "яа
 // 🔄 Window Load
 window.onload = function() {
     initIndexedDB();
-    setupPasswordToggles(); // Нүдний зураг дээр дарахад нууц үг харах код
+    setupPasswordToggles();
 };
 
-// 🔐 НЭВТРЭХ ХҮҮДЭСНИЙ ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ
+// 🔐 АРЫН ЗУРГУУДЫГ ХАР ЗАЙГҮЙ ОНООХ
 function initAuthPage() {
     const authContainer = document.getElementById('auth-container');
     if (!authContainer) return;
@@ -92,7 +92,7 @@ function showAuthPage(type) {
     }
 }
 
-// 📦 INDEXEDDB INITIALIZATION
+// 📦 INDEXEDDB ИДЭВХЖҮҮЛЭХ
 function initIndexedDB() {
     const request = indexedDB.open("iKnowTomorrowDB", 3);
 
@@ -104,7 +104,6 @@ function initIndexedDB() {
     request.onsuccess = function(event) {
         db = event.target.result;
         initAuthPage(); 
-        setupFormListeners(); // Формуудыг гацаахгүй сонсох функц дуудах
         checkLoginStatus();
     };
 
@@ -122,51 +121,33 @@ function initIndexedDB() {
     };
 }
 
-// 🎮 ЭНД ФОРМ ИЛГЭЭХЭД REFRESH ХИЙДГИЙГ БҮРМӨСӨН ЗАСАВ (EVENT LISTENERS)
-function setupFormListeners() {
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-
-    if(loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleLogin();
-        });
-    }
-
-    if(registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleRegister();
-        });
-    }
-}
-
-// 👀 `*****` НУУЦ ҮГИЙГ ХАРЖ, НУУДАГ БОЛГОХ ФУНКЦ
+// 👀 НУУЦ ҮГ ХАРАХ ТОХИРГОО
 function setupPasswordToggles() {
     const toggleLogin = document.getElementById('toggleLoginPassword');
     const loginPass = document.getElementById('login-password');
     if(toggleLogin && loginPass) {
-        toggleLogin.addEventListener('click', function() {
+        toggleLogin.onclick = function() {
             const type = loginPass.getAttribute('type') === 'password' ? 'text' : 'password';
             loginPass.setAttribute('type', type);
             this.classList.toggle('fa-eye-slash');
-        });
+        };
     }
 
     const toggleReg = document.getElementById('toggleRegPassword');
     const regPass = document.getElementById('reg-password');
     if(toggleReg && regPass) {
-        toggleReg.addEventListener('click', function() {
+        toggleReg.onclick = function() {
             const type = regPass.getAttribute('type') === 'password' ? 'text' : 'password';
             regPass.setAttribute('type', type);
             this.classList.toggle('fa-eye-slash');
-        });
+        };
     }
 }
 
-// 🔑 БҮРТГҮҮЛЭХ
-function handleRegister() {
+// 🔑 БҮРТГҮҮЛЭХҮҮД (EVENT ДАМЖУУЛАЛТЫГ ЗӨВ БОЛГОЖ ХҮҮДЭС REFRESH ХИЙДГИЙГ ЗАСАВ)
+function handleRegister(event) {
+    if(event) event.preventDefault(); // Хуудсыг дахин ачаалахаас 100% хамгаална
+
     const u = document.getElementById('reg-username').value.trim();
     const p = document.getElementById('reg-password').value;
 
@@ -189,8 +170,10 @@ function handleRegister() {
     };
 }
 
-// 🔑 НЭВТРЭХ
-function handleLogin() {
+// 🔑 НЭВТРЭХҮҮД
+function handleLogin(event) {
+    if(event) event.preventDefault(); // Хуудсыг дахин ачаалахаас 100% хамгаална
+
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
 
