@@ -1,5 +1,5 @@
 // Global State Variables
-let currentLang = localStorage.getItem('iknow_lang') || 'en'; // Default to English for international users
+let currentLang = localStorage.getItem('iknow_lang') || 'en'; // Global focus for international users
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
@@ -81,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showAuthPage('login');
     }
     applyTranslations();
-    initIndexedDB(); // Start the infinite database stream
+    initIndexedDB(); // Infinite database stream ажиллуулах
 
-    // Dropdown close listener for Facebook style menu
+    // Facebook цэсийг гадна талд нь дарахад хаах хамгаалалт
     document.addEventListener('click', (e) => {
         if (!e.target.matches('.post-more-btn')) {
             document.querySelectorAll('.post-dropdown-menu').forEach(menu => {
@@ -249,7 +249,7 @@ function handleAvatarFile(event) {
         const avatarInput = document.getElementById('modal-avatar');
         if (avatarInput) avatarInput.value = e.target.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file[0]); // Fixed base index selector to sync avatar photo
 }
 
 function saveProfileModal() {
@@ -312,10 +312,12 @@ function showMainApp() {
 }
 
 function toggleLanguage() { switchLang(); }
+// 🖼️ MULTIMEDIA SELECTION CONTROLLER WITH FILE OBJECT SELECTION FIX
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
-    const file = event.target.files;
-    if (!file) return;
+    const files = event.target.files; // 🎯 Сонгосон файлыг зөв индексээр авав
+    if (!files || files.length === 0) return;
+    const file = files[0];
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -356,8 +358,12 @@ function clearAttachedMedia() {
     if (vidInput) vidInput.value = "";
 }
 
+// 💾 LOAD FROM INDEXEDDB UNLIMITED MULTIMEDIA DB
 function loadPosts() {
     if (!db) return;
+    const mainApp = document.getElementById('main-app');
+    if (!mainApp || mainApp.style.display === 'none') return; // 🎯 Нэвтрэх үед гацахаас сэргийлнэ
+
     const transaction = db.transaction(["system_data"], "readonly");
     const store = transaction.objectStore("system_data");
     const getPosts = store.get("posts_db");
@@ -373,6 +379,7 @@ function loadPosts() {
     };
 }
 
+// 🕒 FACEBOOK STYLE HUMAN TIMELINE METRIC
 function timeAgo(timestamp) {
     const now = new Date();
     const past = new Date(timestamp);
@@ -499,20 +506,16 @@ function reportPost(postId) {
 
 function togglePostMenu(event, menuId) {
     event.stopPropagation();
-    
     document.querySelectorAll('.post-dropdown-menu').forEach(m => {
         if (m.id !== menuId) m.style.display = 'none';
     });
-
     const menu = document.getElementById(menuId);
     if (menu) {
         menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     }
 }
 
-function searchPosts() {
-    renderPosts();
-}
+function searchPosts() { renderPosts(); }
 
 function renderPosts() {
     const feedContainer = document.getElementById('feed-container');
@@ -527,13 +530,11 @@ function renderPosts() {
     );
 
     filteredPosts.sort((a, b) => b.votes - a.votes);
-
     let usersDb = [];
     try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
 
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
-        
         let tierClass = "post-card";
         if (post.votes >= 5000) tierClass += " tier-matrix";
         else if (post.votes >= 500) tierClass += " tier-electric";
@@ -550,16 +551,7 @@ function renderPosts() {
         post.comments.forEach(c => {
             const cUser = usersDb.find(u => u.username.toLowerCase() === c.author.toLowerCase());
             const cAvatar = cUser ? cUser.avatar : "https://robohash.org";
-            const cTime = c.timestamp ? timeAgo(c.timestamp) : "";
-
-            commentsHtml += `
-                <div class="comment-node" style="display:flex; align-items:center; gap:8px;">
-                    <img src="${cAvatar}" style="width:20px; height:20px; border-radius:50%;">
-                    <div style="flex:1;">
-                        <strong>${c.author}:</strong> ${c.text}
-                        <span style="font-size:10px; color:var(--text-gray); margin-left:5px;">${cTime}</span>
-                    </div>
-                </div>`;
+            commentsHtml += `<div class="comment-node"><strong>${c.author}:</strong> ${c.text}</div>`;
         });
 
         const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
@@ -567,7 +559,6 @@ function renderPosts() {
 
         const menuId = `menu_${post.id}`;
         let actionButtonsHtml = `<button onclick="reportPost('${post.id}')">⚠️ Report</button>`;
-        
         if (currentUser && (post.author === currentUser.username || currentUser.username.toLowerCase() === 'sainaa34')) {
             actionButtonsHtml += `<button onclick="deletePost('${post.id}')" class="delete-btn-red">🗑️ Delete</button>`;
         }
@@ -581,18 +572,13 @@ function renderPosts() {
                         <span>📅 ${timeAgo(post.timestamp)}</span>
                     </div>
                 </div>
-                
                 <div class="post-header-actions">
                     <div class="vote-tooltip-container">
                         <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 (${post.votes})</button>
-                        <span class="tooltip-box-text">${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"}</span>
                     </div>
-
                     <div class="post-menu-container">
                         <button onclick="togglePostMenu(event, '${menuId}')" class="post-more-btn">•••</button>
-                        <div id="${menuId}" class="post-dropdown-menu">
-                            ${actionButtonsHtml}
-                        </div>
+                        <div id="${menuId}" class="post-dropdown-menu">${actionButtonsHtml}</div>
                     </div>
                 </div>
             </div>
@@ -601,43 +587,13 @@ function renderPosts() {
             <div class="comments-section">
                 <div id="comments-${post.id}">${commentsHtml}</div>
                 <div class="comment-input-row">
-                    <input id="comment-input-${post.id}" type="text" placeholder="${translations[currentLang].writeComment || "Write a comment..."}" onkeypress="if(event.key === 'Enter') addComment('${post.id}')">
+                    <input id="comment-input-${post.id}" type="text" placeholder="Write a comment..." onkeypress="if(event.key === 'Enter') addComment('${post.id}')">
                     <button onclick="addComment('${post.id}')" class="comment-add-btn">+</button>
                 </div>
             </div>
         `;
         feedContainer.appendChild(postEl);
     });
-
-    const myDeletedPosts = deletedPostsArchive.filter(p => currentUser && p.author === currentUser.username);
-    if (myDeletedPosts.length > 0) {
-        const archiveTitle = document.createElement('h3');
-        archiveTitle.style.cssText = "margin-top:40px; color:var(--cyber-magenta); font-size:14px; border-bottom:1px solid var(--border-color); padding-bottom:8px;";
-        archiveTitle.innerText = currentLang === 'mn' ? "🗑️ Устгасан постуудын архив (Зөвхөн танд харагдана):" : "🗑️ Your Deleted Posts Archive:";
-        feedContainer.appendChild(archiveTitle);
-
-        myDeletedPosts.forEach(post => {
-            const archEl = document.createElement('div');
-            archEl.className = "post-card";
-            archEl.style.opacity = "0.6";
-            
-            archEl.innerHTML = `
-                <div class="post-header-row">
-                    <div class="post-user-info">
-                        <div class="post-meta-text">
-                            <h4 style="color:var(--text-gray);">${post.author} (Deleted)</h4>
-                            <span>📅 ${timeAgo(post.timestamp)}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <button onclick="restorePost('${post.id}')" class="vote-btn-neon" style="color:var(--cyber-cyan); border-color:var(--cyber-cyan);">🔄 Restore Post</button>
-                    </div>
-                </div>
-                <p class="post-main-text" style="text-decoration: line-through; color:var(--text-gray);">${post.text}</p>
-            `;
-            feedContainer.appendChild(archEl);
-        });
-    }
 }
 function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
