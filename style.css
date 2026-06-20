@@ -51,7 +51,7 @@ body {
     overflow-x: hidden;
 }
 
-/* 🔐 НЭВТРЭХ ХЭСГИЙН ХООСОН ЗАЙГ БҮРЭН НӨХӨХ (3 ЗУРАГТ ЗОРИУЛСАН) */
+/* 🚨 НЭВТРЭХ ХЭСГИЙН ГАЦААГ АРИЛГАЖ, ЗУРГУУДЫГ БҮРЭН ГАРГАЖ ИРЭХ ЗАСВАР */
 #auth-container {
     display: flex !important;
     align-items: center;
@@ -60,18 +60,19 @@ body {
     width: 100vw;
     margin: 0;
     padding: 20px;
-    background-size: 35% 100%, 35% 100%, cover !important;
+    background-color: #020502; /* Зургууд ачаалагдаж амжаагүй үед харагдах суурь өнгө */
+    /* Голын хар зайг устгаж, 3 зургийг дэлгэцэнд яг таг хувааж наах */
+    background-size: 33.33% 100%, 33.33% 100%, cover !important;
     background-position: left center, right center, center center !important;
     background-repeat: no-repeat, no-repeat, no-repeat !important;
     position: relative;
     overflow: hidden;
 }
 
-/* Голын нэвтрэх картын загвар */
+/* Зургууд текстийг дарахгүй байх хамгаалалт */
 .auth-card {
-    background-size: cover !important;
-    background-position: center !important;
-    backdrop-filter: blur(10px);
+    background-color: rgba(5, 12, 5, 0.85) !important; /* Картыг арын зургаас салгаж тод харуулах */
+    backdrop-filter: blur(15px);
     border: 2px solid var(--cyber-cyan);
     box-shadow: 0 0 40px var(--cyber-glow);
     padding: 40px;
@@ -79,7 +80,7 @@ body {
     width: 100%;
     max-width: 450px;
     text-align: center;
-    z-index: 5;
+    z-index: 10 !important;
     position: relative;
 }
 
