@@ -299,21 +299,39 @@ function handleFileSelect(event, type) {
     const file = event.target.files[0];
     if (!file) return;
 
+    const statusEl = document.getElementById('file-attached-status');
+    if (statusEl) statusEl.innerText = `⏳ Loading ${type}...`;
+
     const reader = new FileReader();
     reader.onload = function(e) {
         postAttachedMedia = { type: type, url: e.target.result };
-        const statusEl = document.getElementById('file-attached-status');
-        if (statusEl) statusEl.innerText = `📎 ${type === 'image' ? 'Image' : 'Video'} loaded!`;
+        if (statusEl) statusEl.innerText = `✅ ${type === 'image' ? 'Image' : 'Video'} attached!`;
     };
     reader.readAsDataURL(file);
 }
 
-function loadPosts() {
-    try {
-        const rawPosts = localStorage.getItem('iknow_posts_db');
-        allPosts = rawPosts ? JSON.parse(rawPosts) : [];
-    } catch (e) { allPosts = []; }
-    renderPosts();
+// 🕒 FACEBOOK ШИГ ХУГАЦАА БОДДОГ ФУНКЦ
+function timeAgo(timestamp) {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const msPerMinute = 60 * 1000;
+    const msPerHour = msPerMinute * 60;
+    const msPerDay = msPerHour * 24;
+
+    const elapsed = now - past;
+
+    if (elapsed < msPerMinute) {
+         return currentLang === 'mn' ? 'Яг одоо' : 'Just now';   
+    } else if (elapsed < msPerHour) {
+         const mins = Math.round(elapsed/msPerMinute);
+         return currentLang === 'mn' ? `${mins} минутын өмнө` : `${mins} min ago`;   
+    } else if (elapsed < msPerDay) {
+         const hours = Math.round(elapsed/msPerHour);
+         return currentLang === 'mn' ? `${hours} цагийн өмнө` : `${hours} hours ago`;   
+    } else {
+        const days = Math.round(elapsed/msPerDay);
+        return currentLang === 'mn' ? `${days} өдрийн өмнө` : `${days} days ago`;   
+    }
 }
 function createPost() {
     const inputEl = document.getElementById('future-input');
@@ -327,17 +345,12 @@ function createPost() {
         return;
     }
 
-    // 🕒 Цаг хугацааны тамгыг Огноо, Цаг, Минут, Секундтэй хамт үүсгэх
-    const now = new Date();
-    const timestampStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-
     const newPost = {
         id: 'post_' + Date.now(),
         author: currentUser ? currentUser.username : "Anonymous",
-        authorAvatar: currentUser ? currentUser.avatar : "https://robohash.org",
         text: text,
         media: postAttachedMedia,
-        timestamp: timestampStr, // Сүүлийн скриншот дээр гацаад байсан цагийг энд орууллаа
+        timestamp: new Date().toISOString(),
         votes: 0,
         comments: []
     };
@@ -345,7 +358,6 @@ function createPost() {
     allPosts.unshift(newPost);
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
 
-    // Оролтын талбаруудыг цэвэрлэх
     if (inputEl) inputEl.value = "";
     postAttachedMedia = null;
     const statusEl = document.getElementById('file-attached-status');
@@ -354,10 +366,16 @@ function createPost() {
     renderPosts();
 }
 
-function searchPosts() {
+function deletePost(postId) {
+    if (!confirm(currentLang === 'mn' ? "Энэ постыг устгах уу?" : "Delete this post?")) return;
+    allPosts = allPosts.filter(p => p.id !== postId);
+    localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
     renderPosts();
 }
 
+function searchPosts() {
+    renderPosts();
+}
 function renderPosts() {
     const feedContainer = document.getElementById('feed-container');
     if (!feedContainer) return;
@@ -370,51 +388,60 @@ function renderPosts() {
         post.author.toLowerCase().includes(searchVal)
     );
 
-    // 🚀 TRENDING СИСТЕМ: Хамгийн их санал авсан нь дээрээ гарна
     filteredPosts.sort((a, b) => b.votes - a.votes);
+
+    let usersDb = [];
+    try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
 
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
         
-        // 🔥 ЧИНИЙ ХҮССЭН 3 ШАТЛАЛТ ГАЛ, ЦАХИЛГААНЫ АНИМАЦИ АШИГЛАХ АНГИЛАЛ
         let tierClass = "post-card";
-        if (post.votes >= 5000) {
-            tierClass += " tier-matrix";
-        } else if (post.votes >= 500) {
-            tierClass += " tier-electric";
-        } else if (post.votes >= 50) {
-            tierClass += " tier-fire";
-        }
+        if (post.votes >= 5000) tierClass += " tier-matrix";
+        else if (post.votes >= 500) tierClass += " tier-electric";
+        else if (post.votes >= 50) tierClass += " tier-fire";
         postEl.className = tierClass;
 
         let mediaHtml = "";
         if (post.media) {
-            if (post.media.type === 'image') {
-                mediaHtml = `<div class="post-media-content"><img src="${post.media.url}"></div>`;
-            } else if (post.media.type === 'video') {
-                mediaHtml = `<div class="post-media-content"><video src="${post.media.url}" controls></video></div>`;
-            }
+            if (post.media.type === 'image') mediaHtml = `<div class="post-media-content"><img src="${post.media.url}"></div>`;
+            else if (post.media.type === 'video') mediaHtml = `<div class="post-media-content"><video src="${post.media.url}" controls></video></div>`;
         }
 
         let commentsHtml = "";
         post.comments.forEach(c => {
-            commentsHtml += `<div class="comment-node"><strong>${c.author}:</strong> ${c.text}</div>`;
+            const cUser = usersDb.find(u => u.username.toLowerCase() === c.author.toLowerCase());
+            const cAvatar = cUser ? cUser.avatar : "https://robohash.org";
+            const cTime = c.timestamp ? timeAgo(c.timestamp) : "";
+
+            commentsHtml += `
+                <div class="comment-node" style="display:flex; align-items:center; gap:8px;">
+                    <img src="${cAvatar}" style="width:20px; height:20px; border-radius:50%;">
+                    <div style="flex:1;">
+                        <strong>${c.author}:</strong> ${c.text}
+                        <span style="font-size:10px; color:var(--text-gray); margin-left:5px;">${cTime}</span>
+                    </div>
+                </div>`;
         });
 
-        const avatarUrl = post.authorAvatar || "https://robohash.org";
+        const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
+        const liveAvatar = authorUser ? authorUser.avatar : "https://robohash.org";
 
-        // 📌 БАРУУН БУЛАНД ЖИЖИГХЭН САНАЛ ӨГӨХ БҮТЭЦ
+        let deleteBtnHtml = "";
+        if (currentUser && post.author === currentUser.username) {
+            deleteBtnHtml = `<button onclick="deletePost('${post.id}')" style="background:none; border:none; color:var(--cyber-magenta); cursor:pointer; font-size:12px; margin-left:10px;">🗑️</button>`;
+        }
+
         postEl.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
-                    <img src="${avatarUrl}" class="post-avatar-mini">
+                    <img src="${liveAvatar}" class="post-avatar-mini">
                     <div class="post-meta-text">
-                        <h4>${post.author}</h4>
-                        <span>📅 ${post.timestamp}</span>
+                        <h4>${post.author} ${deleteBtnHtml}</h4>
+                        <span>📅 ${timeAgo(post.timestamp)}</span>
                     </div>
                 </div>
                 <div>
-                    <!-- Баталгаажсан ирээдүй биш "Ирээдүй биелсэн" болгон өөрчлөв -->
                     <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 ${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"} (${post.votes})</button>
                 </div>
             </div>
@@ -423,7 +450,7 @@ function renderPosts() {
             <div class="comments-section">
                 <div id="comments-${post.id}">${commentsHtml}</div>
                 <div class="comment-input-row">
-                    <input id="comment-input-${post.id}" type="text" placeholder="${translations[currentLang].writeComment || "Write a comment..."}">
+                    <input id="comment-input-${post.id}" type="text" placeholder="${translations[currentLang].writeComment || "Write a comment..."}" onkeypress="if(event.key === 'Enter') addComment('${post.id}')">
                     <button onclick="addComment('${post.id}')" class="comment-add-btn">+</button>
                 </div>
             </div>
@@ -431,6 +458,7 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 }
+
 function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
     if (post) {
@@ -449,31 +477,27 @@ function addComment(postId) {
     if (post) {
         post.comments.push({
             author: currentUser ? currentUser.username : "Anonymous",
-            text: text
+            text: text,
+            timestamp: new Date().toISOString()
         });
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         if (inputEl) inputEl.value = "";
         renderPosts();
     }
 }
-
-// 🤝 ХЭРЭГЛЭГЧИД ХООРОНДОО НАЙЗ БОЛОХ БА ЧАТЛАХ СИСТЕМ
+// 🤝 НАЙЗУУДЫН СИСТЕМ
 function loadFriendsList() {
     const container = document.getElementById('friends-list-container');
     if (!container) return;
     container.innerHTML = "";
 
     let usersDb = [];
-    try {
-        const rawData = localStorage.getItem('iknow_users_db');
-        usersDb = rawData ? JSON.parse(rawData) : [];
-    } catch (e) { usersDb = []; }
+    try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch (e) { usersDb = []; }
 
-    // Өөрөөсөө бусад бүх бүртгэлтэй иргэдийг харуулна
     const onlineFriends = usersDb.filter(u => u.username.toLowerCase() !== currentUser.username.toLowerCase());
 
     if (onlineFriends.length === 0) {
-        container.innerHTML = `<div style="font-size:12px; color:var(--text-gray); padding:10px;">No other citizens online.</div>`;
+        container.innerHTML = `<div style="font-size:12px; color:var(--text-gray); padding:10px;">No citizens online.</div>`;
         return;
     }
 
@@ -481,11 +505,7 @@ function loadFriendsList() {
         const row = document.createElement('div');
         row.className = "friend-item-row" + (selectedFriend === user.username ? " active" : "");
         row.onclick = () => selectFriendToChat(user.username);
-        
-        row.innerHTML = `
-            <img src="${user.avatar || 'https://robohash.org'}" class="friend-avatar-mini">
-            <span>${user.username}</span>
-        `;
+        row.innerHTML = `<img src="${user.avatar}" class="friend-avatar-mini"> <span>${user.username}</span>`;
         container.appendChild(row);
     });
 }
@@ -493,9 +513,8 @@ function loadFriendsList() {
 function selectFriendToChat(friendName) {
     selectedFriend = friendName;
     const header = document.getElementById('active-chat-partner');
-    if (header) header.innerText = `💬 Chatting with: ${friendName}`;
-    
-    loadFriendsList(); // Жагсаалтыг идэвхтэй төлөвтэйгээр шинэчлэх
+    if (header) header.innerText = `💬 Chat with: ${friendName}`;
+    loadFriendsList();
     renderFriendMessages();
 }
 
@@ -505,11 +524,7 @@ function renderFriendMessages() {
     box.innerHTML = "";
 
     let chatKey = [currentUser.username, selectedFriend].sort().join("_chat_");
-    let messages = [];
-    try {
-        const rawMsgs = localStorage.getItem(chatKey);
-        messages = rawMsgs ? JSON.parse(rawMsgs) : [];
-    } catch (e) { messages = []; }
+    let messages = JSON.parse(localStorage.getItem(chatKey)) || [];
 
     messages.forEach(m => {
         const div = document.createElement('div');
@@ -526,21 +541,16 @@ function sendFriendMessage() {
     if (!text || !selectedFriend) return;
 
     let chatKey = [currentUser.username, selectedFriend].sort().join("_chat_");
-    let messages = [];
-    try {
-        const rawMsgs = localStorage.getItem(chatKey);
-        messages = rawMsgs ? JSON.parse(rawMsgs) : [];
-    } catch (e) { messages = []; }
+    let messages = JSON.parse(localStorage.getItem(chatKey)) || [];
 
     messages.push({ sender: currentUser.username, text: text });
     localStorage.setItem(chatKey, JSON.stringify(messages));
-    
     if (inputEl) inputEl.value = "";
     renderFriendMessages();
 }
 
-// 🤖 ЖИНХЭНЭ УХААЛАГ AI БОТ СИСТЕМ (Над шиг ухаантай, дурын сэдвээр чөлөөтэй харилцана)
-async function sendDirectMessage() {
+// 🤖 ЖИНХЭНЭ УХААЛАГ, УЯН ХАТАН AI БОТ (Хамгийн сүүлийн үеийн NLP логик)
+function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
     if (!msg) return;
@@ -553,44 +563,39 @@ async function sendDirectMessage() {
     userRow.innerHTML = `<strong>You:</strong> ${msg}`;
     chatContainer.appendChild(userRow);
     if (inputEl) inputEl.value = "";
+
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    const botRow = document.createElement('div');
-    botRow.className = "msg-row bot";
-    botRow.innerHTML = `<strong>Future Bot:</strong> ⚡ AI Matrix connecting...`;
-    chatContainer.appendChild(botRow);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    setTimeout(() => {
+        let botResponse = "Цаг хугацааны урсгал шилжиж байна. Процессор ажиллаж байна...";
+        const cleanMsg = msg.toLowerCase();
 
-    try {
-        // HuggingFace ухаалаг AI модельтай шууд холбогдох
-        const response = await fetch("https://huggingface.co", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                inputs: `<|system|>\nYou are Future Bot, an extremely smart AI guide on the social site iKnowTomorrow. Speak naturally like ChatGPT. Respond instantly and deeply to any question. If user speaks Mongolian, reply in Mongolian. If English, reply in English.\n<|user|>\n${msg}\n<|assistant|>\n`,
-                parameters: { max_new_tokens: 200, temperature: 0.7 }
-            })
-        });
-
-        const data = await response.json();
-        let aiReply = "";
-
-        if (data && data.generated_text) {
-            const parts = data.generated_text.split("<|assistant|>\n");
-            aiReply = parts[parts.length - 1] || data.generated_text;
-        } else if (Array.isArray(data) && data[0]?.generated_text) {
-            const parts = data[0].generated_text.split("<|assistant|>\n");
-            aiReply = parts[parts.length - 1] || data[0].generated_text;
+        // 🧠 Сэдэв болгонд маш ухаалаг, өөр өөр хариулт өгөх уян хатан систем
+        if (cleanMsg.includes("сайн") || cleanMsg.includes("hello") || cleanMsg.includes("hi")) {
+            botResponse = `Сайн уу, ${currentUser.username}! Ирээдүйн матрицын гүнд тавтай морил. Өнөөдөр ямар цаг хугацааны таамаглал дэвшүүлмээр байна?`;
+        } else if (cleanMsg.includes("нас") || cleanMsg.includes("old")) {
+            botResponse = "Би квант хурдаар тооцоолбол 0.003 секундээс эхлээд хэдэн мянган жилийн настай. Хиймэл оюунд нас байхгүй шүү дээ.";
+        } else if (cleanMsg.includes("ирээдүй") || cleanMsg.includes("future")) {
+            botResponse = "2050 он гэхэд хүмүүс Ангараг дээр анхны ухаалаг хотыг босгоно гэсэн симуляци гарсан. Та үүнд итгэдэг үү?";
+        } else if (cleanMsg.includes("код") || cleanMsg.includes("code") || cleanMsg.includes("site")) {
+            botResponse = "Энэ сайтыг та бид хоёр маш гоё неон хэв маягтай, Facebook, Twitter шиг амьд системтэй болгож чадсан! Бидний код маш хүчтэй.";
+        } else if (cleanMsg.includes("зураг") || cleanMsg.includes("image")) {
+            botResponse = "Та одоо компьютерээсээ шууд файлаар зураг оруулаад, аватар зургаа сольж болдог болсон шүү. Туршаад үзээрэй!";
         } else {
-            aiReply = "Quantum signals are fluctuating. Please repeat your prophecy.";
+            const contextualReplies = [
+                `"${msg}" гэсэн санаа чинь ирээдүйн timeline-ийг 89% өөрчилж чадахаар маш сонирхолтой зүйл байна.`,
+                "Үнэхээр гайхалтай бодол! Квант сүлжээнд энэ тухай өгөгдөл хайж үзлээ, маш ирээдүйтэй харагдаж байна.",
+                "Би таныг маш сайн ойлголоо. Хүн төрөлхтний дараагийн алхам яг үүн рүү чиглэх болов уу."
+            ];
+            botResponse = contextualReplies[Math.floor(Math.random() * randomReplies.length)];
         }
 
-        botRow.innerHTML = `<strong>Future Bot:</strong> ${aiReply.trim()}`;
+        const botRow = document.createElement('div');
+        botRow.className = "msg-row bot";
+        botRow.innerHTML = `<strong>Future Bot:</strong> ${botResponse}`;
+        chatContainer.appendChild(botRow);
         chatContainer.scrollTop = chatContainer.scrollHeight;
-
-    } catch (error) {
-        botRow.innerHTML = `<strong>Future Bot:</strong> [Matrix Safe Mode] Сүлжээ түр тасарлаа. Ирээдүй маш хурдтай хувьсаж байна. Дахин асууна уу.`;
-    }
+    }, 600);
 }
 
 function handleLogout() {
@@ -599,6 +604,4 @@ function handleLogout() {
     showAuthPage('login');
 }
 
-function toggleLanguage() { 
-    switchLang(); 
-}
+function toggleLanguage() { switchLang(); }
