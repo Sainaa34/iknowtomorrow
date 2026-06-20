@@ -670,6 +670,7 @@ function randomizeAuthImages() {
 
     // Голын нэвтрэх хайрцагны арын зургийг солих
     authCard.style.backgroundImage = `url('${centerImg}')`;
+
 }
 
 // Хуудас ачаалагдах үед зургуудыг шууд холино
