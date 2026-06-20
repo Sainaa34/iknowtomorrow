@@ -50,7 +50,7 @@ body {
     transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* 🔐 AUTHENTICATION CONTAINER (3 ТАЛЫН ЗУРГИЙГ ЖАВАСРИПТЭЭР ШАХАХ ХОЛИГДОХ СУУРЬ) */
+/* 🔐 AUTHENTICATION CONTAINER (3 ТАЛЫН ЗУРГИЙГ ЖАВАСРИПТЭЭР ХОЛЬЖ ШАХАХ СУУРЬ) */
 #auth-container {
     display: flex;
     justify-content: center;
@@ -63,9 +63,9 @@ body {
     background-size: cover;
 }
 
-/* 🔒 ЧИНИЙ ХҮССЭН: ГОЛЫН БАЛАЙ ХАР ХЭСГИЙГ АРИЛГАЖ, ТУНГАЛАГ НЕОН ШИЛТЭЙ БОЛГОСОН ХЭСЭГ */
+/* 🔒 ГОЛЫН БАЛАЙ ХАР ХЭСГИЙГ БҮРМӨСӨН УСТГАЖ ТУНГАЛАГ ШИЛ ШИГ БОЛГОСОН ХЭСЭГ */
 .auth-card {
-    background: transparent !important; /* Хатуу хар фон өгөхийг бүрмөсөн хориглов */
+    background: transparent !important;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -80,7 +80,6 @@ body {
     z-index: 2;
 }
 
-/* 🌟 Арын зургийг нэвт харуулах 45%-ийн тунгалаг неон манан хамгаалалт (Үг тод харагдуулна) */
 .auth-card::before {
     content: "";
     position: absolute;
@@ -365,7 +364,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* 🔮 TIMELINE POST CARD & SHATALAL REAL EFFECTS */
+/* 🔮 TIMELINE POST CARD & REAL EFFECTS */
 .post-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -374,40 +373,33 @@ body {
     margin-top: 12px;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
-    overflow: hidden;
 }
 
-/* 🔥 50+ Санал: Жинхэнэ Неон Галт Эффект */
 .post-card.tier-fire {
     border-color: var(--cyber-orange);
     animation: neonFireGlow 2s infinite alternate;
 }
 
-/* ⚡ 500+ Санал: Кибер Цахилгаанжсан Аянгын Эффект */
 .post-card.tier-electric {
     border-color: var(--cyber-cyan);
     animation: neonLightningPulse 1s infinite alternate;
 }
 
-/* 🪐 5000+ Санал: Matrix Асар хүчтэй Супер Гэрэлтэлт */
 .post-card.tier-matrix {
     border-color: #ff00ff;
     animation: neonMatrixHyper 1.5s infinite linear;
 }
 
-/* 🔥 Галт Анимацийн код */
 @keyframes neonFireGlow {
-    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3), inset 0 0 4px rgba(255, 69, 0, 0.1); }
-    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8), inset 0 0 12px rgba(255, 69, 0, 0.3); }
+    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3); }
+    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8); }
 }
 
-/* ⚡ Цахилгаан Анимацийн код */
 @keyframes neonLightningPulse {
     0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); transform: scale(1); }
     100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.9); transform: scale(1.005); }
 }
 
-/* 🪐 Matrix Анимацийн код */
 @keyframes neonMatrixHyper {
     0% { box-shadow: 0 0 15px #ff00ff; filter: hue-rotate(0deg); }
     50% { box-shadow: 0 0 35px #00ffff; }
@@ -419,6 +411,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    position: relative;
 }
 
 .post-user-info {
@@ -444,6 +437,64 @@ body {
     font-size: 0.7rem;
     color: var(--text-gray);
 }
+
+/* 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭСНИЙ НЕОН СТИЛЬ */
+.post-menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.post-more-btn {
+    background: none;
+    border: none;
+    color: var(--text-gray);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.post-more-btn:hover {
+    color: var(--text-white);
+}
+
+.post-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 50;
+    min-width: 120px;
+    overflow: hidden;
+}
+
+.post-dropdown-menu button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-white);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.post-dropdown-menu button:hover {
+    background: #141420;
+}
+
+.post-dropdown-menu button.delete-btn-red {
+    color: var(--cyber-magenta);
+}
+
+.post-dropdown-menu button.delete-btn-red:hover {
+    background: rgba(255, 0, 127, 0.1);
+}
 .post-main-text {
     font-size: 0.98rem;
     line-height: 1.45;
@@ -453,21 +504,21 @@ body {
 
 .post-media-content img, .post-media-content video {
     width: 100%;
-    max-height: 300px;
-    object-fit: cover;
+    max-height: 350px;
+    object-fit: contain; /* Хэт том зургийг сунгахгүй, яг гоё бүтнээр нь харуулна */
+    background: #000;
     border-radius: 6px;
     margin-bottom: 12px;
     border: 1px solid var(--border-color);
 }
 
-/* 📊 ПОСТНЫ БАРУУН ДЭЭД ХЭСЭГТ БАЙРЛАХ ТОВЧНУУД */
 .post-header-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
-/* 🔮 ЧИНИЙ ХҮССЭН TWITTER/FACEBOOK ШИГ ХӨӨРДӨГ TOOLTIP ЭФФЕКТ */
+/* 🔮 ЧИНИЙ ХҮССЭН TWITTER ШИГ ХӨӨРДӨГ TOOLTIP ЭФФЕКТ */
 .vote-tooltip-container {
     position: relative;
     display: inline-block;
@@ -490,7 +541,6 @@ body {
     background: rgba(255, 204, 0, 0.05);
 }
 
-/* 🎈 Хулгана очиход гарч ирэх бүдгэвтэр неон бичиг (Tooltip Text) */
 .vote-tooltip-container .tooltip-box-text {
     visibility: hidden;
     width: 120px;
@@ -501,7 +551,7 @@ body {
     padding: 5px 0;
     position: absolute;
     z-index: 10;
-    bottom: 125%; /* Дээшээ хөөрч гарах байрлал */
+    bottom: 125%; 
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
@@ -509,34 +559,16 @@ body {
     font-size: 0.75rem;
     border: 1px solid var(--cyber-yellow);
     box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
-    pointer-events: none; /* Хулганы хөдөлгөөнд саад болохгүй */
+    pointer-events: none; 
 }
 
-/* 🔥 Хулгана ирэхэд Tooltip-ийг харуулах хэсэг */
 .vote-tooltip-container:hover .tooltip-box-text {
     visibility: visible;
     opacity: 1;
-    transform: translateX(-50%) translateY(-3px); /* Үл мэдэг дээшээ хөөрөх хөдөлгөөн */
+    transform: translateX(-50%) translateY(-3px); 
 }
 
-/* 🚨 REPORT (ГОМДОЛЛОХ) ТОВЧНЫ ДИЗАЙН */
-.report-btn-cyber {
-    background: none;
-    border: 1px solid transparent;
-    color: var(--text-gray);
-    cursor: pointer;
-    font-size: 0.85rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s;
-}
-
-.report-btn-cyber:hover {
-    color: #ff3333;
-    border-color: rgba(255, 51, 51, 0.2);
-    background: rgba(255, 51, 51, 0.05);
-}
-/* 💬 COMMENTS LOG SYSTEM */
+/* 💬 COMMENTS SYSTEM */
 .comments-section {
     margin-top: 12px;
     border-top: 1px solid var(--border-color);
@@ -548,10 +580,9 @@ body {
     color: #bbb;
     margin-bottom: 5px;
     background: #0f0f15;
-    padding: 5px 8px;
+    padding: 6px 10px;
     border-radius: 4px;
 }
-
 .comment-input-row {
     display: flex;
     gap: 6px;
