@@ -476,3 +476,4 @@ function handleLogout() {
     localStorage.removeItem('iknow_current_user');
     showAuthPage('login');
 }
+function toggleLanguage() { switchLang(); }
