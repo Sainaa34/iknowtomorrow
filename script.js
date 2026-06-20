@@ -653,9 +653,11 @@ function randomizeAuthImages() {
     const shuffled = [...cyberImages].sort(() => 0.5 - Math.random());
 
     // Зүүн, баруун, голын зургуудыг санамсаргүйгээр хуваарилах
-    const leftImg = shuffled;
-    const rightImg = shuffled;
-    const centerImg = shuffled;
+    // 🪐 Массиваас зүүн, баруун, голын зургуудыг тус тусад нь өөр өөрөөр сонгож буй зөв хэсэг:
+    const leftImg = shuffled[0];
+    const rightImg = shuffled[1];
+    const centerImg = shuffled[2];
+
 
 
     // CSS стилийг динамикаар шууд шахаж өгөх
