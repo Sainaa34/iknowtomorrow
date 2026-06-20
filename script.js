@@ -250,7 +250,6 @@ function enterAsGuest() {
     showMainApp();
 }
 
-// НЭР БОЛОН АВАТАР ЗУРАГ СОЛИХ ФУНКЦ
 function updateProfileSettings() {
     const newName = prompt("Шинэ хэрэглэгчийн нэрээ оруулна уу:", currentUser.username);
     const newAvatar = prompt("Шинэ Аватар зургийн URL хаяг оруулна уу (Хоосон орхивол өмнөх зураг хэвээр үлдэнэ):", currentUser.avatar);
@@ -263,7 +262,6 @@ function updateProfileSettings() {
         usersDb = rawData ? JSON.parse(rawData) : [];
     } catch (err) { usersDb = []; }
 
-    // Хэрэглэгчдийн бааз доторх мэдээллийг шинэчлэх
     usersDb = usersDb.map(u => {
         if (u.username === currentUser.username) {
             u.username = newName.trim();
@@ -274,7 +272,6 @@ function updateProfileSettings() {
 
     localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
 
-    // Одоогийн сешнийг шинэчлэх
     currentUser.username = newName.trim();
     if (newAvatar && newAvatar.trim() !== "") currentUser.avatar = newAvatar.trim();
     localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
@@ -292,11 +289,9 @@ function showMainApp() {
     if (registerCard) registerCard.style.display = 'none';
     if (mainApp) mainApp.style.display = 'block';
 
-    // Дэлгэц дээр нэр болон профайл аватарт зургийг нь зурах хэсэг
     const profileName = document.getElementById('profile-name');
     if (profileName && currentUser) profileName.innerText = currentUser.username;
 
-    // Хэрэв HTML дээр чинь #profile-avatar гэсэн img таг байвал зургийг нь солино
     const profileAvatar = document.getElementById('profile-avatar');
     if (profileAvatar && currentUser.avatar) {
         profileAvatar.src = currentUser.avatar;
@@ -308,6 +303,7 @@ function showMainApp() {
     updateSyncUI();
     loadPosts();
 }
+
 function loadPosts() {
     try {
         const rawPosts = localStorage.getItem('iknow_posts_db');
