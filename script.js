@@ -797,14 +797,10 @@ function randomizeAuthImages() {
 
     authCard.style.backgroundImage = "url('" + centerImg + "')";
 }
+randomizeAuthImages();
 
 function handleLogout() {
     currentUser = null;
     localStorage.removeItem('iknow_current_user');
     showAuthPage('login');
 }
-
-// Хуудас ачаалагдах үед зургуудыг шууд холино
-document.addEventListener('DOMContentLoaded', () => {
-    randomizeAuthImages();
-});
