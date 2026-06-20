@@ -6,10 +6,10 @@ let allPosts = [];
 let currentTab = 'feed';
 let selectedFriend = null;
 
-// Translations Database (Batalgaajsan ireedui -> Ирээдүй биелсэн болгов)
+// Translations Database (Feed -> Timeline, Ирээдүйн урсгал болгов)
 const translations = {
     en: {
-        feed: "Feed",
+        feed: "Timeline",
         friends: "🤝 Friends & Chats",
         chats: "🤖 Future Bot",
         profileSettings: "⚙️ Profile Settings",
@@ -23,7 +23,7 @@ const translations = {
         searchLabel: "Search Timeline..."
     },
     mn: {
-        feed: "Тэжээл",
+        feed: "Ирээдүйн урсгал",
         friends: "🤝 Найзууд & Чат",
         chats: "🤖 Ирээдүйн Бот",
         profileSettings: "⚙️ Профайл Тохиргоо",
@@ -42,7 +42,6 @@ const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
 // App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    // Темыг идэвхжүүлэх
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) themeBtn.innerText = "🎨 Theme: " + currentTheme.toUpperCase();
@@ -61,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTranslations();
 });
 
-// ТЕМЕ СОЛИХ СИСТЕМ (Cyber -> Matrix -> Dark)
 function toggleTheme() {
     if (currentTheme === 'cyber') currentTheme = 'matrix';
     else if (currentTheme === 'matrix') currentTheme = 'dark';
@@ -194,14 +192,20 @@ function handleLogin(e) {
     }
 }
 
-function enterAsGuest() {
-    currentUser = {
-        username: "Guest_" + Math.floor(Math.random() * 900 + 100),
-        avatar: "https://robohash.orgguest.png?set=set4"
-    };
-    // Зочин бүртгэл тул сешнд түр хадгална, үндсэн хэрэглэгчдийн баазыг бохирдуулахгүй
-    localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
-    showMainApp();
+function showMainApp() {
+    const authContainer = document.getElementById('auth-container');
+    const mainApp = document.getElementById('main-app');
+
+    if (authContainer) authContainer.style.display = 'none';
+    if (mainApp) mainApp.style.display = 'block';
+
+    const profileName = document.getElementById('profile-name');
+    if (profileName && currentUser) profileName.innerText = currentUser.username;
+
+    const profileAvatar = document.getElementById('profile-avatar');
+    if (profileAvatar && currentUser.avatar) profileAvatar.src = currentUser.avatar;
+
+    loadPosts();
 }
 function openProfileModal() {
     const modal = document.getElementById('profile-modal');
@@ -241,10 +245,7 @@ function saveProfileModal() {
     }
 
     let usersDb = [];
-    try {
-        const rawData = localStorage.getItem('iknow_users_db');
-        usersDb = rawData ? JSON.parse(rawData) : [];
-    } catch (err) { usersDb = []; }
+    try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch (err) { usersDb = []; }
 
     usersDb = usersDb.map(u => {
         if (u.username.toLowerCase() === currentUser.username.toLowerCase()) {
@@ -277,61 +278,53 @@ function switchTab(tabName) {
     if (tabName === 'friends') loadFriendsList();
 }
 
-function showMainApp() {
-    const authContainer = document.getElementById('auth-container');
-    const mainApp = document.getElementById('main-app');
-
-    if (authContainer) authContainer.style.display = 'none';
-    if (mainApp) mainApp.style.display = 'block';
-
-    const profileName = document.getElementById('profile-name');
-    if (profileName && currentUser) profileName.innerText = currentUser.username;
-
-    const profileAvatar = document.getElementById('profile-avatar');
-    if (profileAvatar && currentUser.avatar) profileAvatar.src = currentUser.avatar;
-
-    loadPosts();
-}
-
-// 📎 ПОСТОНД КОМПЬЮТЕРЭЭС ФАЙЛ СОНГОЖ ОРУУЛАХ ФУНКЦ
+// 🖼️ ЗУРАГ/ВИДЕОГ ШУУД ДЭЛГЭЦЭНД УРЬДЧИЛЖ ХАРУУЛАХ (PREVIEW) ФУНКЦ
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const statusEl = document.getElementById('file-attached-status');
-    if (statusEl) statusEl.innerText = `⏳ Loading ${type}...`;
-
     const reader = new FileReader();
     reader.onload = function(e) {
         postAttachedMedia = { type: type, url: e.target.result };
-        if (statusEl) statusEl.innerText = `✅ ${type === 'image' ? 'Image' : 'Video'} attached!`;
+        
+        // Хайрцагнуудыг олж урьдчилж харуулах логик
+        const previewBox = document.getElementById('post-media-preview-box');
+        const previewImg = document.getElementById('post-image-preview-img');
+        const previewVid = document.getElementById('post-video-preview-vid');
+
+        if (previewBox) previewBox.style.display = 'block';
+        
+        if (type === 'image' && previewImg && previewVid) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+            previewVid.style.display = 'none';
+        } else if (type === 'video' && previewVid && previewImg) {
+            previewVid.src = e.target.result;
+            previewVid.style.display = 'block';
+            previewImg.style.display = 'none';
+        }
     };
     reader.readAsDataURL(file);
 }
 
-// 🕒 FACEBOOK ШИГ ХУГАЦАА БОДДОГ ФУНКЦ
-function timeAgo(timestamp) {
-    const now = new Date();
-    const past = new Date(timestamp);
-    const msPerMinute = 60 * 1000;
-    const msPerHour = msPerMinute * 60;
-    const msPerDay = msPerHour * 24;
+function clearAttachedMedia() {
+    postAttachedMedia = null;
+    const previewBox = document.getElementById('post-media-preview-box');
+    const previewImg = document.getElementById('post-image-preview-img');
+    const previewVid = document.getElementById('post-video-preview-vid');
 
-    const elapsed = now - past;
+    if (previewBox) previewBox.style.display = 'none';
+    if (previewImg) previewImg.style.display = 'none';
+    if (previewVid) previewVid.style.display = 'none';
+}
 
-    if (elapsed < msPerMinute) {
-         return currentLang === 'mn' ? 'Яг одоо' : 'Just now';   
-    } else if (elapsed < msPerHour) {
-         const mins = Math.round(elapsed/msPerMinute);
-         return currentLang === 'mn' ? `${mins} минутын өмнө` : `${mins} min ago`;   
-    } else if (elapsed < msPerDay) {
-         const hours = Math.round(elapsed/msPerHour);
-         return currentLang === 'mn' ? `${hours} цагийн өмнө` : `${hours} hours ago`;   
-    } else {
-        const days = Math.round(elapsed/msPerDay);
-        return currentLang === 'mn' ? `${days} өдрийн өмнө` : `${days} days ago`;   
-    }
+function loadPosts() {
+    try {
+        const rawPosts = localStorage.getItem('iknow_posts_db');
+        allPosts = rawPosts ? JSON.parse(rawPosts) : [];
+    } catch (e) { allPosts = []; }
+    renderPosts();
 }
 function createPost() {
     const inputEl = document.getElementById('future-input');
@@ -352,6 +345,7 @@ function createPost() {
         media: postAttachedMedia,
         timestamp: new Date().toISOString(),
         votes: 0,
+        reports: [], // Гомдол гаргасан хэрэглэгчдийн массивыг шинээр үүсгэв
         comments: []
     };
 
@@ -359,9 +353,7 @@ function createPost() {
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
 
     if (inputEl) inputEl.value = "";
-    postAttachedMedia = null;
-    const statusEl = document.getElementById('file-attached-status');
-    if (statusEl) statusEl.innerText = "";
+    clearAttachedMedia(); // Урьдчилж харах хайрцгийг цэвэрлэх
 
     renderPosts();
 }
@@ -373,9 +365,38 @@ function deletePost(postId) {
     renderPosts();
 }
 
+// 🚨 ЧИНИЙ ХҮССЭН: 10 ХҮН ДАРАХАД АВТОМАТААР УСТАГДДАГ REPORT СИСТЕМ
+function reportPost(postId) {
+    if (!currentUser) return;
+    const post = allPosts.find(p => p.id === postId);
+    if (!post) return;
+
+    if (!post.reports) post.reports = [];
+
+    // Нэг хэрэглэгч олон дахин дарахаас хамгаалах
+    if (post.reports.includes(currentUser.username)) {
+        alert(currentLang === 'mn' ? "Та аль хэдийн гомдол гаргасан байна!" : "You have already reported this post!");
+        return;
+    }
+
+    if (confirm(currentLang === 'mn' ? "Энэ постонд гомдол гаргах уу?" : "Report this post?")) {
+        post.reports.push(currentUser.username);
+
+        // 🚨 Хэрэв гомдлын тоо 10 хүрвэл баазаас автоматаар устгаж цэвэрлэнэ
+        if (post.reports.length >= 10) {
+            alert(currentLang === 'mn' ? "Энэ постыг 10 иргэн гомдоллосон тул систем автоматаар устгалаа." : "Post auto-deleted due to 10 reports.");
+            allPosts = allPosts.filter(p => p.id !== postId);
+        }
+
+        localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
+        renderPosts();
+    }
+}
+
 function searchPosts() {
     renderPosts();
 }
+
 function renderPosts() {
     const feedContainer = document.getElementById('feed-container');
     if (!feedContainer) return;
@@ -427,11 +448,15 @@ function renderPosts() {
         const authorUser = usersDb.find(u => u.username.toLowerCase() === post.author.toLowerCase());
         const liveAvatar = authorUser ? authorUser.avatar : "https://robohash.org";
 
+        // 🗑️ Чи өөрөө (Админ) эсвэл постыг бичсэн хүн устгах товч
         let deleteBtnHtml = "";
-        if (currentUser && post.author === currentUser.username) {
+        if (currentUser && (post.author === currentUser.username || currentUser.username.toLowerCase() === 'sainaa34')) {
             deleteBtnHtml = `<button onclick="deletePost('${post.id}')" style="background:none; border:none; color:var(--cyber-magenta); cursor:pointer; font-size:12px; margin-left:10px;">🗑️</button>`;
         }
 
+        const reportCount = post.reports ? post.reports.length : 0;
+
+        // 📌 БАРУУН БУЛАНД БАЙРЛАХ ТҮГЖЭЭТЭЙ TOOLTIP БҮТЭЦ
         postEl.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
@@ -441,8 +466,15 @@ function renderPosts() {
                         <span>📅 ${timeAgo(post.timestamp)}</span>
                     </div>
                 </div>
-                <div>
-                    <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 ${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"} (${post.votes})</button>
+                <div class="post-header-actions">
+                    <!-- 🚨 Report товчлуур -->
+                    <button onclick="reportPost('${post.id}')" class="report-btn-cyber">⚠️ Report (${reportCount}/10)</button>
+                    
+                    <!-- 🔮 ЧИНИЙ ХҮССЭН: Бичгийг нь нууж хулгана очиход хөөрдөг Tooltip товчлуур -->
+                    <div class="vote-tooltip-container">
+                        <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 (${post.votes})</button>
+                        <span class="tooltip-box-text">${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"}</span>
+                    </div>
                 </div>
             </div>
             <p class="post-main-text">${post.text}</p>
@@ -458,7 +490,6 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 }
-
 function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
     if (post) {
@@ -485,6 +516,7 @@ function addComment(postId) {
         renderPosts();
     }
 }
+
 // 🤝 НАЙЗУУДЫН СИСТЕМ
 function loadFriendsList() {
     const container = document.getElementById('friends-list-container');
@@ -549,7 +581,7 @@ function sendFriendMessage() {
     renderFriendMessages();
 }
 
-// 🤖 ЖИНХЭНЭ УХААЛАГ, УЯН ХАТАН AI БОТ (Хамгийн сүүлийн үеийн NLP логик)
+// 🤖 ЖИНХЭНЭ УХААЛАГ, УЯН ХАТАН AI БОТ
 function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
@@ -570,7 +602,6 @@ function sendDirectMessage() {
         let botResponse = "Цаг хугацааны урсгал шилжиж байна. Процессор ажиллаж байна...";
         const cleanMsg = msg.toLowerCase();
 
-        // 🧠 Сэдэв болгонд маш ухаалаг, өөр өөр хариулт өгөх уян хатан систем
         if (cleanMsg.includes("сайн") || cleanMsg.includes("hello") || cleanMsg.includes("hi")) {
             botResponse = `Сайн уу, ${currentUser.username}! Ирээдүйн матрицын гүнд тавтай морил. Өнөөдөр ямар цаг хугацааны таамаглал дэвшүүлмээр байна?`;
         } else if (cleanMsg.includes("нас") || cleanMsg.includes("old")) {
@@ -587,7 +618,7 @@ function sendDirectMessage() {
                 "Үнэхээр гайхалтай бодол! Квант сүлжээнд энэ тухай өгөгдөл хайж үзлээ, маш ирээдүйтэй харагдаж байна.",
                 "Би таныг маш сайн ойлголоо. Хүн төрөлхтний дараагийн алхам яг үүн рүү чиглэх болов уу."
             ];
-            botResponse = contextualReplies[Math.floor(Math.random() * randomReplies.length)];
+            botResponse = contextualReplies[Math.floor(Math.random() * contextualReplies.length)];
         }
 
         const botRow = document.createElement('div');
