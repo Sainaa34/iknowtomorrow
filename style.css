@@ -1,45 +1,56 @@
-/* 🌌 ЦУВРАЛ ӨНГӨНҮҮД БОЛОН СИСТЕМ */
-:root {
-    --cyber-bg: #0a0a12;
-    --cyber-card: rgba(16, 16, 28, 0.9);
+/* 🪐 MULTI-THEME CONFIGURATION VARIABLES */
+.theme-cyber {
+    --bg-dark: #060608;
+    --bg-card: #0d0d12;
     --cyber-cyan: #00f0ff;
-    --cyber-pink: #ff0055;
-    --cyber-yellow: #fcee0a;
-    --cyber-text: #e0e0ff;
+    --cyber-magenta: #ff007f;
+    --cyber-glow: rgba(0, 240, 255, 0.4);
+    --text-white: #ffffff;
+    --text-gray: #808090;
+    --border-color: #1a1a24;
 }
 
-/* Themes */
 .theme-matrix {
-    --cyber-bg: #020202;
-    --cyber-card: rgba(5, 15, 5, 0.95);
-    --cyber-cyan: #00ff41;
-    --cyber-pink: #008f11;
-    --cyber-text: #00ff41;
+    --bg-dark: #020a02;
+    --bg-card: #051405;
+    --cyber-cyan: #00ff66;
+    --cyber-magenta: #00aa33;
+    --cyber-glow: rgba(0, 255, 102, 0.4);
+    --text-white: #d5ffd5;
+    --text-gray: #558855;
+    --border-color: #0d330d;
 }
 
 .theme-dark {
-    --cyber-bg: #121212;
-    --cyber-card: #1e1e1e;
-    --cyber-cyan: #bb86fc;
-    --cyber-pink: #cf6679;
-    --cyber-text: #ffffff;
+    --bg-dark: #050505;
+    --bg-card: #111111;
+    --cyber-cyan: #ffffff;
+    --cyber-magenta: #444444;
+    --cyber-glow: rgba(255, 255, 255, 0.2);
+    --text-white: #ffffff;
+    --text-gray: #666666;
+    --border-color: #222222;
+}
+
+:root {
+    --cyber-yellow: #ffcc00;
+    --cyber-orange: #ff4500;
 }
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-    background-color: var(--cyber-bg);
-    color: var(--cyber-text);
-    overflow-x: hidden;
-    transition: all 0.3s ease;
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* 🔐 AUTHENTICATION GATEWAY EXTERNAL */
+/* 🔐 AUTHENTICATION CONTAINER (4 ТАЛЫН ЗУРГИЙГ НЭВТ ХАРУУЛАХ ТУНГАЛАГ ФОН) */
 #auth-container {
     display: flex;
     justify-content: center;
@@ -47,210 +58,769 @@ body {
     min-height: 100vh;
     padding: 20px;
     position: relative;
-    /* 🪐 Хар өнгийг тунгалаг (transparent) болгосноор арын 4 зураг шууд нэвт гарч ирнэ! */
-    background: transparent !important; 
+    background: transparent !important; /* Хар өнгийг устгаж, зургийг нэвт харуулна */
     background-attachment: fixed;
     background-size: cover;
     overflow: hidden;
 }
 
-
-
+/* 🔒 НЭВТРЭХ ХАЙРЦАГНЫ НЕОН ШИЛЭН ЭФФЕКТ */
 .auth-card {
-    background: var(--cyber-card);
+    background: rgba(13, 13, 18, 0.88) !important; /* Арын зураг дээр үг уншигдах харанхуй уусгалт */
     border: 2px solid var(--cyber-cyan);
-    box-shadow: 0 0 20px var(--cyber-cyan);
-    padding: 40px;
-    border-radius: 10px;
+    padding: 35px;
+    border-radius: 12px;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
     text-align: center;
+    position: relative;
+    z-index: 100;
 }
 
-.auth-card h1 {
-    font-size: 28px;
-    color: var(--cyber-yellow);
-    text-shadow: 0 0 10px var(--cyber-yellow);
-    margin-bottom: 5px;
-}
-
-.subtitle {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--cyber-pink);
-    margin-bottom: 25px;
-}
-
-/* Inputs & Buttons */
-input[type="text"], input[type="password"], textarea {
+/* 📥 ЧИНИЙ ХҮССЭН: БӨГЛӨХ НҮДНҮҮДИЙГ УУСГАХГҮЙ, МҮНГӨЛӨГ ТОД ГАРГАХ СТИЛЬ */
+.auth-card input {
     width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--cyber-pink);
-    color: #fff;
-    border-radius: 5px;
+    background: #14141f !important; /* Санах ойд уусдаггүй хатуу, тод саарал өнгө */
+    border: 1px solid var(--cyber-cyan) !important; /* Цэнхэр неон ирмэг */
+    color: #ffffff !important; /* Бичих үсэг нь цул цагаан */
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
     outline: none;
 }
 
-input:focus, textarea:focus {
-    border-color: var(--cyber-cyan);
-    box-shadow: 0 0 10px var(--cyber-cyan);
+.auth-card input:focus {
+    border-color: var(--cyber-magenta) !important;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.5) !important;
 }
-
 .cyber-btn {
     width: 100%;
-    padding: 12px;
-    background: var(--cyber-pink);
+    background: linear-gradient(90deg, var(--cyber-cyan), var(--cyber-magenta));
+    color: #fff;
     border: none;
-    color: white;
+    padding: 12px;
+    border-radius: 6px;
     font-weight: bold;
+    font-size: 0.95rem;
     cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 0 0 10px var(--cyber-pink);
-    transition: 0.2s;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    margin-bottom: 12px;
 }
 
 .cyber-btn:hover {
-    background: var(--cyber-cyan);
-    box-shadow: 0 0 15px var(--cyber-cyan);
-    color: #000;
+    box-shadow: 0 0 15px var(--cyber-glow);
+    transform: translateY(-1px);
 }
 
 .toggle-link {
     background: none;
     border: none;
-    color: var(--cyber-cyan);
-    margin-top: 20px;
+    color: var(--text-gray);
+    font-size: 0.8rem;
     cursor: pointer;
-    font-size: 13px;
 }
 
 .toggle-link:hover {
-    text-decoration: underline;
+    color: var(--cyber-cyan);
 }
 
-/* 🛸 MAIN APPLICATION INTERFACE */
+/* 🛸 MAIN APP HEADER WITH TOP RIGHT EXIT */
 .cyber-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
     padding: 15px 25px;
-    background: rgba(10, 10, 20, 0.9);
-    border-bottom: 2px solid var(--cyber-pink);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .logo-neon {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--cyber-cyan);
-    text-shadow: 0 0 10px var(--cyber-cyan);
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--text-white);
 }
 
-.header-actions button {
-    background: transparent;
-    border: 1px solid var(--cyber-cyan);
+.timeline-badge {
+    font-size: 0.65rem;
+    background: rgba(0, 240, 255, 0.1);
     color: var(--cyber-cyan);
-    padding: 8px 15px;
-    margin-left: 10px;
-    cursor: pointer;
+    padding: 3px 6px;
     border-radius: 4px;
+    margin-left: 8px;
+    font-weight: bold;
 }
 
-.header-actions .exit-top-btn {
-    border-color: var(--cyber-pink);
-    color: var(--cyber-pink);
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Layout Grid */
+.theme-toggle-btn, .lang-toggle-btn {
+    background: #14141f;
+    border: 1px solid var(--border-color);
+    color: var(--text-white);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* 🚪 БАРУУН ДЭЭД БУЛАНГИЙН EXIT ТОВЧ */
+.exit-top-btn {
+    background: rgba(255, 0, 127, 0.1);
+    border: 1px solid rgba(255, 0, 127, 0.3);
+    color: var(--cyber-magenta);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.exit-top-btn:hover {
+    background: var(--cyber-magenta);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+}
+
 .app-layout {
     display: flex;
-    min-height: calc(100vh - 70px);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    gap: 20px;
 }
 
 .sidebar {
     width: 250px;
-    background: rgba(15, 15, 30, 0.8);
-    border-right: 1px solid rgba(255, 0, 85, 0.3);
-    padding: 20px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .profile-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
     text-align: center;
-    margin-bottom: 30px;
 }
 
 .user-avatar-main {
-    width: 80px;
-    height: 80px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
-    border: 2px solid var(--cyber-yellow);
+    background: #101015;
+    margin-bottom: 10px;
+    border: 2px solid var(--cyber-cyan);
+    object-fit: cover;
 }
 
-.side-menu .menu-tab {
-    display: block;
+.edit-profile-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-gray);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-top: 10px;
     width: 100%;
-    padding: 12px;
+}
+
+.side-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.menu-tab {
     background: transparent;
     border: 1px solid transparent;
-    color: var(--cyber-text);
-    text-align: left;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.side-menu .menu-tab.active, .side-menu .menu-tab:hover {
-    background: rgba(0, 240, 255, 0.1);
-    border-color: var(--cyber-cyan);
-    color: var(--cyber-cyan);
-}
-
-.main-content {
-    flex: 1;
-    padding: 25px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-/* Timeline & Feed */
-.create-post-card {
-    background: var(--cyber-card);
-    border: 1px solid var(--cyber-cyan);
-    padding: 20px;
+    color: var(--text-gray);
+    padding: 10px 14px;
     border-radius: 6px;
-    margin-bottom: 25px;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.create-post-card textarea {
-    height: 80px;
+.menu-tab:hover, .menu-tab.active {
+    background: #121218;
+    color: var(--text-white);
+    border-color: var(--border-color);
+}
+
+.menu-tab.active {
+    border-left: 3px solid var(--cyber-cyan);
+}
+/* 📰 CENTRAL AREA & POST GENERATION */
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 650px;
+    width: 100%;
+}
+
+.search-wrapper input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-white);
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.create-post-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.create-post-box textarea {
+    background: transparent;
+    border: none;
     resize: none;
+    height: 80px;
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    color: #fff;
+    outline: none;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+}
+
+.media-attach-btns {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.action-mini {
+    background: #14141f;
+    border: 1px solid var(--border-color);
+    color: var(--text-gray);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.action-mini:hover {
+    border-color: var(--text-white);
+    color: var(--text-white);
 }
 
 .post-submit-btn {
     background: var(--cyber-cyan);
-    border: none;
     color: #000;
-    padding: 8px 20px;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 4px;
-    float: right;
+    font-size: 0.85rem;
 }
 
-/* Chat Screen */
-.chat-messages-box::-webkit-scrollbar {
-    width: 5px;
+/* 🔮 TIMELINE POST CARD & SHATALAL REAL EFFECTS */
+.post-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px;
+    margin-top: 12px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
 }
-.chat-messages-box::-webkit-scrollbar-thumb {
-    background: var(--cyber-pink);
+
+/* 🔥 50+ Санал: Неон Галт Эффект */
+.post-card.tier-fire {
+    border-color: var(--cyber-orange);
+    animation: neonFireGlow 2s infinite alternate;
+}
+
+/* ⚡ 500+ Санал: Кибер Цахилгаанжсан Аянгын Эффект */
+.post-card.tier-electric {
+    border-color: var(--cyber-cyan);
+    animation: neonLightningPulse 1s infinite alternate;
+}
+
+/* 🪐 5000+ Санал: Matrix Супер Гэрэлтэлт */
+.post-card.tier-matrix {
+    border-color: #ff00ff;
+    animation: neonMatrixHyper 1.5s infinite linear;
+}
+
+@keyframes neonFireGlow {
+    0% { box-shadow: 0 0 8px rgba(255, 69, 0, 0.3); }
+    100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.8); }
+}
+
+@keyframes neonLightningPulse {
+    0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); transform: scale(1); }
+    100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.9); transform: scale(1.005); }
+}
+
+@keyframes neonMatrixHyper {
+    0% { box-shadow: 0 0 15px #ff00ff; filter: hue-rotate(0deg); }
+    50% { box-shadow: 0 0 35px #00ffff; }
+    100% { box-shadow: 0 0 15px #ff00ff; filter: hue-rotate(360deg); }
+}
+
+.post-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.post-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-avatar-mini {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #101015;
+    object-fit: cover;
+}
+
+.post-meta-text h4 {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.post-meta-text span {
+    font-size: 0.7rem;
+    color: var(--text-gray);
+}
+
+/* 💬 FACEBOOK-ИЙН ... УНАДАГ ЦЭСНИЙ НЕОН СТИЛЬ */
+.post-menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.post-more-btn {
+    background: none;
+    border: none;
+    color: var(--text-gray);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.post-more-btn:hover {
+    color: var(--text-white);
+}
+
+.post-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 50;
+    min-width: 120px;
+    overflow: hidden;
+}
+
+.post-dropdown-menu button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-white);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.post-dropdown-menu button:hover {
+    background: #141420;
+}
+
+.post-dropdown-menu button.delete-btn-red {
+    color: var(--cyber-magenta);
+}
+
+.post-dropdown-menu button.delete-btn-red:hover {
+    background: rgba(255, 0, 127, 0.1);
+}
+.post-main-text {
+    font-size: 0.98rem;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    color: #eee;
+}
+
+.post-media-content img, .post-media-content video {
+    width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    background: #000;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.post-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 🔮 TWITTER FLOATING TOOLTIP */
+.vote-tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.vote-btn-neon {
+    background: #14141e;
+    border: 1px solid var(--border-color);
+    color: var(--cyber-yellow);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.vote-btn-neon:hover {
+    border-color: var(--cyber-yellow);
+    background: rgba(255, 204, 0, 0.05);
+}
+
+.vote-tooltip-container .tooltip-box-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgba(13, 13, 18, 0.95);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%; 
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    font-size: 0.75rem;
+    border: 1px solid var(--cyber-yellow);
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
+    pointer-events: none; 
+}
+
+.vote-tooltip-container:hover .tooltip-box-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(-3px); 
+}
+
+/* 💬 COMMENTS SYSTEM */
+.comments-section {
+    margin-top: 12px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+}
+
+.comment-node {
+    font-size: 0.82rem;
+    color: #bbb;
+    margin-bottom: 5px;
+    background: #0f0f15;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.comment-input-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.comment-input-row input {
+    flex: 1;
+    margin-bottom: 0;
+    padding: 6px 10px;
+    font-size: 0.82rem;
+}
+
+.comment-add-btn {
+    background: #1a1a24;
+    color: var(--text-white);
+    border: 1px solid var(--border-color);
+    padding: 0 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+/* 🤝 FRIENDS & REAL-TIME CHAT LAYOUT */
+.friends-layout {
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    height: 480px;
+    overflow: hidden;
+}
+
+.friends-list-box {
+    width: 200px;
+    border-right: 1px solid var(--border-color);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.friends-list-box h4 {
+    font-size: 0.85rem;
+    color: var(--cyber-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.friend-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: background 0.2s;
+}
+
+.friend-item-row:hover, .friend-item-row.active {
+    background: #141420;
+}
+
+.friend-avatar-mini {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--cyber-cyan);
+}
+
+.friends-chat-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background: rgba(10, 10, 15, 0.4);
+}
+
+.friends-chat-box h4 {
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    color: var(--text-gray);
+}
+
+/* 🤖 AI FUTURE BOT CHAT SYSTEM */
+.chat-header-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.bot-desc {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    margin-top: 3px;
+}
+
+.cyber-chat-messages {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    height: 350px;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.msg-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.msg-row.user {
+    align-self: flex-end;
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    color: var(--cyber-cyan);
+}
+
+.msg-row.bot, .msg-row.friend-msg {
+    align-self: flex-start;
+    background: #14141e;
+    border: 1px solid var(--border-color);
+    color: #ddd;
+}
+
+.chat-input-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.chat-input-bar input {
+    flex: 1;
+    margin-bottom: 0;
 }
 
 .chat-send-btn {
-    background: var(--cyber-pink);
-    color: #fff;
+    background: var(--cyber-magenta);
+    color: var(--text-white);
     border: none;
     padding: 0 20px;
+    border-radius: 6px;
+    font-weight: bold;
     cursor: pointer;
+    font-size: 0.85rem;
+}
+
+/* 👤 MODAL POPUP INTERFACE */
+.cyber-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.cyber-modal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--cyber-cyan);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+    padding: 25px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 380px;
+}
+
+.cyber-modal-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.modal-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.modal-form-group label {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    text-transform: uppercase;
+}
+
+.modal-form-group input {
+    margin-bottom: 0;
+}
+
+.modal-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.modal-btn {
+    padding: 8px 16px;
     border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border: none;
+}
+
+.modal-btn.close {
+    background: #181822;
+    color: var(--text-white);
+}
+
+.modal-btn.save {
+    background: var(--cyber-cyan);
+    color: #000;
+}
+
+/* 👁️ CYBERPUNK PASSWORD SHOW/HIDE EYE DESIGN */
+.password-toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--cyber-cyan);
+    font-size: 1.1rem;
+    user-select: none;
+    transition: all 0.2s;
+    z-index: 101;
+}
+
+.password-toggle-eye:hover {
+    text-shadow: 0 0 8px var(--cyber-cyan);
+    transform: translateY(-50%) scale(1.1);
 }
