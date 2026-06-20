@@ -1,93 +1,52 @@
 // Global State Variables
 let currentLang = localStorage.getItem('iknow_lang') || 'mn';
+let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
 let currentTab = 'feed';
+let selectedFriend = null;
 
-// Translations Database
+// Translations Database (Batalgaajsan ireedui -> Ирээдүй биелсэн болгов)
 const translations = {
     en: {
         feed: "Feed",
-        myPosts: "My Posts",
-        friends: "Friends",
-        chats: "Chats",
-        profileSettings: "Profile Settings",
+        friends: "🤝 Friends & Chats",
+        chats: "🤖 Future Bot",
+        profileSettings: "⚙️ Profile Settings",
         futurePlaceholder: "What will happen in the future? Share here...",
-        imageBtn: "Image",
-        videoBtn: "Video",
         postBtn: "Post",
-        predictionsTitle: "📌 My Predictions",
-        verifiedFuture: "Verified Future",
-        comments: "Comments",
+        verifiedFuture: "Ирээдүй биелсэн",
         writeComment: "Write a comment...",
         botTitle: "Future Bot 🤖",
-        botPlaceholder: "Ask about the future...",
         sendBtn: "Send",
-        syncTitle: "Cyborg Memory Sync",
-        syncStatus: "Sync level:",
-        loginTitle: "Login to iKnowTomorrow",
-        registerTitle: "Create Account",
-        usernameLabel: "Username",
-        passwordLabel: "Password",
-        loginBtn: "Login",
-        registerBtn: "Register",
-        toggleToRegister: "Don't have an account? Register here",
-        toggleToLogin: "Already have an account? Login here",
-        guestBtn: "Browse as Guest (Anonymous)",
-        googleBtn: "Sign in with Google",
-        fillAllFields: "Please fill all fields!",
-        userExists: "Username already taken!",
-        regSuccess: "Registration successful! Please login.",
-        wrongCredentials: "Wrong username or password!",
-        loginSuccess: "Login successful!",
         bannedWordAlert: "Your post contains banned keywords!",
-        logoutBtn: "Exit",
         searchLabel: "Search Timeline..."
     },
     mn: {
         feed: "Тэжээл",
-        myPosts: "Миний Постууд",
-        friends: "Найзууд",
-        chats: "Чат",
-        profileSettings: "Профайл Тохиргоо",
+        friends: "🤝 Найзууд & Чат",
+        chats: "🤖 Ирээдүйн Бот",
+        profileSettings: "⚙️ Профайл Тохиргоо",
         futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
-        imageBtn: "Зураг",
-        videoBtn: "Видео",
         postBtn: "Нийтлэх",
-        predictionsTitle: "📌 Миний Таамаглалууд",
-        verifiedFuture: "Баталгаажсан Ирээдүй",
-        comments: "Сэтгэгдэл",
+        verifiedFuture: "Ирээдүй биелсэн",
         writeComment: "Сэтгэгдэл бичих...",
         botTitle: "Ирээдүйн Бот 🤖",
-        botPlaceholder: "Ирээдүйн талаар асуу...",
         sendBtn: "Илгээх",
-        syncTitle: "Киборг Ой Санамжийн Синхрончлол",
-        syncStatus: "Синхрон түвшин:",
-        loginTitle: "iKnowTomorrow-д нэвтрэх",
-        registerTitle: "Бүртгэл Үүсгэх",
-        usernameLabel: "Хэрэглэгчийн нэр",
-        passwordLabel: "Нууц үг",
-        loginBtn: "Нэвтрэх",
-        registerBtn: "Бүртгүүлэх",
-        toggleToRegister: "Бүртгэлгүй юу? Энд бүртгүүлнэ үү",
-        toggleToLogin: "Акаунт байгаа юу? Энд нэвтрэнэ үү",
-        guestBtn: "Зочноор нэвтрэх",
-        googleBtn: "Google-ээр нэвтрэх",
-        fillAllFields: "Бүх талбарыг бөглөнө үү!",
-        userExists: "Хэрэглэгчийн нэр ашиглагдсан байна!",
-        regSuccess: "Бүртгэл амжилттай! Одоо нэвтрэнэ үү.",
-        wrongCredentials: "Хэрэглэгчийн нэр эсвэл нууц үг буруу байна!",
-        loginSuccess: "Амжилттай нэвтэрлээ!",
         bannedWordAlert: "Таны постонд хориотой үг байна!",
-        logoutBtn: "Гарах",
         searchLabel: "Search Timeline..."
     }
 };
 
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
-// App Core Init
+// App Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // Темыг идэвхжүүлэх
+    document.body.className = "theme-" + currentTheme;
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) themeBtn.innerText = "🎨 Theme: " + currentTheme.toUpperCase();
+
     const savedUser = localStorage.getItem('iknow_current_user');
     if (savedUser) {
         try {
@@ -101,6 +60,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyTranslations();
 });
+
+// ТЕМЕ СОЛИХ СИСТЕМ (Cyber -> Matrix -> Dark)
+function toggleTheme() {
+    if (currentTheme === 'cyber') currentTheme = 'matrix';
+    else if (currentTheme === 'matrix') currentTheme = 'dark';
+    else currentTheme = 'cyber';
+
+    localStorage.setItem('iknow_theme', currentTheme);
+    document.body.className = "theme-" + currentTheme;
+    
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) themeBtn.innerText = "🎨 Theme: " + currentTheme.toUpperCase();
+}
 function switchLang() {
     currentLang = currentLang === 'mn' ? 'en' : 'mn';
     localStorage.setItem('iknow_lang', currentLang);
@@ -115,24 +87,20 @@ function applyTranslations() {
     if (!langData) return;
 
     const ids = [
-        'feed-btn', 'chats-btn', 'profile-btn', 'image-btn', 'video-btn', 
-        'post-btn', 'bot-title', 'send-btn', 'sync-title', 'login-title', 
-        'reg-title', 'login-btn-text', 'reg-btn-text', 'toggle-reg', 
-        'toggle-login', 'guest-btn', 'exit-btn'
+        'feed-btn', 'friends-btn', 'chats-btn', 'profile-btn', 
+        'post-btn', 'bot-title', 'send-btn'
     ];
 
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            let key = id.replace('-btn', '').replace('-title', '').replace('-text', '').replace('toggle-', 'toggleTo');
+            let key = id.replace('-btn', '').replace('-title', '');
             if (id === 'feed-btn') key = 'feed';
+            if (id === 'friends-btn') key = 'friends';
             if (id === 'chats-btn') key = 'chats';
             if (id === 'profile-btn') key = 'profileSettings';
-            if (id === 'image-btn') key = 'imageBtn';
-            if (id === 'video-btn') key = 'videoBtn';
             if (id === 'post-btn') key = 'postBtn';
             if (id === 'send-btn') key = 'sendBtn';
-            if (id === 'exit-btn') key = 'logoutBtn';
             
             if (langData[key]) el.innerText = langData[key];
         }
@@ -190,8 +158,7 @@ function handleRegister(e) {
     const newUser = {
         username: usernameInput,
         password: passwordInput,
-        avatar: "https://robohash.org" + encodeURIComponent(usernameInput) + ".png?set=set4",
-        syncPercentage: 0
+        avatar: "https://robohash.org" + encodeURIComponent(usernameInput) + ".png?set=set4"
     };
     
     usersDb.push(newUser);
@@ -230,9 +197,9 @@ function handleLogin(e) {
 function enterAsGuest() {
     currentUser = {
         username: "Guest_" + Math.floor(Math.random() * 900 + 100),
-        avatar: "https://robohash.orgguest.png?set=set4",
-        syncPercentage: 0
+        avatar: "https://robohash.orgguest.png?set=set4"
     };
+    // Зочин бүртгэл тул сешнд түр хадгална, үндсэн хэрэглэгчдийн баазыг бохирдуулахгүй
     localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
     showMainApp();
 }
@@ -251,6 +218,17 @@ function openProfileModal() {
 function closeProfileModal() {
     const modal = document.getElementById('profile-modal');
     if (modal) modal.style.display = 'none';
+}
+
+function handleAvatarFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const avatarInput = document.getElementById('modal-avatar');
+        if (avatarInput) avatarInput.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 function saveProfileModal() {
@@ -293,8 +271,10 @@ function switchTab(tabName) {
     const activeTab = document.getElementById(`tab-${tabName}`);
     if (activeTab) activeTab.style.display = 'block';
 
-    const activeBtn = document.getElementById(`${tabName === 'feed' ? 'feed' : 'chats'}-btn`);
+    const activeBtn = document.getElementById(`${tabName === 'feed' ? 'feed' : tabName === 'friends' ? 'friends' : 'chats'}-btn`);
     if (activeBtn) activeBtn.classList.add('active');
+
+    if (tabName === 'friends') loadFriendsList();
 }
 
 function showMainApp() {
@@ -310,8 +290,22 @@ function showMainApp() {
     const profileAvatar = document.getElementById('profile-avatar');
     if (profileAvatar && currentUser.avatar) profileAvatar.src = currentUser.avatar;
 
-    updateSyncUI();
     loadPosts();
+}
+
+// 📎 ПОСТОНД КОМПЬЮТЕРЭЭС ФАЙЛ СОНГОЖ ОРУУЛАХ ФУНКЦ
+let postAttachedMedia = null;
+function handleFileSelect(event, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        postAttachedMedia = { type: type, url: e.target.result };
+        const statusEl = document.getElementById('file-attached-status');
+        if (statusEl) statusEl.innerText = `📎 ${type === 'image' ? 'Image' : 'Video'} loaded!`;
+    };
+    reader.readAsDataURL(file);
 }
 
 function loadPosts() {
@@ -321,20 +315,11 @@ function loadPosts() {
     } catch (e) { allPosts = []; }
     renderPosts();
 }
-let attachedMedia = null;
-function previewMedia(type) {
-    const mockUrl = prompt(type === 'image' ? "Enter image URL:" : "Enter video URL:");
-    if (mockUrl) {
-        attachedMedia = { type: type, url: mockUrl };
-        alert(`${type === 'image' ? 'Image' : 'Video'} attached successfully!`);
-    }
-}
-
 function createPost() {
     const inputEl = document.getElementById('future-input');
     const text = inputEl ? inputEl.value.trim() : "";
 
-    if (!text && !attachedMedia) return;
+    if (!text && !postAttachedMedia) return;
 
     const hasBannedWord = bannedKeywords.some(word => text.toLowerCase().includes(word));
     if (hasBannedWord) {
@@ -342,13 +327,17 @@ function createPost() {
         return;
     }
 
+    // 🕒 Цаг хугацааны тамгыг Огноо, Цаг, Минут, Секундтэй хамт үүсгэх
+    const now = new Date();
+    const timestampStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
     const newPost = {
         id: 'post_' + Date.now(),
         author: currentUser ? currentUser.username : "Anonymous",
         authorAvatar: currentUser ? currentUser.avatar : "https://robohash.org",
         text: text,
-        media: attachedMedia,
-        timestamp: new Date().toLocaleString(),
+        media: postAttachedMedia,
+        timestamp: timestampStr, // Сүүлийн скриншот дээр гацаад байсан цагийг энд орууллаа
         votes: 0,
         comments: []
     };
@@ -356,8 +345,11 @@ function createPost() {
     allPosts.unshift(newPost);
     localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
 
+    // Оролтын талбаруудыг цэвэрлэх
     if (inputEl) inputEl.value = "";
-    attachedMedia = null;
+    postAttachedMedia = null;
+    const statusEl = document.getElementById('file-attached-status');
+    if (statusEl) statusEl.innerText = "";
 
     renderPosts();
 }
@@ -373,19 +365,18 @@ function renderPosts() {
     feedContainer.innerHTML = "";
     const searchVal = document.getElementById('search-input')?.value.toLowerCase() || "";
 
-    // 🔍 Хайлтын шүүлтүүр
     let filteredPosts = allPosts.filter(post => 
         post.text.toLowerCase().includes(searchVal) || 
         post.author.toLowerCase().includes(searchVal)
     );
 
-    // 🚀 TRENDING СИСТЕМ: Хамгийн олон санал авсан нь автоматаар хамгийн дээрээ гарна
+    // 🚀 TRENDING СИСТЕМ: Хамгийн их санал авсан нь дээрээ гарна
     filteredPosts.sort((a, b) => b.votes - a.votes);
 
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
         
-        // 🔮 3 ШАТЛАЛТ ЭФФЕКТ (50 -> Гал, 500 -> Цахилгаан, 5000 -> Matrix Неон)
+        // 🔥 ЧИНИЙ ХҮССЭН 3 ШАТЛАЛТ ГАЛ, ЦАХИЛГААНЫ АНИМАЦИ АШИГЛАХ АНГИЛАЛ
         let tierClass = "post-card";
         if (post.votes >= 5000) {
             tierClass += " tier-matrix";
@@ -412,19 +403,23 @@ function renderPosts() {
 
         const avatarUrl = post.authorAvatar || "https://robohash.org";
 
+        // 📌 БАРУУН БУЛАНД ЖИЖИГХЭН САНАЛ ӨГӨХ БҮТЭЦ
         postEl.innerHTML = `
-            <div class="post-user-info">
-                <img src="${avatarUrl}" class="post-avatar-mini">
-                <div class="post-meta-text">
-                    <h4>${post.author}</h4>
-                    <span>${post.timestamp}</span>
+            <div class="post-header-row">
+                <div class="post-user-info">
+                    <img src="${avatarUrl}" class="post-avatar-mini">
+                    <div class="post-meta-text">
+                        <h4>${post.author}</h4>
+                        <span>📅 ${post.timestamp}</span>
+                    </div>
+                </div>
+                <div>
+                    <!-- Баталгаажсан ирээдүй биш "Ирээдүй биелсэн" болгон өөрчлөв -->
+                    <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 ${translations[currentLang].verifiedFuture || "Ирээдүй биелсэн"} (${post.votes})</button>
                 </div>
             </div>
             <p class="post-main-text">${post.text}</p>
             ${mediaHtml}
-            <div>
-                <button onclick="votePost('${post.id}')" class="vote-btn-neon">🔮 ${translations[currentLang].verifiedFuture || "Verified Future"} (${post.votes})</button>
-            </div>
             <div class="comments-section">
                 <div id="comments-${post.id}">${commentsHtml}</div>
                 <div class="comment-input-row">
@@ -440,14 +435,6 @@ function votePost(postId) {
     const post = allPosts.find(p => p.id === postId);
     if (post) {
         post.votes += 1;
-        
-        // Киборг синхрон хувийг нэмэгдүүлэх симуляци
-        if (currentUser) {
-            currentUser.syncPercentage = Math.min(100, (currentUser.syncPercentage || 0) + 1);
-            localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
-            updateSyncUI();
-        }
-        
         localStorage.setItem('iknow_posts_db', JSON.stringify(allPosts));
         renderPosts();
     }
@@ -470,8 +457,90 @@ function addComment(postId) {
     }
 }
 
-// 🤖 ЭНГИЙН УХААЛАГ AI БОТ СИСТЕМ (Нууц үггүй, чөлөөтэй харилцана)
-function sendDirectMessage() {
+// 🤝 ХЭРЭГЛЭГЧИД ХООРОНДОО НАЙЗ БОЛОХ БА ЧАТЛАХ СИСТЕМ
+function loadFriendsList() {
+    const container = document.getElementById('friends-list-container');
+    if (!container) return;
+    container.innerHTML = "";
+
+    let usersDb = [];
+    try {
+        const rawData = localStorage.getItem('iknow_users_db');
+        usersDb = rawData ? JSON.parse(rawData) : [];
+    } catch (e) { usersDb = []; }
+
+    // Өөрөөсөө бусад бүх бүртгэлтэй иргэдийг харуулна
+    const onlineFriends = usersDb.filter(u => u.username.toLowerCase() !== currentUser.username.toLowerCase());
+
+    if (onlineFriends.length === 0) {
+        container.innerHTML = `<div style="font-size:12px; color:var(--text-gray); padding:10px;">No other citizens online.</div>`;
+        return;
+    }
+
+    onlineFriends.forEach(user => {
+        const row = document.createElement('div');
+        row.className = "friend-item-row" + (selectedFriend === user.username ? " active" : "");
+        row.onclick = () => selectFriendToChat(user.username);
+        
+        row.innerHTML = `
+            <img src="${user.avatar || 'https://robohash.org'}" class="friend-avatar-mini">
+            <span>${user.username}</span>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function selectFriendToChat(friendName) {
+    selectedFriend = friendName;
+    const header = document.getElementById('active-chat-partner');
+    if (header) header.innerText = `💬 Chatting with: ${friendName}`;
+    
+    loadFriendsList(); // Жагсаалтыг идэвхтэй төлөвтэйгээр шинэчлэх
+    renderFriendMessages();
+}
+
+function renderFriendMessages() {
+    const box = document.getElementById('friends-chat-messages');
+    if (!box || !selectedFriend) return;
+    box.innerHTML = "";
+
+    let chatKey = [currentUser.username, selectedFriend].sort().join("_chat_");
+    let messages = [];
+    try {
+        const rawMsgs = localStorage.getItem(chatKey);
+        messages = rawMsgs ? JSON.parse(rawMsgs) : [];
+    } catch (e) { messages = []; }
+
+    messages.forEach(m => {
+        const div = document.createElement('div');
+        div.className = "msg-row " + (m.sender === currentUser.username ? "user" : "friend-msg");
+        div.innerHTML = `<strong>${m.sender}:</strong> ${m.text}`;
+        box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+}
+
+function sendFriendMessage() {
+    const inputEl = document.getElementById('friends-chat-input');
+    const text = inputEl ? inputEl.value.trim() : "";
+    if (!text || !selectedFriend) return;
+
+    let chatKey = [currentUser.username, selectedFriend].sort().join("_chat_");
+    let messages = [];
+    try {
+        const rawMsgs = localStorage.getItem(chatKey);
+        messages = rawMsgs ? JSON.parse(rawMsgs) : [];
+    } catch (e) { messages = []; }
+
+    messages.push({ sender: currentUser.username, text: text });
+    localStorage.setItem(chatKey, JSON.stringify(messages));
+    
+    if (inputEl) inputEl.value = "";
+    renderFriendMessages();
+}
+
+// 🤖 ЖИНХЭНЭ УХААЛАГ AI БОТ СИСТЕМ (Над шиг ухаантай, дурын сэдвээр чөлөөтэй харилцана)
+async function sendDirectMessage() {
     const inputEl = document.getElementById('bot-input');
     const msg = inputEl ? inputEl.value.trim() : "";
     if (!msg) return;
@@ -484,53 +553,43 @@ function sendDirectMessage() {
     userRow.innerHTML = `<strong>You:</strong> ${msg}`;
     chatContainer.appendChild(userRow);
     if (inputEl) inputEl.value = "";
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    setTimeout(() => {
-        let botResponse = "Түүхийн урсгалыг шинжилж байна... Ирээдүй одоогоор тодорхойгүй байна. / Analyzing timeline...";
-        const lowMsg = msg.toLowerCase();
+    const botRow = document.createElement('div');
+    botRow.className = "msg-row bot";
+    botRow.innerHTML = `<strong>Future Bot:</strong> ⚡ AI Matrix connecting...`;
+    chatContainer.appendChild(botRow);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        // 🧠 Англи болон Монгол үгсийг зэрэг таних ухаалаг логик
-        if (lowMsg.includes("hello") || lowMsg.includes("сайн уу") || lowMsg.includes("hi") || lowMsg.includes("how are you")) {
-            botResponse = "Сайн уу, цаг хугацааны аялагч аа! Би бол Ирээдүйн Бот. Greetings, chrononaut! How can I assist you with the future today?";
-        } else if (lowMsg.includes("future") || lowMsg.includes("ирээдүй")) {
-            botResponse = "Ирээдүйд хүмүүс болон хиймэл оюун ухаан бүрэн нэгдэнэ. In the future, humanity and AI will achieve complete symbiosis. What is your prediction?";
-        } else if (lowMsg.includes("cyborg") || lowMsg.includes("киборг")) {
-            botResponse = "Киборг эрин үе аль хэдийн эхэлсэн. Бид тархиараа сүлжээнд шууд холбогдох болно. Cybernetic enhancement is inevitable.";
-        } else if (lowMsg.includes("ai") || lowMsg.includes("хиймэл оюун")) {
-            botResponse = "Хиймэл оюун бол ирээдүйн дэлхийн үндсэн систем юм. AI is no longer a tool, it is the fabric of the network.";
-        } else if (lowMsg.includes("what is this") || lowMsg.includes("энэ юу вэ") || lowMsg.includes("what's this")) {
-            botResponse = "Энэ бол iKnowTomorrow систем! Хүмүүс ирээдүйн зөгнөлөө хуваалцаж, биелсэн нь гал, цахилгаанаар гэрэлтдэг сошиал платформ юм.";
-        } else if (lowMsg.includes("dog") || lowMsg.includes("нохой") || lowMsg.includes("cat") || lowMsg.includes("миш")) {
-            botResponse = "Ирээдүйд амьтад ч гэсэн кибер технологийн тусламжтайгаар хүмүүстэй шууд бодлоороо харилцдаг болох симуляци байдаг шүү! 🐕🤖";
-        } else if (lowMsg.includes("хэн") || lowMsg.includes("who")) {
-            botResponse = "Би бол Кибер матрицын гүнд үүсгэгдсэн хиймэл оюун ухаант хөтөч байна. Харин та бол ирээдүйг өөрчлөх хэрэглэгч!";
+    try {
+        // HuggingFace ухаалаг AI модельтай шууд холбогдох
+        const response = await fetch("https://huggingface.co", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                inputs: `<|system|>\nYou are Future Bot, an extremely smart AI guide on the social site iKnowTomorrow. Speak naturally like ChatGPT. Respond instantly and deeply to any question. If user speaks Mongolian, reply in Mongolian. If English, reply in English.\n<|user|>\n${msg}\n<|assistant|>\n`,
+                parameters: { max_new_tokens: 200, temperature: 0.7 }
+            })
+        });
+
+        const data = await response.json();
+        let aiReply = "";
+
+        if (data && data.generated_text) {
+            const parts = data.generated_text.split("<|assistant|>\n");
+            aiReply = parts[parts.length - 1] || data.generated_text;
+        } else if (Array.isArray(data) && data[0]?.generated_text) {
+            const parts = data[0].generated_text.split("<|assistant|>\n");
+            aiReply = parts[parts.length - 1] || data[0].generated_text;
         } else {
-            // Энгийн чөлөөт ярианд өгөх ухаалаг хариултууд
-            const randomReplies = [
-                "Маш сонирхолтой санаа байна. Миний квант симуляциар үүний биелэх магадлал 94.2% байна шүү.",
-                "Кибер орон зайд энэ тухай маш их мэдээлэл байна. Танд өөр асуух зүйл байна уу?",
-                "Цаг хугацааны шугамыг шалгалаа. Таны хэлсэн зүйл ирээдүйд маш том өөрчлөлт авчирч магадгүй юм.",
-                "Би таныг ойлголоо. Ирээдүйн хотууд яг л неон гэрэлт цамхгууд шиг байх болно. Keep exploring!"
-            ];
-            botResponse = randomReplies[Math.floor(Math.random() * randomReplies.length)];
+            aiReply = "Quantum signals are fluctuating. Please repeat your prophecy.";
         }
 
-        const botRow = document.createElement('div');
-        botRow.className = "msg-row bot";
-        botRow.innerHTML = `<strong>Future Bot:</strong> ${botResponse}`;
-        chatContainer.appendChild(botRow);
+        botRow.innerHTML = `<strong>Future Bot:</strong> ${aiReply.trim()}`;
         chatContainer.scrollTop = chatContainer.scrollHeight;
-    }, 600);
-}
 
-
-function updateSyncUI() {
-    const syncLevelText = document.getElementById('sync-level-text');
-    const syncFill = document.getElementById('sync-fill');
-    if (currentUser) {
-        const percentage = currentUser.syncPercentage || 0;
-        if (syncLevelText) syncLevelText.innerText = percentage + "%";
-        if (syncFill) syncFill.style.width = percentage + "%";
+    } catch (error) {
+        botRow.innerHTML = `<strong>Future Bot:</strong> [Matrix Safe Mode] Сүлжээ түр тасарлаа. Ирээдүй маш хурдтай хувьсаж байна. Дахин асууна уу.`;
     }
 }
 
@@ -540,7 +599,6 @@ function handleLogout() {
     showAuthPage('login');
 }
 
-// Хуучин товчлуурын холболтыг хамгаалах нэмэлт функц
 function toggleLanguage() { 
     switchLang(); 
 }
