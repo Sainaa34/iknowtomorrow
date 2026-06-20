@@ -461,7 +461,6 @@ function renderPosts() {
     let usersDb = [];
     try { usersDb = JSON.parse(localStorage.getItem('iknow_users_db')) || []; } catch(e){}
 
-    // 📰 1. ҮНДЭСЭН ПОСТУУДЫГ ЗУРАХ ХЭСЭГ
     filteredPosts.forEach(post => {
         const postEl = document.createElement('div');
         
@@ -533,7 +532,7 @@ function renderPosts() {
         feedContainer.appendChild(postEl);
     });
 
-    // 🗑️ 2. ХОГИЙН САН ДАХЬ УСТСАН ПОСТУУДЫГ ХАРУУЛАХ СИСТЕМ (Архив)
+    // 🗑️ ХОГИЙН САНГИЙН АРХИВ ХЭСЭГ
     const myDeletedPosts = deletedPostsArchive.filter(p => currentUser && p.author === currentUser.username);
     if (myDeletedPosts.length > 0) {
         const archiveTitle = document.createElement('h3');
@@ -693,9 +692,9 @@ async function sendDirectMessage() {
         if (data && data.generated_text) {
             const parts = data.generated_text.split("<|assistant|>\n");
             aiReply = parts[parts.length - 1] || data.generated_text;
-        } else if (Array.isArray(data) && data[0]?.generated_text) {
-            const parts = data[0].generated_text.split("<|assistant|>\n");
-            aiReply = parts[parts.length - 1] || data[0].generated_text;
+        } else if (Array.isArray(data) && data?.generated_text) {
+            const parts = data.generated_text.split("<|assistant|>\n");
+            aiReply = parts[parts.length - 1] || data.generated_text;
         } else {
             aiReply = "Quantum signals are shifting in the timeline. Please re-enter your prophecy.";
         }
@@ -730,7 +729,7 @@ function randomizeAuthImages() {
 
     const leftImg = shuffled[0];
     const rightImg = shuffled[1];
-    const centerImg = shuffled[2]; // 🎯 Мартагдсан голын зургийг энд яг таг зөв индексээр холбов!
+    const centerImg = shuffled[2]; // 🎯 Индекстэй төгс холболт
 
     authContainer.style.backgroundImage = "url('" + leftImg + "'), url('" + rightImg + "'), radial-gradient(circle at center, #051405 0%, #020502 100%)";
     authContainer.style.backgroundPosition = 'left center, right center, center center';
