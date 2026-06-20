@@ -27,7 +27,7 @@ const translations = {
     mn: {
         feed: "Ирээдүйн урсгал",
         friends: "🤝 Найзууд & Чат",
-        chats: "🤖 Ирээдүйн Бот",
+        chats: "🤖 Ирээдүйн Bот",
         profileSettings: "⚙️ Профайл Тохиргоо",
         futurePlaceholder: "Ирээдүйд юу болох вэ? Энд хуваалц...",
         postBtn: "Нийтлэх",
@@ -172,7 +172,7 @@ function handleRegister(e) {
     const passwordInput = document.getElementById('reg-password')?.value;
 
     if (!usernameInput || !passwordInput) {
-        alert("Please fill all required data transmission fields!");
+        alert("Please fill all fields!");
         return;
     }
 
@@ -183,7 +183,7 @@ function handleRegister(e) {
 
     const userExists = usersDb.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
     if (userExists) {
-        alert("This cybernetic username identity is already occupied!");
+        alert("Username already taken!");
         return;
     }
 
@@ -195,7 +195,7 @@ function handleRegister(e) {
     
     usersDb.push(newUser);
     localStorage.setItem('iknow_users_db', JSON.stringify(usersDb));
-    alert("New temporal entity generated successfully!");
+    alert("Registration successful!");
     showAuthPage('login');
 }
 
@@ -205,7 +205,7 @@ function handleLogin(e) {
     const passwordInput = document.getElementById('login-password')?.value;
 
     if (!usernameInput || !passwordInput) {
-        alert("Access fields cannot be blank!");
+        alert("Please fill all fields!");
         return;
     }
 
@@ -221,7 +221,7 @@ function handleLogin(e) {
         localStorage.setItem('iknow_current_user', JSON.stringify(currentUser));
         showMainApp();
     } else {
-        alert("Access Denied: Invalid Username or Password Matrix Key!");
+        alert("Wrong credentials!");
     }
 }
 function openProfileModal() {
@@ -242,7 +242,7 @@ function closeProfileModal() {
 }
 
 function handleAvatarFile(event) {
-    const file = event.target.files[0];
+    const file = event.target.files;
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -311,10 +311,9 @@ function showMainApp() {
     if (db) loadPosts();
 }
 
-// 🖼️ MULTIMEDIA PREVIEW CORE CONTROLLER
 let postAttachedMedia = null;
 function handleFileSelect(event, type) {
-    const file = event.target.files[0];
+    const file = event.target.files;
     if (!file) return;
 
     const reader = new FileReader();
@@ -356,7 +355,6 @@ function clearAttachedMedia() {
     if (vidInput) vidInput.value = "";
 }
 
-// 💾 LOAD FROM INDEXEDDB UNLIMITED STREAM
 function loadPosts() {
     if (!db) return;
     const transaction = db.transaction(["system_data"], "readonly");
@@ -374,7 +372,6 @@ function loadPosts() {
     };
 }
 
-// 🕒 HUMAN TIME AGO METRIC SYSTEM
 function timeAgo(timestamp) {
     const now = new Date();
     const past = new Date(timestamp);
@@ -794,45 +791,54 @@ function sendDirectMessage() {
     }, 600);
 }
 
-// 🎲 REFRESH ХИЙХ БОЛГОНД 4 ТАЛД 4 ӨӨР ШИНИЙ ЗУРГИЙГ ДЭЛГЭЦ ДҮҮРЭН СУНГАХ СИСТЕМ
+// 🎲 REFRESH ХИЙХ БОЛГОНД БАРУУН, ЗҮҮН, ДЭЭД, ДООД 4 БУЛАНД ЗУРГИЙГ ЗЭРЭГ СОЛИХ СИСТЕМ
 function randomizeAuthImages() {
     const authContainer = document.getElementById('auth-container');
     const authCard = document.querySelector('.auth-card');
     if (!authContainer || !authCard) return;
 
-    // 🪐 Чиний GitHub дээр оруулсан яг тэр шинэ зургуудын нэрс
+    // 🪐 Чиний GitHub дээр оруулсан яг тэр шинэ 9 зургуудын нэрс
     const newCyberImages = [
         'r1.webp', 'r2.jpg', 'r3.jpg', 'r4.jpg', 
         'r5.jpg', 'r6.jpg', 'r7.jpg', 'r8.jpg', 'r9.jpg'
     ];
 
-    // Зургуудыг санамсаргүйгээр холих
     const shuffled = [...newCyberImages].sort(() => 0.5 - Math.random());
 
-    // 📐 4 талд болон голын хайрцагны ард байрлах 5 өөр зургийг сонгох
     const leftTopImg = shuffled[0];
     const rightTopImg = shuffled[1];
     const leftBottomImg = shuffled[2];
     const rightBottomImg = shuffled[3];
-    const centerImg = shuffled[4];
+    const centerImg = shuffled[4]; // Голын хайрцагны арын зураг
 
-    // 🖼️ 4 ТАЛД ЯМАР Ч ХАР ЗАЙГҮЙ ДЭЛГЭЦ ДҮҮРЭН (50% x 50%) ТУЛГАЖ СУНГАХ CSS ШАХАЛТ
+    // 📐 4 буланд ямар ч хар зай үлдээхгүй дэлгэц дүүрэн (50% х 50%) тулгах CSS шахалт
     authContainer.style.backgroundImage = `url('${leftTopImg}'), url('${rightTopImg}'), url('${leftBottomImg}'), url('${rightBottomImg}')`;
     authContainer.style.backgroundPosition = 'left top, right top, left bottom, right bottom';
     authContainer.style.backgroundRepeat = 'no-repeat, no-repeat, no-repeat, no-repeat';
     authContainer.style.backgroundSize = '50% 50%, 50% 50%, 50% 50%, 50% 50%'; 
 
-    // Голын нэвтрэх хайрцагны арын зургийг солих
     authCard.style.backgroundImage = `url('${centerImg}')`;
+}
 
-    // 🔓 НЭВТРЭХ ҮГИЙГ БУЦААЖ ТОД ГАРГАХ СИСТЕМ
-    const loginCard = document.getElementById('login-card');
-    if (loginCard) {
-        const subtitle = loginCard.querySelector('.subtitle');
-        if (subtitle) subtitle.innerText = "🛸 GLOBAL TIMELINE CITIZEN LOGIN";
+// 👁️ ЧИНИЙ ХҮССЭН: НУУЦ ҮГИЙГ ХАРДАГ/НУУДАГ ТОГТОЛЦОО
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const eyeBtn = input.nextElementSibling;
+    if (input.type === "password") {
+        input.type = "text";
+        if (eyeBtn) eyeBtn.innerText = "🙈";
+    } else {
+        input.type = "password";
+        if (eyeBtn) eyeBtn.innerText = "👁️";
     }
 }
 
-// Функцийг ганцхан нэгдсэн урсгалаар эхлүүлж дуудах
-randomizeAuthImages();
+function handleLogout() {
+    currentUser = null;
+    localStorage.removeItem('iknow_current_user');
+    showAuthPage('login');
+}
 
+// Жаваскриптийг давхардалгүй ажиллуулах нэгдсэн урсгал
+randomizeAuthImages();
