@@ -21,13 +21,11 @@
                 </div>
                 <button type="submit" class="neon-btn-primary" data-i18n="login_btn">Enter Timeline</button>
             </form>
-            <button class="neon-btn-google" onclick="handleGoogleAuth()">
-                <span data-i18n="google_btn">Connect via Google Neural Gateway</span>
-            </button>
-            <p><span data-i18n="no_account">New Citizen?</span> Create Identity</a></p>
+            <!-- 🛠 Patched: Google Auth Pathway completely dismantled for security integrity -->
+            <p style="margin-top:24px;"><span data-i18n="no_account">New Citizen?</span> Create Identity</a></p>
         </div>
 
-        <!-- REGISTER CONTROL CARD (🛠 Patched: Completely restored semantic level structure) -->
+        <!-- REGISTER CONTROL CARD -->
         <div id="register-card" class="auth-card" style="display: none;">
             <h2 data-i18n="register_title">Create Neural Identity</h2>
             <form onsubmit="handleRegister(event)">
@@ -46,7 +44,6 @@
     <div id="main-app" style="display: none;">
         <!-- MASTER HEADER DEPLOYMENT -->
         <header class="main-header">
-            <!-- Clicking logo resets application state back to default home screen safely -->
             <div class="logo-neon" onclick="resetAppToHome()" style="cursor: pointer;">iKnowTomorrow</div>
             <div class="header-right-controls">
                 
@@ -57,7 +54,6 @@
                     <div onclick="changeLanguage('mn')">Монгол</div>
                 </div>
                 
-                <!-- Fixed Avatar Node Trigger -->
                 <div class="user-session-node" id="trigger-profile-node" onclick="triggerAvatarModal()">
                     <img id="profile-avatar" src="avatar.png" class="header-avatar">
                     <span id="profile-name">Citizen</span>
@@ -170,7 +166,7 @@
         </div>
     </div>
 
-    <!-- 3. PROFILE IDENTITY UPDATER MODAL (🛠 Patched: Added dynamic username change field) -->
+    <!-- 3. PROFILE IDENTITY UPDATER MODAL (WITH USERNAME INPUT FIELD) -->
     <div id="avatar-modal" class="modal-backdrop-overlay" style="display: none;">
         <div class="modal-content-card">
             <h3 data-i18n="modal_title">Update Neural Identity</h3>
@@ -179,7 +175,6 @@
                 <img id="modal-avatar-preview-tag" src="avatar.png">
             </div>
             
-            <!-- Dynamic Username Change Box Component Inside Modal -->
             <div style="margin-bottom: 20px; width: 100%;">
                 <input type="text" id="modal-username-input" placeholder="Update Username" style="width:100%; padding:12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-main); color:var(--text-main); font-weight:600; outline:none; text-align:center;">
             </div>
