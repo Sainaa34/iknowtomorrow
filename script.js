@@ -11,6 +11,10 @@ let activeChatPartner = null;
 // Selected media variable for the master calendar log
 let vaultSelectedImageBase64 = null;
 
+// Block lists and unseen trackers
+let blockedUsers = JSON.parse(localStorage.getItem('iknow_blocked_users')) || {};
+let unseenMessagesFrom = JSON.parse(localStorage.getItem('iknow_unseen_msgs')) || {};
+
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Unlimited Database Storage Engine
 function initIndexedDB() {
-    const request = indexedDB.open("iKnowTomorrowDB", 3); // Schema updated to v3 for combined calendar logic
+    const request = indexedDB.open("iKnowTomorrowDB", 4); // Schema updated to v4 for Messenger and Vault updates
     
     request.onupgradeneeded = (e) => {
         const localDB = e.target.result;
@@ -31,7 +35,6 @@ function initIndexedDB() {
         if (!localDB.objectStoreNames.contains("messages")) {
             localDB.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
         }
-        // Combined calendar master store
         if (!localDB.objectStoreNames.contains("vault_calendar")) {
             localDB.createObjectStore("vault_calendar", { keyPath: "id" });
         }
@@ -58,7 +61,7 @@ function randomizeAuthImages() {
     let shuffled = [...availablePool].sort(() => 0.5 - Math.random());
     let selected = shuffled.slice(0, 4);
 
-    authScreen.style.backgroundImage = `url('${selected[0]}'), url('${selected[1]}'), url('${selected[2]}'), url('${selected[3]}')`;
+    authScreen.style.backgroundImage = `url('${selected}'), url('${selected}'), url('${selected}'), url('${selected}')`;
 }
 
 function showAuthPage(page) {
@@ -139,7 +142,7 @@ function handleLogout() {
 // 4. INTERACTIVE UTILITIES & CORE NAVIGATION
 // ========================================================
 function toggleTheme() {
-    const themes = ['light', 'cyber', 'matrix', 'dark']; // Light theme is prioritized first
+    const themes = ['light', 'cyber', 'matrix', 'dark'];
     let idx = themes.indexOf(currentTheme);
     currentTheme = themes[(idx + 1) % themes.length];
     localStorage.setItem('iknow_theme', currentTheme);
@@ -163,8 +166,8 @@ function switchTab(tabId) {
 // 5. TIMELINE FILE MEDIA CAPTURE PROCESSORS
 // ========================================================
 function handleFileSelect(event, type) {
-    const file = event.target.files[0];
-    if (!file) return;
+    const file = event.target.files;
+    if (!file || file.length === 0) return;
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -185,7 +188,7 @@ function handleFileSelect(event, type) {
             if (previewImg) previewImg.style.display = 'none';
         }
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file[0]);
 }
 
 function clearAttachedMedia() {
@@ -207,6 +210,16 @@ function clearAttachedMedia() {
 // ========================================================
 // 6. MASTER TIMELINE ENGINE & VERIFIED CRYSTAL SYSTEM
 // ========================================================
+// TEXTAREA ДЭЭР ENTER ДАРАХАД ШУУД ПОСТ ОРДОГ БОЛГОХ ТОХИРГОО
+document.addEventListener('keydown', (e) => {
+    if (e.target && e.target.id === 'future-input') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            createPost();
+        }
+    }
+});
+
 function createPost() {
     const inputEl = document.getElementById('future-input');
     const text = inputEl ? inputEl.value.trim() : "";
@@ -225,7 +238,7 @@ function createPost() {
         votes: 0,
         voters: [],
         comments: [],
-        timestamp: Date.now() // Огноог зөв тооцоолохын тулд миллисекундээр хадгална
+        timestamp: Date.now() // "Just now"-ыг зөв тооцоолох суурь огноо
     };
 
     const transaction = db.transaction(["posts"], "readwrite");
@@ -246,7 +259,7 @@ function loadPostsFromDB() {
     request.onsuccess = () => {
         allPosts = request.result;
 
-        // ЭРЭМБЭЛЭЛТ: Миний пост үргэлж нэгдүгээрт, бусад нь Кристалын тоогоор дээрээ гаргана
+        // ЭРЭМБЭЛЭЛТ: Миний пост үргэлж нэгдүгээрт, бусад нь Кристалын тоогоор жагсана
         allPosts.sort((a, b) => {
             const isMeA = a.author === currentUser ? 1 : 0;
             const isMeB = b.author === currentUser ? 1 : 0;
@@ -266,7 +279,7 @@ function renderPosts(postsToRender) {
         if (!post.voters) post.voters = [];
         const hasVerified = post.voters.includes(currentUser);
 
-        // ⏱️ ОГНООГ ЗӨВ ХАРУУЛАХ СИСТЕМ (Дөнгөж сая оруулсан бол "Just now" гэнэ)
+        // ⏱️ ОГНОО ЗАСАЛТ: Дөнгөж сая оруулсан бол "Just now" харагдана
         let timeDisplay = "Just now";
         if (post.timestamp && typeof post.timestamp === 'number') {
             const diffSec = Math.floor((Date.now() - post.timestamp) / 1000);
@@ -333,7 +346,6 @@ function votePost(postId) {
         const post = request.result;
         if (!post.voters) post.voters = [];
         
-        // 🔄 ХЯЗГААРЛАЛТТАЙ КРИСТАЛ БӨМБӨЛӨГ ЛОГИК (Unlike / Like)
         if (post.voters.includes(currentUser)) {
             post.votes--;
             post.voters = post.voters.filter(v => v !== currentUser);
@@ -354,6 +366,7 @@ function deletePost(postId) {
     transaction.oncomplete = () => { loadPostsFromDB(); };
 }
 
+// Хайлтын систем
 function searchPosts() {
     const query = document.getElementById('search-input').value.toLowerCase().trim();
     if (!query) { renderPosts(allPosts); return; }
@@ -382,29 +395,88 @@ function addComment(postId) {
     };
 }
 // ========================================================
-// 7. REAL-TIME CITIZENS & SECURE CHAT INFRASTRUCTURE
+// 7. REAL-TIME CITIZENS MESSENGER (Facebook Style UI Logic)
 // ========================================================
 function loadOnlineCitizens() {
     const container = document.getElementById('friends-list-container');
     if (!container) return;
     container.innerHTML = "";
-    const systemCitizens = ["Neo_2050", "Trinity_X", "Morph_Quantum"];
+
+    // Тест хийхэд хэрэг болох 3 иргэн хэвээр үлдлээ
+    let systemCitizens = ["Neo_2050", "Trinity_X", "Morph_Quantum"];
+    
+    // 🧠 УХААЛАГ ЭРЭМБЭЛЭЛТ: Шинэ мессеж илгээсэн эсвэл уншаагүй мессежтэй хүмүүс хамгийн эхэнд гарна
+    systemCitizens.sort((a, b) => {
+        const hasUnseenA = unseenMessagesFrom[a] ? 1 : 0;
+        const hasUnseenB = unseenMessagesFrom[b] ? 1 : 0;
+        
+        if (hasUnseenA !== hasUnseenB) {
+            return hasUnseenB - hasUnseenA; // Уншаагүй мессежтэйг дээр нь гаргана
+        }
+        return a.localeCompare(b); // Бусад үед Англи үсгийн дарааллаар (A-Z) жагсана
+    });
+
     systemCitizens.forEach(citizen => {
+        // Хэрэглэгч өөрөө өөрийгөө жагсаалтад харахгүй
+        if (citizen === currentUser) return;
+
+        const isBlocked = blockedUsers[citizen] ? true : false;
+        const hasUnseen = unseenMessagesFrom[citizen] ? true : false;
+
         const row = document.createElement('div');
         row.className = `friend-item-row ${activeChatPartner === citizen ? 'active' : ''}`;
-        row.onclick = () => selectChatPartner(citizen);
+        
+        // Нэр дээр нь дарахад чат нээгдэнэ (Блок хийгээгүй үед)
         row.innerHTML = `
-            <img src="https://robohash.org{citizen}.png?set=set4" class="friend-avatar-mini">
-            <span>${citizen}</span>
+            <div class="friend-user-meta-block" onclick="selectChatPartner('${citizen}')">
+                ${hasUnseen ? `<span class="unseen-mark">!!!</span>` : ""}
+                <img src="https://robohash.org{citizen}.png?set=set4" class="friend-avatar-mini">
+                <span style="font-weight: ${hasUnseen ? 'bold' : 'normal'};">${citizen} ${isBlocked ? '(Blocked)' : ''}</span>
+            </div>
+            <button class="friend-block-btn ${isBlocked ? 'blocked' : ''}" onclick="toggleBlockUser(event, '${citizen}')">
+                ${isBlocked ? 'Unblock' : 'Block'}
+            </button>
         `;
         container.appendChild(row);
     });
 }
 
+function toggleBlockUser(event, citizenName) {
+    event.stopPropagation(); // Нэр дээр нь давхар дарагдаж чат нээгдэхээс сэргийлнэ
+    
+    if (blockedUsers[citizenName]) {
+        delete blockedUsers[citizenName];
+        alert(`${citizenName} has been unblocked.`);
+    } else {
+        blockedUsers[citizenName] = true;
+        alert(`${citizenName} has been blocked. You will no longer receive or send messages to this entity.`);
+        if (activeChatPartner === citizenName) {
+            activeChatPartner = null;
+            document.getElementById('active-chat-partner').textContent = "💬 Select a neural citizen to initiate chat";
+            document.getElementById('friends-chat-messages').innerHTML = "";
+        }
+    }
+    localStorage.setItem('iknow_blocked_users', JSON.stringify(blockedUsers));
+    loadOnlineCitizens();
+}
+
 function selectChatPartner(citizenName) {
+    if (blockedUsers[citizenName]) {
+        alert("This entity is blocked. Unblock them first to open chat framework.");
+        return;
+    }
+    
     activeChatPartner = citizenName;
+    
+    // Чатыг уншсан тул уншаагүй тэмдгийг (!!!) устгана
+    if (unseenMessagesFrom[citizenName]) {
+        delete unseenMessagesFrom[citizenName];
+        localStorage.setItem('iknow_unseen_msgs', JSON.stringify(unseenMessagesFrom));
+    }
+
     const header = document.getElementById('active-chat-partner');
     if (header) header.textContent = `💬 Chat with ${citizenName}`;
+    
     loadOnlineCitizens();
     loadFriendMessages();
 }
@@ -413,6 +485,12 @@ function sendFriendMessage() {
     const input = document.getElementById('friends-chat-input');
     const text = input ? input.value.trim() : "";
     if (!text || !activeChatPartner || !db) return;
+
+    if (blockedUsers[activeChatPartner]) {
+        alert("Action Aborted: You cannot transmit data to a blocked entity.");
+        return;
+    }
+
     const newMsg = {
         id: "msg_" + Date.now(),
         sender: currentUser,
@@ -420,11 +498,16 @@ function sendFriendMessage() {
         text: text,
         timestamp: new Date().toLocaleTimeString()
     };
+
     const transaction = db.transaction(["messages"], "readwrite");
     transaction.objectStore("messages").add(newMsg);
+
     transaction.oncomplete = () => {
         if (input) input.value = "";
         loadFriendMessages();
+        
+        // Мессеж илгээсэн тул жагсаалтын хамгийн дээр гаргахын тулд дахин зуруулна
+        loadOnlineCitizens();
     };
 }
 
@@ -437,10 +520,12 @@ function loadFriendMessages() {
         const msgBox = document.getElementById('friends-chat-messages');
         if (!msgBox) return;
         msgBox.innerHTML = "";
+
         const filtered = allMsgs.filter(m => 
             (m.sender === currentUser && m.receiver === activeChatPartner) ||
             (m.sender === activeChatPartner && m.receiver === currentUser)
         );
+
         filtered.forEach(m => {
             const isMe = m.sender === currentUser;
             const div = document.createElement('div');
@@ -452,46 +537,47 @@ function loadFriendMessages() {
     };
 }
 
-// ========================================================
-// 8. 🔒 MASTER CALENDAR ENGINE (Logs, Dreams & Images)
-// ========================================================
-function handleVaultImageSelect(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+// Сетийн цаанаас шинэ мессеж ирэхийг симуляци хийх ухаалаг функц (Тестлэхэд хэрэг болно)
+function simulateIncomingMessage(fromUser, msgText) {
+    if (blockedUsers[fromUser] || !db) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        vaultSelectedImageBase64 = e.target.result;
-        const previewBox = document.getElementById('vault-image-preview-box');
-        const previewImg = document.getElementById('vault-img-preview-tag');
-        if (previewBox && previewImg) {
-            previewImg.src = e.target.result;
-            previewBox.style.display = 'block';
+    const incoming = {
+        id: "msg_" + Date.now(),
+        sender: fromUser,
+        receiver: currentUser,
+        text: msgText,
+        timestamp: new Date().toLocaleTimeString()
+    };
+
+    const transaction = db.transaction(["messages"], "readwrite");
+    transaction.objectStore("messages").add(incoming);
+    
+    transaction.oncomplete = () => {
+        if (activeChatPartner === fromUser) {
+            loadFriendMessages();
+        } else {
+            // Чатыг нээж уншаагүй тул !!! тэмдэг тавина
+            unseenMessagesFrom[fromUser] = true;
+            localStorage.setItem('iknow_unseen_msgs', JSON.stringify(unseenMessagesFrom));
+            loadOnlineCitizens();
         }
     };
-    reader.readAsDataURL(file);
 }
-
-function clearVaultImageSelect() {
-    vaultSelectedImageBase64 = null;
-    const previewBox = document.getElementById('vault-image-preview-box');
-    const fileInput = document.getElementById('vault-image-file');
-    if (previewBox) previewBox.style.display = 'none';
-    if (fileInput) fileInput.value = "";
-}
-
+// ========================================================
+// 9. 🔒 MASTER CALENDAR VAULT (Strict Multi-User Privacy)
+// ========================================================
 function saveVaultCalendar() {
     const dateIn = document.getElementById('vault-date-input');
     const textIn = document.getElementById('vault-calendar-text');
     if (!dateIn || !textIn || !dateIn.value || !textIn.value.trim() || !db) return;
 
-    // Календарь дээр тэмдэглэл, зүүд, зураг бүгд нэг объект дотор зэрэг хадгалагдана
+    // Бүх тэмдэглэл, зүүд, зураг хэрэглэгчийн нэрээр хамгаалагдаж хадгалагдана
     const item = {
         id: "cal_" + currentUser + "_" + Date.now(),
         user: currentUser,
         date: dateIn.value,
         text: textIn.value.trim(),
-        image: vaultSelectedImageBase64 // Зургийн дата баазад хамт бичигдэнэ
+        image: vaultSelectedImageBase64
     };
 
     const tx = db.transaction(["vault_calendar"], "readwrite");
@@ -510,7 +596,10 @@ function loadVaultCalendarFromDB() {
         const list = document.getElementById('vault-calendar-list');
         if (!list) return;
         list.innerHTML = "";
+        
+        // 🔒 АЮУЛГҮЙ БАЙДЛЫН ХАМГААЛАЛТ: Өөр хэрэглэгчдийн өгөгдлийг харуулахгүй, зөвхөн өөрийнхийг шүүнэ
         const myData = request.result.filter(item => item.user === currentUser);
+        
         myData.forEach(item => {
             let imgHtml = "";
             if (item.image) {
@@ -525,9 +614,7 @@ function loadVaultCalendarFromDB() {
         });
     };
 }
-// ========================================================
-// 9. 🔒 FREE-FORM PERSONAL NOTES VAULT (Карт 2)
-// ========================================================
+
 function saveVaultNote() {
     const textIn = document.getElementById('vault-note-text');
     if (!textIn || !textIn.value.trim() || !db) return;
@@ -553,7 +640,10 @@ function loadVaultNotesFromDB() {
         const list = document.getElementById('vault-notes-list');
         if (!list) return;
         list.innerHTML = "";
+        
+        // 🔒 Зөвхөн нэвтэрсэн хэрэглэгчийн өөрийнх нь чөлөөт тэмдэглэлүүд уншигдана
         const myData = request.result.filter(item => item.user === currentUser);
+        
         myData.forEach(item => {
             list.innerHTML += `
                 <div class="vault-item-node">
@@ -571,7 +661,7 @@ function deleteVaultItem(storeName, id, callback) {
 }
 
 // ========================================================
-// 10. 🎨 NEURAL FUTURE IMAGE ARTIST ENGINE (Зураг зурдаг бот)
+// 10. 🎨 NEURAL FUTURE IMAGE ARTIST ENGINE (100% Fixed)
 // ========================================================
 function generateAiImage() {
     const inputEl = document.getElementById('bot-input');
@@ -612,7 +702,7 @@ function generateAiImage() {
 }
 
 // ========================================================
-// 11. IDENTITY UPDATE INTERFACE MODALS
+// 11. IDENTITY UPDATE INTERFACE MODALS & AVATAR RE-RENDER
 // ========================================================
 function openProfileModal() {
     const modal = document.getElementById('profile-modal');
@@ -648,11 +738,27 @@ function saveProfileModal() {
 
 function handleAvatarFile(event) {
     const file = event.target.files;
-    if (!file) return;
+    if (!file || file.length === 0) return;
     const reader = new FileReader();
     reader.onload = (e) => {
+        // 🖼️ АВАТАР ШУУД СОЛИГДДОГ БОЛГОЖ ЗАССАН ЛОГИК
         const headerAvatar = document.getElementById('profile-avatar');
         if (headerAvatar) headerAvatar.src = e.target.result;
+        
+        // Хэрэглэгчийн өөрийнх нь аватарийг локал санах ойд түр хадгалах
+        localStorage.setItem(`avatar_${currentUser}`, e.target.result);
+        alert("Neural Profile Avatar successfully updated!");
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file[0]); // Сонгосон эхний файлыг зөв уншина
 }
+
+// Апп ачаалагдах үед хадгалсан аватар байвал шууд зурах тохиргоог showMainApp дотор залгаж өгөв
+const originalShowMainApp = showMainApp;
+showMainApp = function() {
+    originalShowMainApp();
+    const customAvatar = localStorage.getItem(`avatar_${currentUser}`);
+    if (customAvatar) {
+        const headerAvatar = document.getElementById('profile-avatar');
+        if (headerAvatar) headerAvatar.src = customAvatar;
+    }
+};
