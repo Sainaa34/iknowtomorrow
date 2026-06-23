@@ -1,16 +1,16 @@
 /* ==========================================
-   1. CORE STYLE RESET & CYBERPUNK VARIABLES
+   1. CORE STYLE RESET & MULTI-THEME CONFIGS
    ========================================== */
 :root {
     --bg-cyber: #0a0a12;
-    --card-cyber: rgba(16, 16, 28, 0.7);
+    --card-cyber: rgba(16, 16, 28, 0.85);
     --border-cyber: #00ffcc;
     --neon-pink: #ff007f;
     --neon-blue: #00f0ff;
     --neon-green: #39ff14;
     --text-white: #ffffff;
     --text-gray: #8a8a9e;
-    --glass-blur: blur(10px);
+    --glass-blur: blur(12px);
 }
 
 * {
@@ -25,27 +25,41 @@ body {
     color: var(--text-white);
     overflow-x: hidden;
     background-attachment: fixed;
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Theme Profiles */
+/* 🎨 GLOBAL THEME SWITCHER LOGIC (Нийтээрээ өөрчлөгддөг загварууд) */
 body.theme-matrix {
     --bg-cyber: #020204;
-    --card-cyber: rgba(5, 12, 5, 0.75);
+    --card-cyber: rgba(5, 12, 5, 0.9);
     --border-cyber: #00ff33;
     --neon-blue: #00ff33;
     --neon-pink: #008811;
+    --text-white: #33ff33;
 }
 
 body.theme-dark {
-    --bg-cyber: #121212;
-    --card-cyber: #1e1e1e;
-    --border-cyber: #444444;
+    --bg-cyber: #0a0a0a;
+    --card-cyber: #161616;
+    --border-cyber: #333333;
     --neon-blue: #ffffff;
     --neon-pink: #555555;
+    --text-white: #f5f5f5;
+    --text-gray: #777777;
+}
+
+body.theme-light {
+    --bg-cyber: #f0f2f5;
+    --card-cyber: #ffffff;
+    --border-cyber: #002244;
+    --neon-blue: #0055ff;
+    --neon-pink: #ff0055;
+    --text-white: #111122;
+    --text-gray: #555566;
 }
 
 /* ==========================================
-   2. AUTHENTICATION (LOGIN/REG) SCREEN
+   2. AUTHENTICATION CONTRAST & HIGHLIGHT FIX
    ========================================== */
 .auth-screen {
     width: 100vw;
@@ -54,70 +68,67 @@ body.theme-dark {
     justify-content: center;
     align-items: center;
     background-color: #000;
-    /* Зургуудын нэрийг чиний GitHub дээрхтэй яг таг тааруулав */
-    background-image: url('r1.webp'), url('r2.jpg'), url('r3.jpg'), url('r4.jpg');
     background-position: left top, right top, left bottom, right bottom;
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     background-size: 50% 50%, 50% 50%, 50% 50%, 50% 50%;
     transition: all 0.5s ease;
 }
 
+/* Арын зурагнаас текстийг маш тод тусгаарлах гүн хар карт */
 .auth-card {
-    background-color: var(--card-cyber);
-    border: 2px solid var(--border-cyber);
-    box-shadow: 0 0 20px var(--border-cyber);
-    backdrop-filter: var(--glass-blur);
+    background-color: rgba(6, 6, 12, 0.94) !important;
+    border: 3px solid var(--border-cyber);
+    box-shadow: 0 0 30px var(--border-cyber), inset 0 0 15px rgba(0, 255, 204, 0.2);
+    backdrop-filter: blur(15px);
     padding: 40px;
-    border-radius: 12px;
+    border-radius: 16px;
     width: 100%;
-    max-width: 420px;
+    max-width: 430px;
     text-align: center;
-    background-size: cover;
-    background-position: center;
+    z-index: 10;
 }
 
 .auth-title {
     font-family: 'Orbitron', sans-serif;
-    font-size: 2.5rem;
-    color: #fff;
-    text-shadow: 0 0 10px var(--border-cyber);
+    font-size: 2.6rem;
+    color: #fff !important;
+    text-shadow: 0 0 12px var(--border-cyber);
     margin-bottom: 5px;
     letter-spacing: 2px;
 }
 
 .auth-subtitle {
-    color: var(--text-gray);
-    font-size: 1rem;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-}
-.input-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.input-group label {
-    display: block;
+    color: var(--neon-blue) !important;
     font-size: 0.9rem;
-    color: var(--text-gray);
-    margin-bottom: 8px;
+    margin-bottom: 35px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
 }
 
-.password-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+/* 👁️ Текст харагдахгүй байгааг 100% шийдсэн тодруулагч */
+.auth-label-highlight {
+    display: block;
+    font-size: 0.95rem;
+    color: #ffffff !important;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 4px #000000, 0 0 8px var(--neon-blue);
+}
+.input-group {
+    margin-bottom: 22px;
+    text-align: left;
 }
 
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--text-gray);
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid var(--border-cyber);
     border-radius: 6px;
-    color: #fff;
+    color: #fff !important;
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.1rem;
     outline: none;
@@ -125,8 +136,8 @@ body.theme-dark {
 }
 
 .input-group input:focus {
-    border-color: var(--border-cyber);
-    box-shadow: 0 0 10px var(--border-cyber);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px var(--neon-pink);
 }
 
 .eye-btn {
@@ -134,7 +145,7 @@ body.theme-dark {
     right: 12px;
     background: none;
     border: none;
-    color: var(--text-gray);
+    color: var(--neon-blue);
     cursor: pointer;
     font-size: 1.2rem;
     outline: none;
@@ -165,24 +176,25 @@ body.theme-dark {
 .auth-switch {
     margin-top: 25px;
     font-size: 0.95rem;
-    color: var(--text-gray);
+    color: #fff;
 }
 
 .auth-switch span {
     color: var(--border-cyber);
     cursor: pointer;
     text-decoration: underline;
+    font-weight: bold;
 }
 
 /* ==========================================
-   3. MAIN APPLICATION HEADER & LAYOUT
+   3. MAIN APPLICATION HEADER & AUDIO DESIGN
    ========================================== */
 .main-header {
-    background: rgba(10, 10, 18, 0.85);
+    background: var(--card-cyber);
     border-bottom: 2px solid var(--border-cyber);
-    box-shadow: 0 2px 15px rgba(0, 255, 204, 0.2);
+    box-shadow: 0 2px 15px rgba(0, 255, 204, 0.15);
     backdrop-filter: var(--glass-blur);
-    padding: 15px 30px;
+    padding: 12px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -198,21 +210,73 @@ body.theme-dark {
     font-size: 1.8rem;
     font-weight: bold;
     letter-spacing: 2px;
-    color: #fff;
+    color: var(--text-white);
     text-shadow: 0 0 8px var(--border-cyber);
+}
+
+/* 🎵 USER MP3 MUSIC PLAYER BOX */
+.custom-player-widget {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--neon-blue);
+    padding: 6px 14px;
+    border-radius: 20px;
+    gap: 12px;
+    max-width: 300px;
+}
+
+.music-upload-btn {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--neon-blue);
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.track-text {
+    font-size: 0.9rem;
+    color: var(--text-white);
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-btn-small {
+    background: transparent;
+    border: 1px solid var(--border-cyber);
+    color: var(--border-cyber);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-btn-close {
+    background: none;
+    border: none;
+    color: var(--neon-pink);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
 }
 
 .header-btn {
     background: transparent;
     border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
-    padding: 8px 15px;
+    padding: 8px 14px;
     border-radius: 4px;
     font-family: 'Orbitron', sans-serif;
     cursor: pointer;
@@ -234,65 +298,50 @@ body.theme-dark {
     padding: 6px 12px;
     border-radius: 20px;
     border: 1px solid transparent;
-    transition: all 0.3s ease;
 }
 
 .profile-widget:hover {
     border-color: var(--border-cyber);
-    background: rgba(0, 255, 204, 0.1);
 }
 
 .avatar-header {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #000;
     border: 1px solid var(--border-cyber);
-}
-
-#profile-name {
-    font-weight: bold;
-    font-size: 1.05rem;
 }
 
 .logout-btn {
     background: transparent;
     border: 1px solid var(--neon-pink);
     color: var(--neon-pink);
-    padding: 8px 15px;
+    padding: 8px 14px;
     border-radius: 4px;
     cursor: pointer;
     font-family: 'Rajdhani', sans-serif;
     font-weight: bold;
-    transition: all 0.3s ease;
 }
 
-.logout-btn:hover {
-    background: var(--neon-pink);
-    color: #fff;
-    box-shadow: 0 0 10px var(--neon-pink);
-}
-
-/* Base App Container Layout */
+/* Layout Core */
 .app-layout-container {
     display: flex;
-    margin-top: 75px;
-    height: calc(100vh - 75px);
+    margin-top: 70px;
+    height: calc(100vh - 70px);
 }
 
 .side-navigation {
     width: 240px;
-    background: rgba(16, 16, 28, 0.6);
-    border-right: 1px solid rgba(0, 255, 204, 0.2);
-    padding: 30px 15px;
+    background: rgba(16, 16, 28, 0.4);
+    border-right: 1px solid rgba(0, 255, 204, 0.15);
+    padding: 25px 15px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
 .menu-tab {
     width: 100%;
-    padding: 14px 20px;
+    padding: 12px 18px;
     background: transparent;
     border: 1px solid transparent;
     color: var(--text-gray);
@@ -302,552 +351,249 @@ body.theme-dark {
     font-weight: bold;
     cursor: pointer;
     border-radius: 6px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .menu-tab.active {
-    color: #fff;
+    color: var(--text-white);
     border-color: var(--border-cyber);
     background: rgba(0, 255, 204, 0.1);
     text-shadow: 0 0 5px var(--border-cyber);
-    box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.2);
-}
-
-.menu-tab:hover:not(.active) {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
 }
 
 .main-content-display {
     flex: 1;
-    padding: 30px;
+    padding: 25px;
     overflow-y: auto;
-    background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.03), transparent);
 }
 /* ==========================================
-   4. TIMELINE FEED & CREATOR CARDS
+   4. TIMELINE CARDS & LIKE/UNLIKE SYSTEM
    ========================================== */
-.search-wrapper-box {
-    margin-bottom: 25px;
-}
-
-.search-wrapper-box input {
-    width: 100%;
-    padding: 14px 20px;
-    background: var(--card-cyber);
-    border: 1px solid rgba(0, 240, 255, 0.3);
-    border-radius: 8px;
-    color: #fff;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    outline: none;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
-}
-
-.search-wrapper-box input:focus {
-    border-color: var(--neon-blue);
-    box-shadow: 0 0 15px var(--neon-blue);
-}
-
-.creator-card {
-    background: var(--card-cyber);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 30px;
-}
-
-.creator-card textarea {
-    width: 100%;
-    height: 90px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    color: #fff;
-    padding: 12px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    resize: none;
-    outline: none;
-}
-
-.creator-card textarea:focus {
-    border-color: var(--border-cyber);
-}
-
-.media-preview-zone {
-    margin-top: 15px;
-    position: relative;
-    border: 1px dashed var(--neon-blue);
-    padding: 10px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.4);
-}
-
-.preview-asset {
-    max-width: 100%;
-    max-height: 250px;
-    border-radius: 4px;
-    display: block;
-    margin: 0 auto;
-}
-
-.clear-media-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 0, 127, 0.8);
-    border: none;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.creator-actions-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
-}
-
-.media-upload-options {
-    display: flex;
-    gap: 15px;
-}
-
-.upload-label {
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-
-.upload-label:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--neon-blue);
-}
-
-.btn-neon-post {
-    background: transparent;
-    border: 1px solid var(--border-cyber);
-    color: var(--border-cyber);
-    padding: 10px 25px;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
-}
-
-.btn-neon-post:hover {
-    background: var(--border-cyber);
-    color: #000;
-    box-shadow: 0 0 15px var(--border-cyber);
-}
-
-/* Post Cards & Neon Tiers */
-.post-card {
+.creator-card, .post-card {
     background: var(--card-cyber);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 22px;
     margin-bottom: 25px;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.post-card.tier-fire { border-color: #ff5500; box-shadow: 0 0 15px rgba(255, 85, 0, 0.2); }
-.post-card.tier-electric { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
-.post-card.tier-matrix { border-color: var(--border-cyber); box-shadow: 0 0 20px rgba(0, 255, 204, 0.3); }
-
-.post-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.post-user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.post-avatar-mini {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: #000;
-}
-
-.post-meta-text h4 {
-    font-size: 1.1rem;
-    margin-bottom: 2px;
-}
-
-.post-meta-text span {
-    font-size: 0.85rem;
-    color: var(--text-gray);
-}
-
-.post-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
+/* Шинэ цэвэрхэн Like Товчлуурын Загвар */
 .vote-btn-neon {
     background: transparent;
-    border: 1px solid var(--neon-pink);
-    color: var(--neon-pink);
-    padding: 6px 14px;
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 6px 16px;
     border-radius: 20px;
     cursor: pointer;
     font-family: 'Orbitron', sans-serif;
     font-weight: bold;
+    transition: all 0.2s ease;
 }
 
-.vote-btn-neon:hover {
-    background: var(--neon-pink);
-    color: #fff;
-    box-shadow: 0 0 10px var(--neon-pink);
+/* Лайк дарагдсан үеийн неон гэрэлтэлт */
+.vote-btn-neon.liked {
+    background: var(--neon-blue) !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px var(--neon-blue);
 }
 
-.post-menu-container {
-    position: relative;
-}
-
-.post-more-btn {
-    background: none;
-    border: none;
-    color: var(--text-gray);
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-.post-dropdown-menu {
-    position: absolute;
-    right: 0;
-    top: 25px;
-    background: #161624;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    display: none;
-    z-index: 10;
-    min-width: 110px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-
-.post-dropdown-menu button {
-    width: 100%;
-    padding: 10px;
-    background: none;
-    border: none;
-    color: #fff;
-    text-align: left;
-    cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.95rem;
-}
-
-.post-dropdown-menu button:hover {
-    background: rgba(255,255,255,0.08);
-}
-
-.post-dropdown-menu button.delete-btn-red {
-    color: #ff3333;
-}
-
-.post-main-text {
-    font-size: 1.15rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-    color: #f0f0f5;
-}
-
-.post-media-content {
-    margin-bottom: 15px;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #000;
-}
-
-.post-media-content img, .post-media-content video {
-    width: 100%;
-    display: block;
-    max-height: 450px;
-    object-fit: contain;
-}
-
-/* Comments System */
-.comments-section {
-    border-top: 1px solid rgba(255,255,255,0.05);
-    padding-top: 15px;
-}
-
-.comment-node {
-    background: rgba(255,255,255,0.02);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    margin-bottom: 8px;
-    border-left: 2px solid var(--neon-blue);
-}
-
-.comment-input-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.comment-input-row input {
-    flex: 1;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    color: #fff;
-    padding: 8px 12px;
-    outline: none;
-    font-family: 'Rajdhani', sans-serif;
-}
-
-.comment-add-btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
-    width: 36px;
-    height: 36px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-/* ==========================================
-   5. CHAT SYSTEM LAYOUTS (FRIENDS & AI BOT)
-   ========================================== */
-.friends-layout {
-    display: flex;
-    gap: 25px;
-    height: 100%;
-}
-
-.friends-list-panel {
-    width: 250px;
-    background: var(--card-cyber);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 8px;
-    padding: 15px;
-}
-
-.panel-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 8px;
-}
-
-.friend-item-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 5px;
-}
-
-.friend-item-row:hover, .friend-item-row.active {
+.vote-btn-neon:hover:not(.liked) {
     background: rgba(0, 240, 255, 0.1);
-}
-
-.friend-avatar-mini {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #000;
-}
-
-.friends-chat-panel, .bot-chat-layout {
-    flex: 1;
-    background: var(--card-cyber);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-messages-box, .bot-messages-box {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 6px;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.msg-row {
-    padding: 10px 15px;
-    border-radius: 8px;
-    max-width: 75%;
-    font-size: 1.05rem;
-    line-height: 1.4;
-}
-
-.msg-row.user {
-    background: rgba(0, 240, 255, 0.15);
-    border: 1px solid var(--neon-blue);
-    align-self: flex-end;
-}
-
-.msg-row.bot, .msg-row.friend-msg {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    align-self: flex-start;
-}
-
-.chat-input-row, .bot-input-row {
-    display: flex;
-    gap: 15px;
-}
-
-.chat-input-row input, .bot-input-row input {
-    flex: 1;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 6px;
-    color: #fff;
-    padding: 12px;
-    outline: none;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.05rem;
-}
-
-.chat-send-btn, .bot-send-btn {
-    background: transparent;
-    border: 1px solid var(--neon-blue);
-    color: var(--neon-blue);
-    padding: 0 25px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
-}
-
-.bot-header-zone {
-    margin-bottom: 15px;
-}
-
-.bot-status {
-    font-size: 0.85rem;
-    color: var(--neon-green);
-    margin-top: 4px;
+    box-shadow: 0 0 8px var(--neon-blue);
 }
 
 /* ==========================================
-   6. INTERACTIVE MODAL OVERLAYS
+   5. 🔒 PRIVATE VAULT AREA (Хувийн Орон Зай)
    ========================================== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 200;
-}
-
-.modal-card {
-    background: #12121e;
-    border: 2px solid var(--border-cyber);
-    box-shadow: 0 0 25px var(--border-cyber);
-    padding: 30px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 450px;
-}
-
-.modal-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    text-shadow: 0 0 5px var(--border-cyber);
-}
-
-.modal-input-group {
-    margin-bottom: 15px;
-}
-
-.modal-input-group label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--text-gray);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-}
-
-.modal-input-group input {
-    width: 100%;
-    padding: 10px;
-    background: #000;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 4px;
-    color: #fff;
-    outline: none;
-    font-family: 'Rajdhani', sans-serif;
-}
-
-.file-upload-wrapper {
+.vault-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
     margin-top: 10px;
 }
 
-.modal-file-label {
-    display: block;
-    text-align: center;
-    padding: 8px;
-    background: rgba(255,255,255,0.05);
-    border: 1px dashed rgba(255,255,255,0.3);
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.modal-actions {
+.vault-card {
+    background: rgba(12, 12, 24, 0.85);
+    border: 1px dashed var(--neon-pink);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.1);
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     gap: 15px;
-    margin-top: 25px;
 }
 
-.modal-btn {
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
+.vault-card-title {
     font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
+    color: var(--neon-pink);
+    font-size: 1.2rem;
+    text-shadow: 0 0 5px rgba(255, 0, 127, 0.3);
+    border-bottom: 1px solid rgba(255, 0, 127, 0.2);
+    padding-bottom: 8px;
 }
 
-.modal-btn.cancel {
+.cyber-date-picker {
+    width: 100%;
+    padding: 10px;
+    background: #000;
+    border: 1px solid var(--neon-pink);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    border-radius: 6px;
+    outline: none;
+}
+
+.vault-card textarea {
+    width: 100%;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #fff;
+    padding: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    resize: none;
+    outline: none;
+}
+
+.vault-card textarea:focus {
+    border-color: var(--neon-pink);
+}
+
+.btn-vault-action {
     background: transparent;
     border: 1px solid var(--neon-pink);
     color: var(--neon-pink);
+    padding: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.modal-btn.save {
-    background: var(--border-cyber);
-    border: 1px solid var(--border-cyber);
-    color: #000;
+.btn-vault-action:hover {
+    background: var(--neon-pink);
+    color: #fff;
+    box-shadow: 0 0 12px var(--neon-pink);
 }
+
+.vault-list-preview {
+    max-height: 150px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vault-item-node {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    border-left: 2px solid var(--neon-pink);
+    position: relative;
+}
+
+.vault-item-node .delete-vault-btn {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    background: none;
+    border: none;
+    color: var(--text-gray);
+    cursor: pointer;
+}
+
+/* Нууц зургийн цомог */
+.vault-file-label {
+    display: block;
+    text-align: center;
+    padding: 15px;
+    background: rgba(255, 0, 127, 0.05);
+    border: 2px dashed rgba(255, 0, 127, 0.3);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--neon-pink);
+    border-radius: 6px;
+}
+
+.vault-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.vault-gallery-img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 0, 127, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.vault-gallery-img:hover {
+    transform: scale(1.05);
+    border-color: var(--neon-pink);
+}
+
+/* ==========================================
+   6. ARTIST AI GENERATED MEDIA IMAGES
+   ========================================== */
+.ai-generated-frame {
+    margin-top: 12px;
+    border: 2px solid var(--border-cyber);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+    background: #000;
+}
+
+.ai-generated-frame img {
+    width: 100%;
+    display: block;
+    max-height: 380px;
+    object-fit: contain;
+}
+
+/* Бусад үндсэн чатын элементүүд */
+.friends-layout, .bot-chat-layout { height: 100%; }
+.chat-messages-box, .bot-messages-box {
+    flex: 1; overflow-y: auto; padding: 15px;
+    background: rgba(0,0,0,0.3); border-radius: 8px;
+    margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px;
+}
+.msg-row { padding: 10px 15px; border-radius: 8px; max-width: 75%; font-size: 1.05rem; }
+.msg-row.user { background: rgba(0, 240, 255, 0.15); border: 1px solid var(--neon-blue); align-self: flex-end; }
+.msg-row.bot, .msg-row.friend-msg { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255,255,255,0.08); align-self: flex-start; }
+.chat-input-row, .bot-input-row { display: flex; gap: 12px; }
+.chat-input-row input, .bot-input-row input {
+    flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px; color: #fff; padding: 12px; font-family: 'Rajdhani', sans-serif;
+}
+.chat-send-btn, .bot-send-btn {
+    background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
+    padding: 0 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold;
+}
+.bot-status { font-size: 0.85rem; color: var(--neon-green); margin-top: 4px; }
+
+/* Interactive Modals */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+    display: flex; justify-content: center; align-items: center; z-index: 200;
+}
+.modal-card { background: #0d0d16; border: 2px solid var(--border-cyber); padding: 30px; border-radius: 12px; width: 100%; max-width: 440px; }
+.modal-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 5px var(--border-cyber); }
+.modal-input-group { margin-bottom: 15px; }
+.modal-input-group label { display: block; font-size: 0.85rem; color: var(--text-gray); margin-bottom: 6px; }
+.modal-input-group input { width: 100%; padding: 10px; background: #000; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; }
+.modal-btn { padding: 10px 20px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; }
+.modal-btn.cancel { background: transparent; border: 1px solid var(--neon-pink); color: var(--neon-pink); }
+.modal-btn.save { background: var(--border-cyber); border: 1px solid var(--border-cyber); color: #000; }
