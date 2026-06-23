@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,11 +20,11 @@
             <p class="auth-subtitle">Connect to the Future Network</p>
             <form id="login-form" onsubmit="handleLogin(event)">
                 <div class="input-group">
-                    <label>Cyber Identity (Username)</label>
+                    <label class="auth-label-highlight">Cyber Identity (Username)</label>
                     <input type="text" id="login-username" required placeholder="Enter username...">
                 </div>
                 <div class="input-group">
-                    <label>Access Matrix (Password)</label>
+                    <label class="auth-label-highlight">Access Matrix (Password)</label>
                     <div class="password-wrapper">
                         <input type="password" id="login-password" required placeholder="Enter password...">
                         <button type="button" class="eye-btn" onclick="togglePasswordVisibility('login-password')">👁</button>
@@ -41,11 +41,11 @@
             <p class="auth-subtitle">Create New Timeline Identity</p>
             <form id="register-form" onsubmit="handleRegister(event)">
                 <div class="input-group">
-                    <label>Choose Username</label>
+                    <label class="auth-label-highlight">Choose Username</label>
                     <input type="text" id="reg-username" required placeholder="Choose username...">
                 </div>
                 <div class="input-group">
-                    <label>Secure Password</label>
+                    <label class="auth-label-highlight">Secure Password</label>
                     <div class="password-wrapper">
                         <input type="password" id="reg-password" required placeholder="Create password...">
                         <button type="button" class="eye-btn" onclick="togglePasswordVisibility('reg-password')">👁</button>
@@ -57,13 +57,28 @@
         </div>
 
     </div>
+
     <!-- 🌐 MAIN APPLICATION CORE -->
     <div id="main-app" style="display: none;">
         
-        <!-- 🛰️ CYBER NAVIGATION & CONTROL HEADER -->
+        <!-- 🛰️ CYBER NAVIGATION & CONTROL HEADER WITH MP3 PLAYER -->
         <header class="main-header">
             <div class="header-left">
                 <span class="logo-neon">iKnowTomorrow</span>
+            </div>
+
+            <!-- 🎵 USER CUSTOM MUSIC PLAYER -->
+            <div id="cyber-audio-player" class="custom-player-widget">
+                <label class="music-upload-btn" id="music-label">
+                    🎵 Дуу сонсох
+                    <input type="file" id="user-mp3-file" accept="audio/*" onchange="handleUserMusic(event)" style="display: none;">
+                </label>
+                <audio id="cyber-audio-engine" loop></audio>
+                <div id="player-controls" style="display: none; align-items: center; gap: 8px;">
+                    <button onclick="toggleUserMusic()" id="play-pause-btn" class="player-btn-small">▶</button>
+                    <span id="track-name-display" class="track-text">Track</span>
+                    <button onclick="closeUserMusic()" class="player-btn-close">✕</button>
+                </div>
             </div>
             
             <div class="header-right">
@@ -78,13 +93,13 @@
                 <button class="logout-btn" onclick="handleLogout()">Logout</button>
             </div>
         </header>
-
-        <!-- 🎛️ SIDEBAR MENU TABS -->
+        <!-- 🎛️ SIDEBAR MENU TABS WITH PRIVATE VAULT -->
         <div class="app-layout-container">
             <nav class="side-navigation">
                 <button id="feed-btn" class="menu-tab active" onclick="switchTab('feed')">Ирээдүйн урсгал</button>
                 <button id="friends-btn" class="menu-tab" onclick="switchTab('friends')">🤝 Найзууд & Чат</button>
-                <button id="chats-btn" class="menu-tab" onclick="switchTab('chats')">🤖 Ирээдүйн Бот</button>
+                <button id="vault-btn" class="menu-tab private-tab" onclick="switchTab('vault')">🔒 Хувийн орон зай</button>
+                <button id="chats-btn" class="menu-tab" onclick="switchTab('chats')">🎨 Ирээдүйг Зурах AI</button>
             </nav>
 
             <!-- 🖥️ MAIN VIEW DISPLAY -->
@@ -130,12 +145,10 @@
                 <!-- 🤝 TAB: FRIENDS & PRIVATE CHATS -->
                 <div id="tab-friends" class="tab-content" style="display: none;">
                     <div class="friends-layout">
-                        <!-- Left Side: Citizens List -->
                         <div class="friends-list-panel">
                             <h3 class="panel-title">Online Citizens</h3>
                             <div id="friends-list-container"></div>
                         </div>
-                        <!-- Right Side: Active Chat Box -->
                         <div class="friends-chat-panel">
                             <h3 id="active-chat-partner" class="panel-title">💬 Select a citizen to start chat</h3>
                             <div id="friends-chat-messages" class="chat-messages-box"></div>
@@ -147,21 +160,56 @@
                     </div>
                 </div>
 
-                <!-- 🤖 TAB: FUTURE SMART AI BOT -->
+                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (Хувийн орон зай) -->
+                <div id="tab-vault" class="tab-content" style="display: none;">
+                    <div class="vault-layout">
+                        <!-- Дэд цэснүүд -->
+                        <div class="vault-grid">
+                            <!-- Календарь -->
+                            <div class="vault-card">
+                                <h3 class="vault-card-title">📅 Ирээдүйн Календарь</h3>
+                                <input type="date" id="vault-date-input" class="cyber-date-picker">
+                                <textarea id="vault-calendar-text" placeholder="Энэ өдөр хийх ирээдүйн төлөвлөгөө..."></textarea>
+                                <button class="btn-vault-action" onclick="saveVaultCalendar()">Төлөвлөгөө хадгалах</button>
+                                <div id="vault-calendar-list" class="vault-list-preview"></div>
+                            </div>
+
+                            <!-- Тэмдэглэл -->
+                            <div class="vault-card">
+                                <h3 class="vault-card-title">📝 Зүүд & Төсөөллийн тэмдэглэл</h3>
+                                <textarea id="vault-note-text" placeholder="Шөнө зүүдэлсэн зүйлс эсвэл урт хугацааны зөгнөлөө бичээрэй..."></textarea>
+                                <button class="btn-vault-action" onclick="saveVaultNote()">Тэмдэглэл хадгалах</button>
+                                <div id="vault-notes-list" class="vault-list-preview"></div>
+                            </div>
+
+                            <!-- Зургийн цомог -->
+                            <div class="vault-card">
+                                <h3 class="vault-card-title">🖼️ Нууц зургийн цомог</h3>
+                                <label class="vault-file-label">
+                                    📁 Зураг нэмэх
+                                    <input type="file" id="vault-image-file" accept="image/*" onchange="handleVaultImage(event)" style="display: none;">
+                                </label>
+                                <div id="vault-gallery-container" class="vault-gallery-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🤖 TAB: FUTURE SMART AI BOT (Ирээдүйг Зурах AI) -->
                 <div id="tab-chats" class="tab-content" style="display: none;">
                     <div class="bot-chat-layout">
                         <div class="bot-header-zone">
-                            <h3 id="bot-title">Ирээдүйн Бот 🤖</h3>
-                            <p class="bot-status">● Core AI Online (No Matrix Restrictions)</p>
+                            <h3 id="bot-title">Ирээдүйг Зурах AI 🎨</h3>
+                            <p class="bot-status">● Neural Image Engine Ready</p>
                         </div>
                         <div id="chat-container" class="bot-messages-box">
                             <div class="msg-row bot">
-                                <strong>Future Bot:</strong> Систем бэлэн боллоо. Танд өнөөдөр юугаар туслах вэ?
+                                <strong>AI Artist:</strong> Надад төсөөллөө бичээрэй. Би түүнийг чинь ирээдүйн зураг болгон буулгах болно! (Жишээ нь: "2050 оны Улаанбаатар хот", "Киберпанк машин")
                             </div>
                         </div>
                         <div class="bot-input-row">
-                            <input type="text" id="bot-input" placeholder="Ask anything..." onkeypress="if(event.key === 'Enter') sendDirectMessage()">
-                            <button id="send-btn" class="bot-send-btn" onclick="sendDirectMessage()">Илгээх</button>
+                            <input type="text" id="bot-input" placeholder="Төсөөллөө энд бичээд зураг болго..." onkeypress="if(event.key === 'Enter') generateAiImage()">
+                            <button id="send-btn" class="bot-send-btn" onclick="generateAiImage()">Зураг болгох</button>
                         </div>
                     </div>
                 </div>
