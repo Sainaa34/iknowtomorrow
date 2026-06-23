@@ -17,13 +17,14 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    /* 鼠标 дээш доош гүйлгэхэд текст цэнхэртэж идэвхжихийг бүр мөсөн дарсан тохиргоо */
+    /* 🖱️ ХУЛГАНААР ГҮЙЛГЭХЭД ТЕКСТ ЦЭНХЭРТЭЖ ИДЭВХЖИХИЙГ БҮР МӨСӨН ДАРЛАА */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
+/* Оролтын талбарууд дээр текстээ чөлөөтэй бичиж, сонгож болно */
 input, textarea {
     -webkit-user-select: text;
     -moz-user-select: text;
@@ -40,7 +41,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 🎨 THEME CONFIGURATIONS (LIGHT хувилбар нэгдүгээрт) */
+/* 🎨 THEME CONFIGURATIONS (Цагаан Light загвар нэгдүгээрт) */
 body.theme-light {
     --bg-cyber: #f0f2f5;
     --card-cyber: #ffffff;
@@ -83,7 +84,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   2. SECURE AUTHENTICATION MATRIX (Online Images)
+   2. HIGH-CONTRAST LOGIN SCREEN (Fixed Images)
    ========================================== */
 .auth-screen {
     width: 100vw;
@@ -92,6 +93,7 @@ body.theme-dark {
     justify-content: center;
     align-items: center;
     background-color: #000;
+    /* 🖼️ АРЫН ЗУРГИЙГ ХАВ ХАР БОЛГОХГҮЙ ЗӨВ ДӨРВӨН ТАЛААР ТАСЛАЛТАЙ ХОЛБОСОН ХЭСЭГ */
     background-image: url('https://unsplash.com'), 
                       url('https://unsplash.com'), 
                       url('https://unsplash.com'), 
@@ -120,15 +122,59 @@ body.theme-dark {
     text-shadow: 0 0 10px var(--border-cyber);
     margin-bottom: 5px;
     letter-spacing: 2px;
+    cursor: pointer;
 }
 
 .auth-subtitle {
     color: var(--neon-blue) !important;
     font-size: 0.9rem;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-transform: uppercase;
 }
 
+/* 🔘 Google Login Товчлуурын гоё неон стиль */
+.google-auth-btn {
+    width: 100%;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 6px;
+    color: #3c4043;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.google-auth-btn:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-gray);
+    font-size: 0.8rem;
+}
+
+.auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.auth-divider span {
+    padding: 0 10px;
+}
 .auth-label-highlight {
     display: block;
     font-size: 0.9rem;
@@ -139,6 +185,7 @@ body.theme-dark {
     letter-spacing: 1px;
     text-shadow: 1px 1px 3px #000, 0 0 5px var(--neon-blue);
 }
+
 .input-group {
     margin-bottom: 20px;
     text-align: left;
@@ -282,6 +329,7 @@ body.theme-dark {
     height: 32px;
     border-radius: 50%;
     border: 1px solid var(--border-cyber);
+    object-fit: cover;
 }
 
 .logout-btn {
@@ -432,9 +480,9 @@ body.theme-dark {
     height: 45px;
     border-radius: 50%;
     border: 1px solid var(--border-cyber);
+    object-fit: cover;
 }
 
-/* 🔮 КРИСТАЛ БӨМБӨЛӨГ БАРУУН ДЭЭД БУЛАНД */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--neon-pink);
@@ -459,7 +507,6 @@ body.theme-dark {
     color: var(--text-white);
 }
 
-/* 🖼️ ЗУРГИЙГ КАРТНААС ИЛҮҮ ГАРАХГҮЙ БОЛГОЖ ХЯЗГААРЛАСАН ХЭСЭГ */
 .post-media-content, .media-preview-zone {
     margin-bottom: 20px;
     border-radius: 8px;
@@ -477,13 +524,13 @@ body.theme-dark {
     margin: 0 auto;
 }
 
-/* Comments Box Inside Card & Enter to send */
+/* Сэтгэгдлийн үндсэн хайрцаг */
 .comment-node {
     background: rgba(0,0,0,0.02);
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    border-left: 2px solid var(--neon-blue);
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--neon-blue);
     font-family: 'Rajdhani', sans-serif;
 }
 
@@ -491,7 +538,7 @@ body.theme-dark {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 5px;
+    margin-top: 6px;
 }
 
 .comment-time {
@@ -499,20 +546,25 @@ body.theme-dark {
     color: var(--text-gray);
 }
 
+/* Сэтгэгдлийн Like товчлуур цагаан дээр уусахгүй тод харагдана */
 .comment-vote-btn {
-    background: transparent;
-    border: 1px solid var(--neon-pink);
-    color: var(--neon-pink);
-    padding: 2px 8px;
-    font-size: 0.75rem;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
+    background: transparent !important;
+    border: 1px solid var(--neon-pink) !important;
+    color: var(--neon-pink) !important;
+    padding: 3px 10px !important;
+    font-size: 0.8rem !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: bold !important;
+    display: inline-flex !important;
+    align-items: center !important;
 }
 
 .comment-vote-btn.liked {
     background: var(--neon-pink) !important;
     color: #fff !important;
+    box-shadow: 0 0 10px var(--neon-pink) !important;
 }
 
 .comment-input-row {
@@ -632,6 +684,7 @@ body.theme-dark {
     width: 32px;
     height: 32px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .friend-block-btn {
@@ -722,6 +775,21 @@ body.theme-dark {
     outline: none;
 }
 
+/* 🖼️ ХАРАНХУЙ THEME ДЭЭР КАЛЕНДАРИЙН ЗУРАГ АЛГА БОЛОХООР ХАМГААЛСАН ЗАСАЛТ */
+body.theme-cyber .vault-item-node img,
+body.theme-dark .vault-item-node img,
+body.theme-matrix .vault-item-node img,
+.vault-item-node img {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: transparent !important;
+    max-width: 100%;
+    max-height: 140px;
+    border-radius: 6px;
+    border: 1px dashed var(--neon-pink);
+}
+
 .btn-vault-action {
     background: transparent;
     border: 1px solid var(--neon-pink);
@@ -741,6 +809,25 @@ body.theme-dark {
     flex-direction: column;
     gap: 12px;
     margin-top: 10px;
+}
+
+.vault-item-node {
+    background: rgba(0,0,0,0.01);
+    border-left: 4px solid var(--neon-pink);
+    padding: 15px;
+    border-radius: 6px;
+    position: relative;
+}
+
+.delete-vault-btn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: none;
+    color: var(--text-gray);
+    cursor: pointer;
+    font-weight: bold;
 }
 
 /* ==========================================
@@ -771,12 +858,8 @@ body.theme-dark {
 .msg-row { padding: 12px 18px; border-radius: 8px; max-width: 75%; }
 .msg-row.user { background: rgba(0, 85, 255, 0.08); border: 1px solid var(--neon-blue); align-self: flex-end; }
 .msg-row.bot { background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.05); align-self: flex-start; }
-.bot-input-row { display: flex; gap: 12px; }
-.bot-input-row input { flex: 1; padding: 12px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; color: var(--text-white); }
-.bot-send-btn { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 0 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; }
-.bot-status { font-size: 0.85rem; color: var(--neon-green); margin-top: 4px; }
 
-/* ⚙️ FIXED INTERACTIVE MODAL OVERLAYS (Дэлгэцийн голд гоёмсог неон хүрээтэй гарна) */
+/* ⚙️ FIXED INTERACTIVE MODAL OVERLAYS */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -846,23 +929,4 @@ body.theme-dark {
 @keyframes modalSlide {
     from { transform: translateY(-30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
-}
-.comment-vote-btn {
-    background: transparent !important;
-    border: 1px solid var(--neon-pink) !important;
-    color: var(--neon-pink) !important;
-    padding: 3px 10px !important;
-    font-size: 0.8rem !important;
-    border-radius: 12px !important;
-    cursor: pointer !important;
-    font-family: 'Orbitron', sans-serif !important;
-    font-weight: bold !important;
-    display: inline-flex !important;
-    align-items: center !important;
-}
-
-.comment-vote-btn.liked {
-    background: var(--neon-pink) !important;
-    color: #fff !important;
-    box-shadow: 0 0 10px var(--neon-pink) !important;
 }
