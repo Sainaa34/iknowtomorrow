@@ -1,12 +1,12 @@
 /* ========================================================
-   1. GLOBAL ARCHITECTURE & MODERN COLOR CHANNELS (2026)
+   1. GLOBAL SYSTEM VARIABLES & MODERN INTERFACE CODES (2026)
    ======================================================== */
 :root {
-    --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light Theme */
+/* Light Dynamic Theme Baseline */
 body.theme-light {
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
@@ -19,7 +19,7 @@ body.theme-light {
     --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
 }
 
-/* Dark Theme */
+/* Dark Dynamic Theme Baseline */
 body.theme-dark {
     --bg-main: #0f172a;
     --bg-card: #1e293b;
@@ -27,12 +27,12 @@ body.theme-dark {
     --text-muted: #94a3b8;
     --accent-color: #38bdf8;
     --border-color: #334155;
-    --hover-color: #1e293b;
+    --hover-color: #0f172a;
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
     --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.3);
 }
 
-/* Matrix Theme */
+/* Matrix Binary Theme Baseline */
 body.theme-matrix {
     --bg-main: #000000;
     --bg-card: #050d05;
@@ -45,7 +45,7 @@ body.theme-matrix {
     --shadow-md: 0 0 12px rgba(0, 255, 65, 0.3);
 }
 
-/* Cyberpunk Theme */
+/* Cyberpunk Neon Theme Baseline */
 body.theme-cyber {
     --bg-main: #0c0014;
     --bg-card: #190129;
@@ -59,7 +59,7 @@ body.theme-cyber {
 }
 
 /* ========================================================
-   2. CORE BASE RESET & CALENDAR VISIBILITY PATCH
+   2. GLOBAL CORE RESET & CALENDAR ICON VISIBILITY PATCH
    ======================================================== */
 * {
     margin: 0;
@@ -76,13 +76,25 @@ body {
     overflow-x: hidden;
 }
 
-/* 🛠 Patched: Makes HTML5 calendar indicator perfectly visible on dark backgrounds */
-body:not(.theme-light) input[type="date"]::-webkit-calendar-picker-indicator {
+/* 🛠 Patched: Makes HTML5 calendar indicator perfectly visible based on selected theme.
+   Light theme remains native dark, while dark themes invert to white for ultimate contrast */
+body.theme-dark input[type="date"]::-webkit-calendar-picker-indicator,
+body.theme-matrix input[type="date"]::-webkit-calendar-picker-indicator,
+body.theme-cyber input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1) brightness(100%);
     cursor: pointer;
 }
+
+body.theme-light input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: none; /* Restores default crisp dark look on light environments */
+    cursor: pointer;
+}
+
 input[type="date"] {
     color-scheme: dark;
+}
+body.theme-light input[type="date"] {
+    color-scheme: light;
 }
 /* ========================================================
    3. SECURE IDENTITY PORTAL (AUTH STYLES)
@@ -94,6 +106,9 @@ input[type="date"] {
     min-height: 100vh;
     padding: 20px;
     background: radial-gradient(circle at center, var(--bg-card) 0%, var(--bg-main) 100%);
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1.2s ease-in-out; /* Smooth transition for dynamic screens */
 }
 
 .auth-card {
@@ -105,7 +120,7 @@ input[type="date"] {
     max-width: 420px;
     box-shadow: var(--shadow-md);
     text-align: center;
-    animation: fadeIn 0.4s ease-out;
+    animation: authCardFadeIn 0.4s ease-out;
 }
 
 .auth-card h2 {
@@ -279,7 +294,7 @@ body.theme-cyber .neon-btn-primary {
     width: 140px;
     overflow: hidden;
     z-index: 110;
-    animation: fadeIn 0.15s ease-out;
+    animation: authCardFadeIn 0.15s ease-out;
 }
 
 .lang-dropdown-box div {
@@ -295,7 +310,7 @@ body.theme-cyber .neon-btn-primary {
     color: var(--accent-color);
 }
 
-@keyframes fadeIn {
+@keyframes authCardFadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
 }
@@ -351,7 +366,9 @@ body.theme-cyber .neon-btn-primary {
     border-color: #fed7d7;
 }
 
-body:not(.theme-light) .disconnect-btn:hover {
+body.theme-dark .disconnect-btn:hover,
+body.theme-matrix .disconnect-btn:hover,
+body.theme-cyber .disconnect-btn:hover {
     background-color: #2d1515;
     color: #fc8181;
     border-color: #742a2a;
@@ -459,7 +476,7 @@ body:not(.theme-light) .disconnect-btn:hover {
 }
 
 .tab-content-panel {
-    animation: tabFadeIn 0.25s ease-out-into;
+    animation: tabFadeIn 0.25s ease-out;
 }
 
 @keyframes tabFadeIn {
@@ -572,7 +589,7 @@ body.theme-cyber .publish-btn {
 }
 
 /* ========================================================
-   8. TIMELINE POST CARDS & SUBTLE HOVER CRYPTIC SYSTEM
+   8. TIMELINE POST CARDS & PURE SUBTLE LIKE RENDERING 
    ======================================================== */
 .post-card {
     background-color: var(--bg-card);
@@ -581,6 +598,7 @@ body.theme-cyber .publish-btn {
     padding: 24px;
     margin-bottom: 20px;
     box-shadow: var(--shadow-sm);
+    max-width: 100%; /* Prevents horizontal overflowing */
 }
 
 .post-header-row {
@@ -620,8 +638,7 @@ body.theme-cyber .publish-btn {
     gap: 10px;
 }
 
-/* 🔮 Patched: Humble Theme-Safe Like Button Setup */
-/* Purely minimalist, emoji-only; hover text handled natively via 'title' attribute */
+/* Minimalist, emoji-only; hover text handled via native title prompt strings */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--border-color);
@@ -672,18 +689,25 @@ body.theme-cyber .publish-btn {
     white-space: pre-wrap;
 }
 
+/* 🛠 Patched Image Dimensions Boundary Container */
 .post-media-content {
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 16px;
     border: 1px solid var(--border-color);
     background-color: var(--bg-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
 }
 
+/* 🛠 Patched: Guarantees uploaded visual content never breaks screens or overflows */
 .post-media-content img,
 .post-media-content video {
-    width: 100%;
-    max-height: 440px;
+    width: auto;
+    max-width: 100%;
+    max-height: 400px;
     display: block;
     object-fit: contain;
 }
@@ -721,7 +745,6 @@ body.theme-cyber .publish-btn {
     color: var(--text-muted);
 }
 
-/* Humble Comment Like Button Setup */
 .comment-vote-btn {
     background: transparent;
     border: 1px solid var(--border-color);
@@ -974,6 +997,7 @@ body.theme-matrix .msg-row.user, body.theme-cyber .msg-row.user {
     cursor: pointer;
 }
 
+/* 🛠 Patched: Safe image constraint boundary setup for private vault records layout stream */
 .vault-item-node {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -981,9 +1005,20 @@ body.theme-matrix .msg-row.user, body.theme-cyber .msg-row.user {
     padding: 16px;
     margin-bottom: 12px;
     position: relative;
+    max-width: 100%;
+    overflow: hidden;
 }
 
-/* Patched Big Textarea Layout for AI Vision prompts */
+.vault-item-node img {
+    max-width: 100%;
+    max-height: 250px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+    margin-top: 10px;
+}
+
 .ai-prompt-textarea-tag {
     width: 100%;
     height: 140px;
@@ -1019,6 +1054,15 @@ body.theme-matrix .ai-generate-btn, body.theme-cyber .ai-generate-btn {
 .ai-output-container {
     margin-top: 20px;
     text-align: center;
+    max-width: 100%;
+}
+
+.ai-output-container img {
+    max-width: 100%;
+    max-height: 400px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
 }
 
 /* ========================================================
