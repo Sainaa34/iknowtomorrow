@@ -1,16 +1,16 @@
 /* ==========================================
-   1. CORE STYLE RESET & MULTI-THEME CONFIGS
+   1. GLOBAL RESET & MULTI-THEME ENGINE
    ========================================== */
 :root {
     --bg-cyber: #0a0a12;
-    --card-cyber: rgba(16, 16, 28, 0.85);
+    --card-cyber: rgba(16, 16, 28, 0.75);
     --border-cyber: #00ffcc;
     --neon-pink: #ff007f;
     --neon-blue: #00f0ff;
     --neon-green: #39ff14;
     --text-white: #ffffff;
     --text-gray: #8a8a9e;
-    --glass-blur: blur(12px);
+    --glass-blur: blur(10px);
 }
 
 * {
@@ -25,13 +25,13 @@ body {
     color: var(--text-white);
     overflow-x: hidden;
     background-attachment: fixed;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 🎨 GLOBAL THEME SWITCHER LOGIC (Нийтээрээ өөрчлөгддөг загварууд) */
+/* Global Theme Variations */
 body.theme-matrix {
     --bg-cyber: #020204;
-    --card-cyber: rgba(5, 12, 5, 0.9);
+    --card-cyber: rgba(5, 12, 5, 0.85);
     --border-cyber: #00ff33;
     --neon-blue: #00ff33;
     --neon-pink: #008811;
@@ -59,7 +59,7 @@ body.theme-light {
 }
 
 /* ==========================================
-   2. AUTHENTICATION CONTRAST & HIGHLIGHT FIX
+   2. HIGH-CONTRAST SECURE LOGIN SCREEN
    ========================================== */
 .auth-screen {
     width: 100vw;
@@ -71,28 +71,25 @@ body.theme-light {
     background-position: left top, right top, left bottom, right bottom;
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     background-size: 50% 50%, 50% 50%, 50% 50%, 50% 50%;
-    transition: all 0.5s ease;
 }
 
-/* Арын зурагнаас текстийг маш тод тусгаарлах гүн хар карт */
 .auth-card {
-    background-color: rgba(6, 6, 12, 0.94) !important;
-    border: 3px solid var(--border-cyber);
-    box-shadow: 0 0 30px var(--border-cyber), inset 0 0 15px rgba(0, 255, 204, 0.2);
-    backdrop-filter: blur(15px);
+    background-color: rgba(10, 10, 20, 0.95) !important;
+    border: 2px solid var(--border-cyber);
+    box-shadow: 0 0 25px var(--border-cyber);
+    backdrop-filter: blur(12px);
     padding: 40px;
-    border-radius: 16px;
+    border-radius: 12px;
     width: 100%;
-    max-width: 430px;
+    max-width: 420px;
     text-align: center;
-    z-index: 10;
 }
 
 .auth-title {
     font-family: 'Orbitron', sans-serif;
-    font-size: 2.6rem;
+    font-size: 2.5rem;
     color: #fff !important;
-    text-shadow: 0 0 12px var(--border-cyber);
+    text-shadow: 0 0 10px var(--border-cyber);
     margin-bottom: 5px;
     letter-spacing: 2px;
 }
@@ -100,44 +97,46 @@ body.theme-light {
 .auth-subtitle {
     color: var(--neon-blue) !important;
     font-size: 0.9rem;
-    margin-bottom: 35px;
+    margin-bottom: 30px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
 }
 
-/* 👁️ Текст харагдахгүй байгааг 100% шийдсэн тодруулагч */
 .auth-label-highlight {
     display: block;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #ffffff !important;
-    font-weight: 700;
+    font-weight: bold;
     margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: 2px 2px 4px #000000, 0 0 8px var(--neon-blue);
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 3px #000, 0 0 5px var(--neon-blue);
 }
 .input-group {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
     text-align: left;
 }
 
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    background: rgba(0, 0, 0, 0.8) !important;
-    border: 1px solid var(--border-cyber);
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--text-gray);
     border-radius: 6px;
-    color: #fff !important;
+    color: #fff;
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.1rem;
     outline: none;
-    transition: all 0.3s ease;
 }
 
 .input-group input:focus {
-    border-color: var(--neon-pink);
-    box-shadow: 0 0 15px var(--neon-pink);
+    border-color: var(--border-cyber);
+    box-shadow: 0 0 10px var(--border-cyber);
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .eye-btn {
@@ -145,10 +144,9 @@ body.theme-light {
     right: 12px;
     background: none;
     border: none;
-    color: var(--neon-blue);
+    color: var(--text-gray);
     cursor: pointer;
     font-size: 1.2rem;
-    outline: none;
 }
 
 .btn-neon-submit {
@@ -165,7 +163,6 @@ body.theme-light {
     margin-top: 15px;
     text-shadow: 0 0 5px var(--neon-pink);
     box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
-    transition: all 0.3s ease;
 }
 
 .btn-neon-submit:hover {
@@ -176,25 +173,24 @@ body.theme-light {
 .auth-switch {
     margin-top: 25px;
     font-size: 0.95rem;
-    color: #fff;
+    color: var(--text-gray);
 }
 
 .auth-switch span {
     color: var(--border-cyber);
     cursor: pointer;
     text-decoration: underline;
-    font-weight: bold;
 }
 
 /* ==========================================
-   3. MAIN APPLICATION HEADER & AUDIO DESIGN
+   3. MAIN HEADER & AUDIO PLAYER ALIGNMENT
    ========================================== */
 .main-header {
     background: var(--card-cyber);
     border-bottom: 2px solid var(--border-cyber);
-    box-shadow: 0 2px 15px rgba(0, 255, 204, 0.15);
+    box-shadow: 0 2px 15px rgba(0, 255, 204, 0.2);
     backdrop-filter: var(--glass-blur);
-    padding: 12px 30px;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -210,20 +206,19 @@ body.theme-light {
     font-size: 1.8rem;
     font-weight: bold;
     letter-spacing: 2px;
-    color: var(--text-white);
+    color: #fff;
     text-shadow: 0 0 8px var(--border-cyber);
 }
 
-/* 🎵 USER MP3 MUSIC PLAYER BOX */
+/* 🎵 Custom Music Player Header Alignment */
 .custom-player-widget {
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     border: 1px solid var(--neon-blue);
     padding: 6px 14px;
     border-radius: 20px;
     gap: 12px;
-    max-width: 300px;
 }
 
 .music-upload-btn {
@@ -280,7 +275,6 @@ body.theme-light {
     border-radius: 4px;
     font-family: 'Orbitron', sans-serif;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .header-btn:hover {
@@ -322,26 +316,30 @@ body.theme-light {
     font-weight: bold;
 }
 
-/* Layout Core */
+/* ==========================================
+   4. LAYOUT CORE (Fixing Sidebar Collapse)
+   ========================================== */
 .app-layout-container {
     display: flex;
-    margin-top: 70px;
-    height: calc(100vh - 70px);
+    margin-top: 75px;
+    height: calc(100vh - 75px);
+    width: 100vw;
 }
 
 .side-navigation {
-    width: 240px;
-    background: rgba(16, 16, 28, 0.4);
-    border-right: 1px solid rgba(0, 255, 204, 0.15);
-    padding: 25px 15px;
+    width: 250px;
+    min-width: 250px;
+    background: rgba(16, 16, 28, 0.6);
+    border-right: 1px solid rgba(0, 255, 204, 0.2);
+    padding: 30px 15px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
 
 .menu-tab {
     width: 100%;
-    padding: 12px 18px;
+    padding: 14px 20px;
     background: transparent;
     border: 1px solid transparent;
     color: var(--text-gray);
@@ -351,11 +349,11 @@ body.theme-light {
     font-weight: bold;
     cursor: pointer;
     border-radius: 6px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .menu-tab.active {
-    color: var(--text-white);
+    color: #fff;
     border-color: var(--border-cyber);
     background: rgba(0, 255, 204, 0.1);
     text-shadow: 0 0 5px var(--border-cyber);
@@ -363,27 +361,66 @@ body.theme-light {
 
 .main-content-display {
     flex: 1;
-    padding: 25px;
+    padding: 30px;
     overflow-y: auto;
 }
 /* ==========================================
-   4. TIMELINE CARDS & LIKE/UNLIKE SYSTEM
+   5. TIMELINE FEED & FIXED LIKE SYSTEM CARD
    ========================================== */
+.search-wrapper-box {
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.search-wrapper-box input {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--card-cyber);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    outline: none;
+}
+
 .creator-card, .post-card {
     background: var(--card-cyber);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    margin-bottom: 30px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Шинэ цэвэрхэн Like Товчлуурын Загвар */
+.creator-card textarea {
+    width: 100%;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    padding: 15px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    resize: none;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.creator-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Шинэ цэвэрхэн Like Товчлуур */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
-    padding: 6px 16px;
+    padding: 8px 20px;
     border-radius: 20px;
     cursor: pointer;
     font-family: 'Orbitron', sans-serif;
@@ -391,26 +428,77 @@ body.theme-light {
     transition: all 0.2s ease;
 }
 
-/* Лайк дарагдсан үеийн неон гэрэлтэлт */
 .vote-btn-neon.liked {
     background: var(--neon-blue) !important;
     color: #000 !important;
     box-shadow: 0 0 15px var(--neon-blue);
 }
 
-.vote-btn-neon:hover:not(.liked) {
+.post-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.post-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.post-avatar-mini {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--border-cyber);
+}
+
+.post-main-text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #f5f5fa;
+}
+
+/* Comments section reset */
+.comment-input-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.comment-input-row input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #fff;
+    padding: 10px 15px;
+    outline: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+}
+
+.comment-add-btn {
     background: rgba(0, 240, 255, 0.1);
-    box-shadow: 0 0 8px var(--neon-blue);
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
 }
 
 /* ==========================================
-   5. 🔒 PRIVATE VAULT AREA (Хувийн Орон Зай)
+   6. 🔒 PRIVATE VAULT AREA (Хувийн Орон Зай)
    ========================================== */
 .vault-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px;
-    margin-top: 10px;
 }
 
 .vault-card {
@@ -418,19 +506,6 @@ body.theme-light {
     border: 1px dashed var(--neon-pink);
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 0 15px rgba(255, 0, 127, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.vault-card-title {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--neon-pink);
-    font-size: 1.2rem;
-    text-shadow: 0 0 5px rgba(255, 0, 127, 0.3);
-    border-bottom: 1px solid rgba(255, 0, 127, 0.2);
-    padding-bottom: 8px;
 }
 
 .cyber-date-picker {
@@ -439,92 +514,14 @@ body.theme-light {
     background: #000;
     border: 1px solid var(--neon-pink);
     color: #fff;
-    font-family: 'Rajdhani', sans-serif;
     border-radius: 6px;
-    outline: none;
-}
-
-.vault-card textarea {
-    width: 100%;
-    height: 100px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    color: #fff;
-    padding: 12px;
-    font-family: 'Rajdhani', sans-serif;
-    resize: none;
-    outline: none;
-}
-
-.vault-card textarea:focus {
-    border-color: var(--neon-pink);
-}
-
-.btn-vault-action {
-    background: transparent;
-    border: 1px solid var(--neon-pink);
-    color: var(--neon-pink);
-    padding: 10px;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-vault-action:hover {
-    background: var(--neon-pink);
-    color: #fff;
-    box-shadow: 0 0 12px var(--neon-pink);
-}
-
-.vault-list-preview {
-    max-height: 150px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.vault-item-node {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    border-left: 2px solid var(--neon-pink);
-    position: relative;
-}
-
-.vault-item-node .delete-vault-btn {
-    position: absolute;
-    right: 8px;
-    top: 6px;
-    background: none;
-    border: none;
-    color: var(--text-gray);
-    cursor: pointer;
-}
-
-/* Нууц зургийн цомог */
-.vault-file-label {
-    display: block;
-    text-align: center;
-    padding: 15px;
-    background: rgba(255, 0, 127, 0.05);
-    border: 2px dashed rgba(255, 0, 127, 0.3);
-    cursor: pointer;
-    font-weight: bold;
-    color: var(--neon-pink);
-    border-radius: 6px;
+    margin-bottom: 12px;
 }
 
 .vault-gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 10px;
-    max-height: 200px;
-    overflow-y: auto;
 }
 
 .vault-gallery-img {
@@ -533,67 +530,43 @@ body.theme-light {
     object-fit: cover;
     border-radius: 6px;
     border: 1px solid rgba(255, 0, 127, 0.3);
-    cursor: pointer;
-    transition: transform 0.2s;
 }
 
-.vault-gallery-img:hover {
-    transform: scale(1.05);
-    border-color: var(--neon-pink);
-}
-
-/* ==========================================
-   6. ARTIST AI GENERATED MEDIA IMAGES
-   ========================================== */
+/* AI Generated frame inside chat */
 .ai-generated-frame {
-    margin-top: 12px;
+    margin-top: 15px;
     border: 2px solid var(--border-cyber);
     border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-    background: #000;
+    max-width: 400px;
 }
 
 .ai-generated-frame img {
     width: 100%;
     display: block;
-    max-height: 380px;
-    object-fit: contain;
+    border-radius: 6px;
 }
 
-/* Бусад үндсэн чатын элементүүд */
-.friends-layout, .bot-chat-layout { height: 100%; }
+/* Chat & Bots baseline */
 .chat-messages-box, .bot-messages-box {
-    flex: 1; overflow-y: auto; padding: 15px;
-    background: rgba(0,0,0,0.3); border-radius: 8px;
-    margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px;
+    flex: 1;
+    min-height: 350px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
-.msg-row { padding: 10px 15px; border-radius: 8px; max-width: 75%; font-size: 1.05rem; }
-.msg-row.user { background: rgba(0, 240, 255, 0.15); border: 1px solid var(--neon-blue); align-self: flex-end; }
-.msg-row.bot, .msg-row.friend-msg { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255,255,255,0.08); align-self: flex-start; }
-.chat-input-row, .bot-input-row { display: flex; gap: 12px; }
-.chat-input-row input, .bot-input-row input {
-    flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 6px; color: #fff; padding: 12px; font-family: 'Rajdhani', sans-serif;
-}
-.chat-send-btn, .bot-send-btn {
-    background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
-    padding: 0 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold;
-}
-.bot-status { font-size: 0.85rem; color: var(--neon-green); margin-top: 4px; }
 
-/* Interactive Modals */
+.msg-row { padding: 12px 18px; border-radius: 8px; max-width: 75%; }
+.msg-row.user { background: rgba(0, 240, 255, 0.15); border: 1px solid var(--neon-blue); align-self: flex-end; }
+.msg-row.bot { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); align-self: flex-start; }
+
+/* Profile modal popups */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
     display: flex; justify-content: center; align-items: center; z-index: 200;
 }
 .modal-card { background: #0d0d16; border: 2px solid var(--border-cyber); padding: 30px; border-radius: 12px; width: 100%; max-width: 440px; }
-.modal-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 5px var(--border-cyber); }
-.modal-input-group { margin-bottom: 15px; }
-.modal-input-group label { display: block; font-size: 0.85rem; color: var(--text-gray); margin-bottom: 6px; }
-.modal-input-group input { width: 100%; padding: 10px; background: #000; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px; }
-.modal-btn { padding: 10px 20px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; }
-.modal-btn.cancel { background: transparent; border: 1px solid var(--neon-pink); color: var(--neon-pink); }
-.modal-btn.save { background: var(--border-cyber); border: 1px solid var(--border-cyber); color: #000; }
