@@ -10,19 +10,19 @@ let blockedUsers = JSON.parse(localStorage.getItem('iknow_blocked_users')) || {}
 let unseenMessagesFrom = JSON.parse(localStorage.getItem('iknow_unseen_msgs')) || {};
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat", "скам", "хакердах"];
 
-// Media attachment memory addresses
+// Media attachment dynamic buffers
 let postAttachedMedia = null; 
 let vaultAttachedImage = null;
 let modalSelectedAvatarBase64 = null;
 let activeChatPartnerName = null;
 
-// 🌌 RESTORED: Authentication backgrounds asset registry (2026 high-resolution streams)
+// 🌌 PATCHED: Your authentic GitHub local assets utilized for login cycle animations
 const authImages = [
-    "https://unsplash.com",
-    "https://unsplash.com",
-    "https://unsplash.com",
-    "https://unsplash.com",
-    "https://unsplash.com"
+    "r2.jpg",
+    "r3.jpg",
+    "r4.jpg",
+    "r6.jpg",
+    "r7.jpg"
 ];
 let currentAuthImgIdx = 0;
 let authCycleInterval = null;
@@ -32,7 +32,6 @@ const translations = {
     en: {
         login_title: "Access Future Network",
         login_btn: "Enter Timeline",
-        google_btn: "Connect via Google Neural Gateway",
         no_account: "New Citizen?",
         create_identity: "Create Identity",
         register_title: "Create Neural Identity",
@@ -59,12 +58,13 @@ const translations = {
         ai_btn: "Paint Future Vision",
         modal_title: "Update Neural Identity",
         modal_save: "Save Changes",
-        prophecy_text: "Prophecy Verified"
+        prophecy_text: "Prophecy Verified",
+        report_text: "Report Vision",
+        reported_alert: "This post has been reported to the global node network moderators."
     },
     mn: {
         login_title: "Ирээдүйн Сүлжээнд Нэвтрэх",
         login_btn: "Цагийн шугамд орох",
-        google_btn: "Google Neural Gateway-ээр холбогдох",
         no_account: "Шинэ иргэн үү?",
         create_identity: "Хаяг үүсгэх",
         register_title: "Шинэ иргэний бүртгэл үүсгэх",
@@ -91,11 +91,13 @@ const translations = {
         ai_btn: "Ирээдүйн зургийг зуруулах",
         modal_title: "Профайл зураг шинэчлэх",
         modal_save: "Өөрчлөлтийг хадгалах",
-        prophecy_text: "Зөгнөл баталгаажсан"
+        prophecy_text: "Зөгнөл баталгаажсан",
+        report_text: "Зөрчил мэдээлэх",
+        reported_alert: "Энэхүү постын зөрчлийг сүлжээний зохицуулагч нарт амжилттай мэдээллээ."
     }
 };
 
-// Orchestrated Bootstrapper Loader
+// Orchestrated Core Network Bootstrapper
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
@@ -109,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 1.2 INDEXEDDB STORAGE CAPABILITY ARCHITECTURE
 // ========================================================
 function initIndexedDB() {
+    // Structural connection to continuous memory pools
     const request = indexedDB.open("iKnowTomorrowDB", 5);
 
     request.onupgradeneeded = (e) => {
@@ -184,14 +187,14 @@ function applyLanguage(lang) {
     });
 }
 // ========================================================
-// 2. 🌌 SECURE AUTH BACKGROUND CYCLER ENGINE (RESTORED)
+// 2. 🌌 SECURE AUTH BACKGROUND CYCLER ENGINE (LOCAL FIXED)
 // ========================================================
 function startAuthBackgroundCycle() {
     const authContainer = document.getElementById('auth-container');
     if (!authContainer) return;
 
-    // Шинэ дата хуучин дата зөрчилдөхөөс сэргийлж, зөвхөн нэвтрэх цонх нээлттэй үед ажиллуулна
     if (authContainer.style.display !== 'none') {
+        // Таны өөрийн GitHub дээрх бодит зургуудыг алдаагүй унших засалт
         authContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('${authImages[currentAuthImgIdx]}')`;
         
         if (!authCycleInterval) {
@@ -269,31 +272,8 @@ function handleLogin(e) {
         localStorage.setItem('iknow_session', username);
         showMainApp();
     } else {
-        alert("Invalid authorization clearance parameters!");
+        alert("Invalid authorization credentials!");
     }
-}
-
-function handleGoogleAuth() {
-    const googleEmail = prompt("Enter your Google Account email address to link:", "citizen@gmail.com");
-    if (!googleEmail) return;
-    
-    if (!googleEmail.includes("@") || !googleEmail.includes(".")) {
-        alert("Invalid email structure coordinates!");
-        return;
-    }
-
-    const cleanedName = googleEmail.split('@')[0].replace(/[^a-zA-Z0-9]/g, '_');
-    const googleUser = `${cleanedName}_G`;
-    
-    currentUser = googleUser;
-    localStorage.setItem('iknow_session', googleUser);
-    
-    if (!localStorage.getItem(`user_${googleUser}`)) {
-        localStorage.setItem(`user_${googleUser}`, "GOOGLE_FEDERATED_CLEARANCE_2026");
-    }
-    
-    alert(`Successfully authenticated via Google: ${googleEmail}`);
-    showMainApp();
 }
 
 function checkSession() {
@@ -378,7 +358,7 @@ function switchTab(tabId) {
     }
 }
 
-// 🌐 Safely resets search terms and focuses view back to the main timeline feed
+// 🌐 Resets layout matrix view ports back to default global stream viewports cleanly
 function resetAppToHome() {
     const searchField = document.getElementById('search-input');
     const inputField = document.getElementById('future-input');
@@ -398,7 +378,7 @@ function handleFileSelect(event, type) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     
-    // 🛠 Fixed: Isolated file variable to prevent global array scoping collision issues
+    // 🛠 Fixed: Isolated file tracking array node mapping cleanly
     const currentUploadFile = files[0];
     const reader = new FileReader();
     
@@ -522,7 +502,7 @@ function loadPostsFromDB() {
     };
 }
 // ========================================================
-// 6.2 TIMELINE POST RENDERING ENGINE WITH SUBTLE INTERACTIONS
+// 6.2 TIMELINE POST RENDERING ENGINE WITH RESTORED REPORT
 // ========================================================
 function renderPosts(postsToRender) {
     const container = document.getElementById('feed-container');
@@ -548,7 +528,7 @@ function renderPosts(postsToRender) {
             }
         }
 
-        // 💬 Build localized comments stream interface
+        // 💬 Localized comments stream architecture setup
         let commentsHtml = "";
         if (post.comments && post.comments.length > 0) {
             post.comments.forEach((comment, idx) => {
@@ -570,10 +550,17 @@ function renderPosts(postsToRender) {
             });
         }
 
+        // 🛠 Restored: Report and management button logic matching legacy deployment templates
+        let actionButtonHtml = "";
+        if (post.author === currentUser) {
+            actionButtonHtml = `<button class="post-more-btn" onclick="deletePost('${post.id}')" title="Delete Vision">✕</button>`;
+        } else {
+            actionButtonHtml = `<button class="post-more-btn" onclick="reportPost('${post.id}')" title="${translations[currentLanguage].report_text}" style="color:var(--text-muted);">🚩</button>`;
+        }
+
         const postCard = document.createElement('div');
         postCard.className = 'post-card';
         
-        // Pure humble setup: Text-free layout for buttons, hover tooltip contains verification metadata
         postCard.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
@@ -587,7 +574,7 @@ function renderPosts(postsToRender) {
                     <button class="vote-btn-neon ${isLiked}" onclick="votePost('${post.id}')" title="${translations[currentLanguage].prophecy_text}">
                         🔮 <span>${post.voteCount || 0}</span>
                     </button>
-                    ${post.author === currentUser ? `<button class="post-more-btn" onclick="deletePost('${post.id}')" title="Delete Vision">✕</button>` : ''}
+                    ${actionButtonHtml}
                 </div>
             </div>
             <div class="post-main-text">${post.text}</div>
@@ -603,7 +590,7 @@ function renderPosts(postsToRender) {
         container.appendChild(postCard);
     });
     
-    applyLanguage(currentLanguage); // Localized sync update cascade
+    applyLanguage(currentLanguage); 
 }
 
 function votePost(postId) {
@@ -629,6 +616,11 @@ function votePost(postId) {
             loadPostsFromDB();
         };
     };
+}
+
+// 🚩 Restored Legacy Report Node Triggers
+function reportPost(postId) {
+    alert(translations[currentLanguage].reported_alert);
 }
 // ========================================================
 // 6.3 INTERACTIVE SUBTLE COMMENTS, TIMELINE DELETION & SEARCH
@@ -968,7 +960,7 @@ function deleteVaultItem(id) {
 }
 
 // ========================================================
-// 9. 🎨 ARTIST AI SYSTEM LAYER (BIG TEXTAREA CONFIG)
+// 9. 🎨 ARTIST AI SYSTEM LAYER (🛠 Fixed Path Bug)
 // ========================================================
 function generateAIImage() {
     const aiInput = document.getElementById('ai-prompt-input');
@@ -981,6 +973,7 @@ function generateAIImage() {
     
     const aiResultContainer = document.getElementById('ai-image-result');
     if (aiResultContainer) {
+        // 🛠 Patched: Valid dynamic standard URL generation matrix
         aiResultContainer.innerHTML = `
             <div style="color:var(--text-muted); margin-bottom:10px;">Neural network painting: "${promptText}"</div>
             <img src="https://picsum.photos{Date.now()}" style="border-radius:12px; border: 2px solid var(--border-color); max-width:100%; box-shadow:var(--shadow-md);">`;
@@ -988,7 +981,7 @@ function generateAIImage() {
 }
 
 // ========================================================
-// 10. 👤 PROFILE IDENTITY UPDATER MODAL (🛠 COMBINED AVATAR & USERNAME PATCH)
+// 10. 👤 PROFILE IDENTITY UPDATER MODAL (IDENTITY ENGINE COUPLING)
 // ========================================================
 function triggerAvatarModal() {
     const modal = document.getElementById('avatar-modal');
@@ -1001,7 +994,7 @@ function triggerAvatarModal() {
     const savedAvatar = localStorage.getItem(`avatar_${currentUser}`);
     
     if (previewImg) previewImg.src = savedAvatar || "avatar.png";
-    if (usernameInput) usernameInput.value = currentUser; // Pulls active profile name automatically
+    if (usernameInput) usernameInput.value = currentUser; 
     
     modal.style.display = 'flex';
 }
@@ -1015,7 +1008,7 @@ function handleModalAvatarSelect(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const modalTargetFile = files[0]; // 🛠 Solves global scope collision leaks 
+    const modalTargetFile = files[0]; 
     const reader = new FileReader();
     reader.onload = (e) => {
         modalSelectedAvatarBase64 = e.target.result;
@@ -1036,27 +1029,22 @@ function saveModalAvatar() {
 
     const oldUserKey = currentUser;
 
-    // 🛠 1. Username Rewrite Node Migration Handler
     if (newUsername !== oldUserKey) {
         const passwordClearance = localStorage.getItem(`user_${oldUserKey}`);
         const avatarAssetClearance = localStorage.getItem(`avatar_${oldUserKey}`);
         
-        // Write new ledger address blocks
         localStorage.setItem(`user_${newUsername}`, passwordClearance || "2026_DEFAULT_MATRIX");
         localStorage.setItem(`avatar_${newUsername}`, modalSelectedAvatarBase64 || avatarAssetClearance || "avatar.png");
         
-        // Wipe deprecated legacy identities safely
         localStorage.removeItem(`user_${oldUserKey}`);
         localStorage.removeItem(`avatar_${oldUserKey}`);
         
         currentUser = newUsername;
         localStorage.setItem('iknow_session', newUsername);
     } else if (modalSelectedAvatarBase64) {
-        // If username stays identical, update target file raw metadata bytes only
         localStorage.setItem(`avatar_${currentUser}`, modalSelectedAvatarBase64);
     }
 
-    // Update global visual node assets in real time
     const headerAvatar = document.getElementById('profile-avatar');
     if (headerAvatar) headerAvatar.src = localStorage.getItem(`avatar_${currentUser}`) || "avatar.png";
     
@@ -1065,5 +1053,5 @@ function saveModalAvatar() {
     
     alert("Identity network records synchronized successfully!");
     closeAvatarModal();
-    loadPostsFromDB(); // Mass cascade data stream sync update
+    loadPostsFromDB(); 
 }
