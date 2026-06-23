@@ -27,7 +27,7 @@
             <p><span data-i18n="no_account">New Citizen?</span> Create Identity</a></p>
         </div>
 
-        <!-- REGISTER CONTROL CARD -->
+        <!-- REGISTER CONTROL CARD (🛠 Patched: Completely restored semantic level structure) -->
         <div id="register-card" class="auth-card" style="display: none;">
             <h2 data-i18n="register_title">Create Neural Identity</h2>
             <form onsubmit="handleRegister(event)">
@@ -91,7 +91,7 @@
                 </div>
             </aside>
 
-            <!-- CONTENT VIEWPORT INTERFACE -->
+            <!-- CONTENT VIEWPORT INTERFACE CONTAINER -->
             <main class="content-viewport">
                 <!-- TAB 1: FUTURE FEED TIMELINE -->
                 <section id="tab-feed" class="tab-content-panel">
@@ -155,6 +155,7 @@
                         </div>
                     </div>
                 </section>
+
                 <!-- TAB 4: ARTIST AI (PATCHED BIGGER TEXTAREA) -->
                 <section id="tab-ai" class="tab-content-panel" style="display: none;">
                     <div class="ai-generator-card">
@@ -169,13 +170,20 @@
         </div>
     </div>
 
-    <!-- 3. PROFILE AVATAR MODAL WINDOW (FIXED IDENTITY CRASH) -->
+    <!-- 3. PROFILE IDENTITY UPDATER MODAL (🛠 Patched: Added dynamic username change field) -->
     <div id="avatar-modal" class="modal-backdrop-overlay" style="display: none;">
         <div class="modal-content-card">
-            <h3 data-i18n="modal_title">Update Neural Avatar</h3>
+            <h3 data-i18n="modal_title">Update Neural Identity</h3>
+            
             <div class="avatar-current-preview">
                 <img id="modal-avatar-preview-tag" src="avatar.png">
             </div>
+            
+            <!-- Dynamic Username Change Box Component Inside Modal -->
+            <div style="margin-bottom: 20px; width: 100%;">
+                <input type="text" id="modal-username-input" placeholder="Update Username" style="width:100%; padding:12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-main); color:var(--text-main); font-weight:600; outline:none; text-align:center;">
+            </div>
+            
             <div class="modal-actions-row">
                 <label class="modal-file-btn"><input type="file" id="modal-avatar-file" accept="image/*" onchange="handleModalAvatarSelect(event)">Upload Image</label>
                 <button class="modal-save-btn" onclick="saveModalAvatar()" data-i18n="modal_save">Save Changes</button>
