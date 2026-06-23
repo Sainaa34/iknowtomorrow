@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iKnowTomorrow - Future Network</title>
+    <title>iKnowTomorrow - Global Future Network</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-light">
 
-    <!-- 1. AUTHENTICATION CONTAINER -->
+    <!-- 1. SECURE AUTONOMOUS IDENTITY CONTAINER -->
     <div id="auth-container" class="auth-box-matrix">
-        <!-- LOGIN CARD -->
+        <!-- LOGIN CONTROL CARD -->
         <div id="login-card" class="auth-card">
             <h2 data-i18n="login_title">Access Future Network</h2>
             <form onsubmit="handleLogin(event)">
@@ -27,7 +27,7 @@
             <p><span data-i18n="no_account">New Citizen?</span> Create Identity</a></p>
         </div>
 
-        <!-- REGISTER CARD -->
+        <!-- REGISTER CONTROL CARD -->
         <div id="register-card" class="auth-card" style="display: none;">
             <h2 data-i18n="register_title">Create Neural Identity</h2>
             <form onsubmit="handleRegister(event)">
@@ -42,27 +42,30 @@
         </div>
     </div>
 
-    <!-- 2. MAIN APPLICATION APPLICATION -->
+    <!-- 2. MAIN CORE APPLICATION NETWORK INTERFACE -->
     <div id="main-app" style="display: none;">
-        <!-- HEADER ROW -->
+        <!-- MASTER HEADER DEPLOYMENT -->
         <header class="main-header">
-            <div class="logo-neon">iKnowTomorrow</div>
+            <!-- Clicking logo resets application state back to default home screen safely -->
+            <div class="logo-neon" onclick="resetAppToHome()" style="cursor: pointer;">iKnowTomorrow</div>
             <div class="header-right-controls">
-                <!-- 🌐 Language Selector in place of the old theme button -->
+                
+                <!-- 🌐 GLOBAL LANGUAGE DROPDOWN CHANNELS -->
                 <button id="lang-btn" class="header-action-btn" onclick="toggleLanguageSelector()">🌐 Language: EN</button>
                 <div id="lang-dropdown" class="lang-dropdown-box" style="display: none;">
                     <div onclick="changeLanguage('en')">English</div>
                     <div onclick="changeLanguage('mn')">Монгол</div>
                 </div>
                 
-                <div class="user-session-node" id="trigger-profile-node">
+                <!-- Fixed Avatar Node Trigger -->
+                <div class="user-session-node" id="trigger-profile-node" onclick="triggerAvatarModal()">
                     <img id="profile-avatar" src="avatar.png" class="header-avatar">
                     <span id="profile-name">Citizen</span>
                 </div>
                 <button class="disconnect-btn" onclick="handleLogout()" data-i18n="logout_btn">Disconnect</button>
             </div>
         </header>
-        <!-- MAIN LAYOUT MATRIX -->
+        <!-- MAIN APPLICATION GRID MATRIX -->
         <div class="app-layout-grid">
             
             <!-- LEFT NAVIGATION SIDEBAR -->
@@ -82,16 +85,15 @@
                     </button>
                 </nav>
                 
-                <!-- 🎨 Theme Switcher placed directly below Artist AI inside navigation block -->
+                <!-- 🎨 Theme Switcher placed directly below Artist AI button at the very bottom -->
                 <div class="sidebar-footer-theme">
                     <button id="theme-btn" class="sidebar-theme-btn" onclick="toggleTheme()">🎨 Theme: LIGHT</button>
                 </div>
             </aside>
 
-            <!-- MAIN CONTENT AREA SWITCHBOARD -->
+            <!-- CONTENT VIEWPORT INTERFACE -->
             <main class="content-viewport">
-                
-                <!-- TAB 1: FUTURE FEED -->
+                <!-- TAB 1: FUTURE FEED TIMELINE -->
                 <section id="tab-feed" class="tab-content-panel">
                     <div class="feed-composer-card">
                         <textarea id="future-input" class="neural-textarea-tag" data-i18n-placeholder="feed_input_placeholder" placeholder="What will happen tomorrow? Share your vision..."></textarea>
@@ -113,7 +115,7 @@
                     </div>
                     <div id="feed-container" class="timeline-stream"></div>
                 </section>
-                <!-- TAB 2: ENCRYPTED CHATS -->
+                <!-- TAB 2: ENCRYPTED CHATS LAYER -->
                 <section id="tab-chats" class="tab-content-panel" style="display: none;">
                     <div class="chat-interface-grid">
                         <div class="chat-citizens-sidebar">
@@ -131,7 +133,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 3: PRIVATE VAULT -->
+                <!-- TAB 3: SECURE PRIVATE VAULT LOG -->
                 <section id="tab-vault" class="tab-content-panel" style="display: none;">
                     <div class="vault-grid-layout">
                         <div class="vault-form-card">
@@ -153,7 +155,6 @@
                         </div>
                     </div>
                 </section>
-
                 <!-- TAB 4: ARTIST AI (PATCHED BIGGER TEXTAREA) -->
                 <section id="tab-ai" class="tab-content-panel" style="display: none;">
                     <div class="ai-generator-card">
@@ -168,7 +169,7 @@
         </div>
     </div>
 
-    <!-- 3. PROFILE AVATAR MODAL WINDOW (FIXED CRASH) -->
+    <!-- 3. PROFILE AVATAR MODAL WINDOW (FIXED IDENTITY CRASH) -->
     <div id="avatar-modal" class="modal-backdrop-overlay" style="display: none;">
         <div class="modal-content-card">
             <h3 data-i18n="modal_title">Update Neural Avatar</h3>
