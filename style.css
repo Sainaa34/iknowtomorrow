@@ -17,14 +17,13 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    /* 🖱️ ХУЛГАНААР ГҮЙЛГЭХЭД ТЕКСТ ЦЭНХЭРТЭЖ ИДЭВХЖИХИЙГ 100% ДАРСАН ТОХИРГОО */
+    /* 鼠标 дээш доош гүйлгэхэд текст цэнхэртэж идэвхжихийг бүр мөсөн дарсан тохиргоо */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-/* Оролтын талбарууд дээр хэрэглэгч текстээ чөлөөтэй бичих боломжтой хэвээр үлдээв */
 input, textarea {
     -webkit-user-select: text;
     -moz-user-select: text;
@@ -41,7 +40,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 🎨 THEME CONFIGURATIONS (Нийтээрээ солигддог систем) */
+/* 🎨 THEME CONFIGURATIONS (LIGHT хувилбар нэгдүгээрт) */
 body.theme-light {
     --bg-cyber: #f0f2f5;
     --card-cyber: #ffffff;
@@ -84,7 +83,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   2. AUTHENTICATION (LOGIN / REGISTER) CARD
+   2. SECURE AUTHENTICATION MATRIX (Online Images)
    ========================================== */
 .auth-screen {
     width: 100vw;
@@ -93,9 +92,14 @@ body.theme-dark {
     justify-content: center;
     align-items: center;
     background-color: #000;
+    /* Найдвартай онлайн зургийн урсгал - Хав хар болохоос бүрэн хамгаалсан */
+    background-image: url('https://unsplash.com'), 
+                      url('https://unsplash.com'), 
+                      url('https://unsplash.com'), 
+                      url('https://unsplash.com');
     background-position: left top, right top, left bottom, right bottom;
-    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-    background-size: 50% 50%, 50% 50%, 50% 50%, 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 50% 50%;
 }
 
 .auth-card {
@@ -209,7 +213,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   3. MAIN HEADER & MANAGEMENT NAVIGATION
+   3. MAIN HEADER & CONFIGURATION BUTTONS
    ========================================== */
 .main-header {
     background: var(--card-cyber);
@@ -293,7 +297,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   4. APPLICATION GENERAL CONTAINER GRID
+   4. LAYOUT APPLICATION MAIN BASE GRID
    ========================================== */
 .app-layout-container {
     display: flex;
@@ -341,7 +345,7 @@ body.theme-dark {
     overflow-y: auto;
 }
 /* ==========================================
-   5. TIMELINE FEED, MEDIA MATRIX & CRYStAL
+   5. TIMELINE FEED, MEDIA MATRIX & CRYSTAL
    ========================================== */
 .search-wrapper-box {
     margin-bottom: 25px;
@@ -431,7 +435,7 @@ body.theme-dark {
     border: 1px solid var(--border-cyber);
 }
 
-/* 🔮 КРИСТАЛ БӨМБӨЛӨГ БУЦАЖ ИРСЭН */
+/* 🔮 КРИСТАЛ БӨМБӨЛӨГ БАРУУН ДЭЭД БУЛАНД */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--neon-pink);
@@ -474,7 +478,44 @@ body.theme-dark {
     margin: 0 auto;
 }
 
-/* Comments section input */
+/* Comments Box Inside Card & Enter to send */
+.comment-node {
+    background: rgba(0,0,0,0.02);
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border-left: 2px solid var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.comment-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.comment-time {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+}
+
+.comment-vote-btn {
+    background: transparent;
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.comment-vote-btn.liked {
+    background: var(--neon-pink) !important;
+    color: #fff !important;
+}
+
 .comment-input-row {
     display: flex;
     gap: 12px;
@@ -488,21 +529,21 @@ body.theme-dark {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     color: var(--text-white);
-    padding: 10px 15px;
+    padding: 12px 15px;
     outline: none;
     font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
 }
 
 .comment-add-btn {
     background: transparent;
     border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 6px;
     cursor: pointer;
 }
-
 /* ==========================================
    6. MESSENGER SYSTEM (Жагсаалт баруун талдаа)
    ========================================== */
@@ -513,7 +554,6 @@ body.theme-dark {
     width: 100%;
 }
 
-/* Мессеж хардаг хэсэг ухаалгаар хязгаарлагдсан */
 .friends-chat-panel {
     flex: 1;
     background: var(--card-cyber);
@@ -524,7 +564,6 @@ body.theme-dark {
     flex-direction: column;
 }
 
-/* Мессеж бичих талбар маш өргөн, том, тод харагдана */
 .chat-input-row-large {
     display: flex;
     gap: 15px;
@@ -555,14 +594,8 @@ body.theme-dark {
     font-family: 'Orbitron', sans-serif;
     font-weight: bold;
     font-size: 1rem;
-    transition: all 0.2s;
 }
 
-.chat-send-btn-large:hover {
-    box-shadow: 0 0 15px var(--neon-blue);
-}
-
-/* Хүмүүсийн жагсаалт баруун талын нарийн самбарт */
 .friends-list-panel {
     width: 280px;
     min-width: 280px;
@@ -610,7 +643,6 @@ body.theme-dark {
     font-size: 0.75rem;
     border-radius: 4px;
     cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
     font-weight: bold;
 }
 
@@ -619,17 +651,15 @@ body.theme-dark {
     color: #fff;
 }
 
-/* Unseen Chat Alert (!!!) Mark */
 .unseen-mark {
     color: #ff3333;
     font-weight: bold;
     font-size: 1.1rem;
     margin-right: 5px;
-    text-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
 }
 
 /* ==========================================
-   8. 🔒 PRIVATE VAULT (Ганцхан Том Карт)
+   7. 🔒 PRIVATE MASTER VAULT (Ганцхан том карт дэлгэц дүүрэн)
    ========================================== */
 .vault-grid-single {
     width: 100%;
@@ -677,8 +707,45 @@ body.theme-dark {
     font-weight: bold;
 }
 
+/* 📝 ТЭМДЭГЛЭЛ БИЧИХ ТАЛБАРЫГ МАШ ТОМ, ТОХЬ ТУХТАЙ БОЛГОЖ ТОМРУУЛАВ */
+.vault-card-full textarea {
+    width: 100%;
+    height: 250px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    color: var(--text-white);
+    padding: 18px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+}
+
+.btn-vault-action {
+    background: transparent;
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.vault-list-preview {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
 /* ==========================================
-   9. ARTIST AI GENERATED MEDIA IMAGES
+   8. ARTIST AI GENERATED FRAMES & FIXES
    ========================================== */
 .ai-generated-frame {
     margin-top: 15px;
@@ -697,7 +764,6 @@ body.theme-dark {
     display: block;
 }
 
-/* Base messenger lines */
 .chat-messages-box, .bot-messages-box {
     flex: 1; min-height: 350px; background: rgba(0,0,0,0.02);
     padding: 20px; border-radius: 8px; margin-bottom: 15px;
@@ -706,8 +772,62 @@ body.theme-dark {
 .msg-row { padding: 12px 18px; border-radius: 8px; max-width: 75%; }
 .msg-row.user { background: rgba(0, 85, 255, 0.08); border: 1px solid var(--neon-blue); align-self: flex-end; }
 .msg-row.bot { background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.05); align-self: flex-start; }
+.bot-input-row { display: flex; gap: 12px; }
+.bot-input-row input { flex: 1; padding: 12px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; color: var(--text-white); }
+.bot-send-btn { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 0 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; }
+.bot-status { font-size: 0.85rem; color: var(--neon-green); margin-top: 4px; }
 
-/* Modal layout fix for avatar upload button */
+/* ⚙️ FIXED INTERACTIVE MODAL OVERLAYS (Дэлгэцийн голд гоёмсог неон хүрээтэй гарна) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    background: var(--card-cyber);
+    border: 2px solid var(--border-cyber);
+    box-shadow: 0 0 30px var(--border-cyber);
+    padding: 35px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 440px;
+    animation: modalSlide 0.3s ease-out;
+}
+
+.modal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 22px;
+    color: var(--text-white);
+    text-shadow: 0 0 5px var(--border-cyber);
+}
+
+.modal-input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.modal-input-group input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 6px;
+    color: var(--text-white);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    outline: none;
+}
+
 .modal-file-label {
     display: block; text-align: center; padding: 14px;
     background: var(--neon-blue); color: #fff;
@@ -716,3 +836,15 @@ body.theme-dark {
     font-family: 'Orbitron', sans-serif; font-size: 0.9rem;
 }
 .modal-file-label:hover { box-shadow: 0 0 15px var(--neon-blue); }
+
+.modal-actions {
+    display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;
+}
+.modal-btn { padding: 10px 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 0.95rem; }
+.modal-btn.cancel { background: transparent; border: 1px solid var(--neon-pink); color: var(--neon-pink); }
+.modal-btn.save { background: var(--border-cyber); border: 1px solid var(--border-cyber); color: #111; }
+
+@keyframes modalSlide {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
