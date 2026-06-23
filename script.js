@@ -1,17 +1,18 @@
 // ========================================================
-// 1. GLOBAL STATE INITIALIZATION & CLEAN ENGLISH MATRIX
+// 1. GLOBAL STATE INITIALIZATION & TRANSLATION CONSTANTS
 // ========================================================
 let db = null; 
-let currentTheme = localStorage.getItem('iknow_theme') || 'light'; // Initial default theme set to LIGHT
+let currentTheme = localStorage.getItem('iknow_theme') || 'light'; 
 let currentUser = null;
 let allPosts = [];
 let postAttachedMedia = null;
 let activeChatPartner = null;
 
-// Selected media variable for the master calendar log
+// Temporary staging variables for modal commits
 let vaultSelectedImageBase64 = null;
+let modalSelectedAvatarBase64 = null;
 
-// Block lists and unseen trackers
+// Local storage mesh structures
 let blockedUsers = JSON.parse(localStorage.getItem('iknow_blocked_users')) || {};
 let unseenMessagesFrom = JSON.parse(localStorage.getItem('iknow_unseen_msgs')) || {};
 
@@ -23,9 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSession();
 });
 
-// Unlimited Database Storage Engine
+// Unlimited Database Storage Connection Matrix
 function initIndexedDB() {
-    const request = indexedDB.open("iKnowTomorrowDB", 4); // Schema updated to v4 for Messenger and Vault updates
+    const request = indexedDB.open("iKnowTomorrowDB", 5); // v5 integration for Neural Comment Engine
     
     request.onupgradeneeded = (e) => {
         const localDB = e.target.result;
@@ -51,16 +52,14 @@ function initIndexedDB() {
     };
 }
 // ========================================================
-// 2. IDENTITY BACKDROP MANAGEMENT (LOGIN REFRESH BLOCKS)
+// 2. IDENTITY BACKDROP MANAGEMENT (LOGIN CORES)
 // ========================================================
 function randomizeAuthImages() {
     const authScreen = document.getElementById('auth-container');
     if (!authScreen) return;
-
     const availablePool = ['r1.webp', 'r2.jpg', 'r3.jpg', 'r4.jpg', 'r6.jpg', 'r7.jpg', 'r8.jpg', 'r9.jpg'];
     let shuffled = [...availablePool].sort(() => 0.5 - Math.random());
     let selected = shuffled.slice(0, 4);
-
     authScreen.style.backgroundImage = `url('${selected}'), url('${selected}'), url('${selected}'), url('${selected}')`;
 }
 
@@ -83,7 +82,7 @@ function togglePasswordVisibility(inputId) {
 }
 
 // ========================================================
-// 3. SECURE AUTHENTICATION MATRIX & SESSION FLOW
+// 3. SECURE AUTHENTICATION MATRIX (1-CLICK DIRECT FIX)
 // ========================================================
 function handleRegister(e) {
     e.preventDefault();
@@ -92,7 +91,12 @@ function handleRegister(e) {
     if (!user || !pass) return;
 
     localStorage.setItem(`user_${user}`, pass);
-    alert("Neural Identity Created Successfully! Please login.");
+    
+    // 🧠 АВТОМАТ АВАТАР ОНООХ СИСТЕМ: Хэрэглэгчийн нэр дээр суурилсан робот аватар
+    const autoAvatarUrl = `https://robohash.org{user}.png?set=set4`;
+    localStorage.setItem(`avatar_${user}`, autoAvatarUrl);
+
+    alert("Neural Identity Created Successfully! Auto-Avatar assigned.");
     showAuthPage('login');
 }
 
@@ -105,6 +109,11 @@ function handleLogin(e) {
     if (savedPass && savedPass === pass) {
         currentUser = user;
         localStorage.setItem('iknow_session', user);
+        
+        // direct redirect fix: Баазын ачаалал давхцахаас сэргийлж 1 удаа дараад шууд оруулна
+        if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
+        if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
+        
         showMainApp();
     } else {
         alert("Access Denied: Invalid Username or Password.");
@@ -124,22 +133,32 @@ function checkSession() {
 }
 
 function showMainApp() {
-    if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
-    if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
-    document.getElementById('profile-name').textContent = currentUser;
-    document.getElementById('profile-avatar').src = `https://robohash.org{currentUser}.png?set=set4`;
+    const nameTag = document.getElementById('profile-name');
+    const avatarTag = document.getElementById('profile-avatar');
+    
+    if (nameTag) nameTag.textContent = currentUser;
+    
+    if (avatarTag) {
+        const storedAvatar = localStorage.getItem(`avatar_${currentUser}`);
+        avatarTag.src = storedAvatar || `https://robohash.org{currentUser}.png?set=set4`;
+    }
+    
     switchTab('feed');
     loadOnlineCitizens();
+    loadPostsFromDB();
+    loadVaultCalendarFromDB();
+    loadVaultNotesFromDB();
 }
 
 function handleLogout() {
     localStorage.removeItem('iknow_session');
     currentUser = null;
+    activeChatPartner = null;
     checkSession();
 }
 
 // ========================================================
-// 4. INTERACTIVE UTILITIES & CORE NAVIGATION
+// 4. THEME SWITCHER LOGIC
 // ========================================================
 function toggleTheme() {
     const themes = ['light', 'cyber', 'matrix', 'dark'];
@@ -163,7 +182,7 @@ function switchTab(tabId) {
     });
 }
 // ========================================================
-// 5. TIMELINE FILE MEDIA CAPTURE PROCESSORS
+// 5. TIMELINE MULTIMEDIA CAPTURE INTERFACES
 // ========================================================
 function handleFileSelect(event, type) {
     const file = event.target.files;
@@ -206,11 +225,9 @@ function clearAttachedMedia() {
     if (imgInput) imgInput.value = "";
     if (vidInput) vidInput.value = "";
 }
-
 // ========================================================
 // 6. MASTER TIMELINE ENGINE & VERIFIED CRYSTAL SYSTEM
 // ========================================================
-// TEXTAREA ДЭЭР ENTER ДАРАХАД ШУУД ПОСТ ОРДОГ БОЛГОХ ТОХИРГОО
 document.addEventListener('keydown', (e) => {
     if (e.target && e.target.id === 'future-input') {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -238,7 +255,7 @@ function createPost() {
         votes: 0,
         voters: [],
         comments: [],
-        timestamp: Date.now() // "Just now"-ыг зөв тооцоолох суурь огноо
+        timestamp: Date.now()
     };
 
     const transaction = db.transaction(["posts"], "readwrite");
@@ -259,12 +276,12 @@ function loadPostsFromDB() {
     request.onsuccess = () => {
         allPosts = request.result;
 
-        // ЭРЭМБЭЛЭЛТ: Миний пост үргэлж нэгдүгээрт, бусад нь Кристалын тоогоор жагсана
+        // 🧠 ШИНЭ ОН ЦАГИЙН ЭРЭМБЭ: Өөрийн пост дээрээ, он цагаар хамгийн шинэ нь хамгийн дээрээ харагдана
         allPosts.sort((a, b) => {
             const isMeA = a.author === currentUser ? 1 : 0;
             const isMeB = b.author === currentUser ? 1 : 0;
             if (isMeA !== isMeB) return isMeB - isMeA;
-            return b.votes - a.votes || b.id.localeCompare(a.id);
+            return b.timestamp - a.timestamp;
         });
         renderPosts(allPosts);
     };
@@ -279,16 +296,15 @@ function renderPosts(postsToRender) {
         if (!post.voters) post.voters = [];
         const hasVerified = post.voters.includes(currentUser);
 
-        // ⏱️ ОГНОО ЗАСАЛТ: Дөнгөж сая оруулсан бол "Just now" харагдана
+        // ⏱️ Огноо засалт ("Just now" эффект)
         let timeDisplay = "Just now";
-        if (post.timestamp && typeof post.timestamp === 'number') {
-            const diffSec = Math.floor((Date.now() - post.timestamp) / 1000);
-            if (diffSec > 59) {
-                timeDisplay = new Date(post.timestamp).toLocaleString();
-            }
-        } else if (typeof post.timestamp === 'string') {
-            timeDisplay = post.timestamp;
+        const diffSec = Math.floor((Date.now() - post.timestamp) / 1000);
+        if (diffSec > 59) {
+            timeDisplay = new Date(post.timestamp).toLocaleString();
         }
+
+        // 🖼️ Аватар зураг шууд солигддог логик (Хуучин постын зургуудыг санах ойноос зэрэг шинэчилнэ)
+        const currentPostUserAvatar = localStorage.getItem(`avatar_${post.author}`) || `https://robohash.org{post.author}.png?set=set4`;
 
         let mediaHtml = "";
         if (post.media) {
@@ -300,23 +316,48 @@ function renderPosts(postsToRender) {
         }
 
         let commentsHtml = "";
-        post.comments.forEach(c => {
-            commentsHtml += `<div class="comment-node"><strong>${c.user}:</strong> ${c.text}</div>`;
-        });
+        if (post.comments) {
+            post.comments.forEach((c, idx) => {
+                if (!c.voters) c.voters = [];
+                const hasCommentLiked = c.voters.includes(currentUser);
+                
+                let commentTimeDisplay = "Just now";
+                if (c.timestamp) {
+                    const cDiff = Math.floor((Date.now() - c.timestamp) / 1000);
+                    if (cDiff > 59) commentTimeDisplay = new Date(c.timestamp).toLocaleTimeString();
+                }
+
+                const currentCommentUserAvatar = localStorage.getItem(`avatar_${c.user}`) || `https://robohash.org{c.user}.png?set=set4`;
+
+                commentsHtml += `
+                    <div class="comment-node">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                            <img src="${currentCommentUserAvatar}" style="width:20px; height:20px; border-radius:50%;">
+                            <strong>${c.user}:</strong>
+                        </div>
+                        <div>${c.text}</div>
+                        <div class="comment-meta-row">
+                            <span class="comment-time">${commentTimeDisplay}</span>
+                            <button class="comment-vote-btn ${hasCommentLiked ? 'liked' : ''}" onclick="voteComment('${post.id}', ${idx})">
+                                🔮 ${c.votes || 0}
+                            </button>
+                        </div>
+                    </div>`;
+            });
+        }
 
         const card = document.createElement('div');
         card.className = "post-card";
         card.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
-                    <img src="https://robohash.org{post.author}.png?set=set4" class="post-avatar-mini">
+                    <img src="${currentPostUserAvatar}" class="post-avatar-mini">
                     <div class="post-meta-text">
                         <h4>${post.author}</h4>
                         <span>${timeDisplay}</span>
                     </div>
                 </div>
                 <div class="post-header-actions">
-                    <!-- 🔮 БАРУУН ДЭЭД БУЛАНД БАЙДАГ ХУУЧИН КРИСТАЛ ТОХИРГОО -->
                     <button class="vote-btn-neon ${hasVerified ? 'liked' : ''}" onclick="votePost('${post.id}')">
                         🔮 Prophecy Verified ${post.votes}
                     </button>
@@ -328,7 +369,7 @@ function renderPosts(postsToRender) {
             <div class="comments-section">
                 <div class="comments-list">${commentsHtml}</div>
                 <div class="comment-input-row">
-                    <input type="text" id="input-comm-${post.id}" placeholder="Write a neural response...">
+                    <input type="text" class="neural-comment-input-tag" id="input-comm-${post.id}" data-post-id="${post.id}" placeholder="Write a response and press Enter...">
                     <button class="comment-add-btn" onclick="addComment('${post.id}')">➔</button>
                 </div>
             </div>
@@ -345,7 +386,6 @@ function votePost(postId) {
     request.onsuccess = () => {
         const post = request.result;
         if (!post.voters) post.voters = [];
-        
         if (post.voters.includes(currentUser)) {
             post.votes--;
             post.voters = post.voters.filter(v => v !== currentUser);
@@ -355,24 +395,18 @@ function votePost(postId) {
         }
         store.put(post);
     };
-
     transaction.oncomplete = () => { loadPostsFromDB(); };
 }
-
-function deletePost(postId) {
-    if (!confirm("Purge post from matrix timeline?")) return;
-    const transaction = db.transaction(["posts"], "readwrite");
-    transaction.objectStore("posts").delete(postId);
-    transaction.oncomplete = () => { loadPostsFromDB(); };
-}
-
-// Хайлтын систем
-function searchPosts() {
-    const query = document.getElementById('search-input').value.toLowerCase().trim();
-    if (!query) { renderPosts(allPosts); return; }
-    const filtered = allPosts.filter(p => p.text.toLowerCase().includes(query) || p.author.toLowerCase().includes(query));
-    renderPosts(filtered);
-}
+// Сэтгэгдэл бичих талбарт Enter дарахад явах ухаалаг event
+document.addEventListener('keydown', (e) => {
+    if (e.target && e.target.className === 'neural-comment-input-tag') {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const postId = e.target.getAttribute('data-post-id');
+            addComment(postId);
+        }
+    }
+});
 
 function addComment(postId) {
     const input = document.getElementById(`input-comm-${postId}`);
@@ -385,7 +419,16 @@ function addComment(postId) {
 
     request.onsuccess = () => {
         const post = request.result;
-        post.comments.push({ user: currentUser, text: text });
+        if (!post.comments) post.comments = [];
+        
+        // Сэтгэгдлийг цаг хугацаа болон кристал өгөгдөлтэй хадгална
+        post.comments.push({
+            user: currentUser,
+            text: text,
+            timestamp: Date.now(),
+            votes: 0,
+            voters: []
+        });
         store.put(post);
     };
 
@@ -393,6 +436,43 @@ function addComment(postId) {
         if (input) input.value = "";
         loadPostsFromDB();
     };
+}
+
+function voteComment(postId, commentIdx) {
+    const transaction = db.transaction(["posts"], "readwrite");
+    const store = transaction.objectStore("posts");
+    const request = store.get(postId);
+
+    request.onsuccess = () => {
+        const post = request.result;
+        const comment = post.comments[commentIdx];
+        if (!comment.voters) comment.voters = [];
+        if (!comment.votes) comment.votes = 0;
+
+        if (comment.voters.includes(currentUser)) {
+            comment.votes--;
+            comment.voters = comment.voters.filter(v => v !== currentUser);
+        } else {
+            comment.votes++;
+            comment.voters.push(currentUser);
+        }
+        store.put(post);
+    };
+    transaction.oncomplete = () => { loadPostsFromDB(); };
+}
+
+function deletePost(postId) {
+    if (!confirm("Purge post from matrix timeline?")) return;
+    const transaction = db.transaction(["posts"], "readwrite");
+    transaction.objectStore("posts").delete(postId);
+    transaction.oncomplete = () => { loadPostsFromDB(); };
+}
+
+function searchPosts() {
+    const query = document.getElementById('search-input').value.toLowerCase().trim();
+    if (!query) { renderPosts(allPosts); return; }
+    const filtered = allPosts.filter(p => p.text.toLowerCase().includes(query) || p.author.toLowerCase().includes(query));
+    renderPosts(filtered);
 }
 // ========================================================
 // 7. REAL-TIME CITIZENS MESSENGER (Facebook Style UI Logic)
@@ -402,22 +482,17 @@ function loadOnlineCitizens() {
     if (!container) return;
     container.innerHTML = "";
 
-    // Тест хийхэд хэрэг болох 3 иргэн хэвээр үлдлээ
     let systemCitizens = ["Neo_2050", "Trinity_X", "Morph_Quantum"];
     
-    // 🧠 УХААЛАГ ЭРЭМБЭЛЭЛТ: Шинэ мессеж илгээсэн эсвэл уншаагүй мессежтэй хүмүүс хамгийн эхэнд гарна
+    // 🧠 УХААЛАГ ЭРЭМБЭЛЭЛТ: Шинэ мессежтэй хүмүүс үргэлж хамгийн эхэнд гарна
     systemCitizens.sort((a, b) => {
         const hasUnseenA = unseenMessagesFrom[a] ? 1 : 0;
         const hasUnseenB = unseenMessagesFrom[b] ? 1 : 0;
-        
-        if (hasUnseenA !== hasUnseenB) {
-            return hasUnseenB - hasUnseenA; // Уншаагүй мессежтэйг дээр нь гаргана
-        }
-        return a.localeCompare(b); // Бусад үед Англи үсгийн дарааллаар (A-Z) жагсана
+        if (hasUnseenA !== hasUnseenB) return hasUnseenB - hasUnseenA;
+        return a.localeCompare(b);
     });
 
     systemCitizens.forEach(citizen => {
-        // Хэрэглэгч өөрөө өөрийгөө жагсаалтад харахгүй
         if (citizen === currentUser) return;
 
         const isBlocked = blockedUsers[citizen] ? true : false;
@@ -426,11 +501,10 @@ function loadOnlineCitizens() {
         const row = document.createElement('div');
         row.className = `friend-item-row ${activeChatPartner === citizen ? 'active' : ''}`;
         
-        // Нэр дээр нь дарахад чат нээгдэнэ (Блок хийгээгүй үед)
         row.innerHTML = `
             <div class="friend-user-meta-block" onclick="selectChatPartner('${citizen}')">
                 ${hasUnseen ? `<span class="unseen-mark">!!!</span>` : ""}
-                <img src="https://robohash.org{citizen}.png?set=set4" class="friend-avatar-mini">
+                <img src="${localStorage.getItem(`avatar_${citizen}`) || `https://robohash.org{citizen}.png?set=set4`}" class="friend-avatar-mini">
                 <span style="font-weight: ${hasUnseen ? 'bold' : 'normal'};">${citizen} ${isBlocked ? '(Blocked)' : ''}</span>
             </div>
             <button class="friend-block-btn ${isBlocked ? 'blocked' : ''}" onclick="toggleBlockUser(event, '${citizen}')">
@@ -442,14 +516,13 @@ function loadOnlineCitizens() {
 }
 
 function toggleBlockUser(event, citizenName) {
-    event.stopPropagation(); // Нэр дээр нь давхар дарагдаж чат нээгдэхээс сэргийлнэ
-    
+    event.stopPropagation();
     if (blockedUsers[citizenName]) {
         delete blockedUsers[citizenName];
         alert(`${citizenName} has been unblocked.`);
     } else {
         blockedUsers[citizenName] = true;
-        alert(`${citizenName} has been blocked. You will no longer receive or send messages to this entity.`);
+        alert(`${citizenName} has been blocked.`);
         if (activeChatPartner === citizenName) {
             activeChatPartner = null;
             document.getElementById('active-chat-partner').textContent = "💬 Select a neural citizen to initiate chat";
@@ -462,21 +535,16 @@ function toggleBlockUser(event, citizenName) {
 
 function selectChatPartner(citizenName) {
     if (blockedUsers[citizenName]) {
-        alert("This entity is blocked. Unblock them first to open chat framework.");
+        alert("This entity is blocked. Unblock them first.");
         return;
     }
-    
     activeChatPartner = citizenName;
-    
-    // Чатыг уншсан тул уншаагүй тэмдгийг (!!!) устгана
     if (unseenMessagesFrom[citizenName]) {
         delete unseenMessagesFrom[citizenName];
         localStorage.setItem('iknow_unseen_msgs', JSON.stringify(unseenMessagesFrom));
     }
-
     const header = document.getElementById('active-chat-partner');
     if (header) header.textContent = `💬 Chat with ${citizenName}`;
-    
     loadOnlineCitizens();
     loadFriendMessages();
 }
@@ -487,7 +555,7 @@ function sendFriendMessage() {
     if (!text || !activeChatPartner || !db) return;
 
     if (blockedUsers[activeChatPartner]) {
-        alert("Action Aborted: You cannot transmit data to a blocked entity.");
+        alert("Action Aborted: Blocked entity.");
         return;
     }
 
@@ -505,8 +573,6 @@ function sendFriendMessage() {
     transaction.oncomplete = () => {
         if (input) input.value = "";
         loadFriendMessages();
-        
-        // Мессеж илгээсэн тул жагсаалтын хамгийн дээр гаргахын тулд дахин зуруулна
         loadOnlineCitizens();
     };
 }
@@ -520,12 +586,10 @@ function loadFriendMessages() {
         const msgBox = document.getElementById('friends-chat-messages');
         if (!msgBox) return;
         msgBox.innerHTML = "";
-
         const filtered = allMsgs.filter(m => 
             (m.sender === currentUser && m.receiver === activeChatPartner) ||
             (m.sender === activeChatPartner && m.receiver === currentUser)
         );
-
         filtered.forEach(m => {
             const isMe = m.sender === currentUser;
             const div = document.createElement('div');
@@ -537,41 +601,38 @@ function loadFriendMessages() {
     };
 }
 
-// Сетийн цаанаас шинэ мессеж ирэхийг симуляци хийх ухаалаг функц (Тестлэхэд хэрэг болно)
-function simulateIncomingMessage(fromUser, msgText) {
-    if (blockedUsers[fromUser] || !db) return;
-
-    const incoming = {
-        id: "msg_" + Date.now(),
-        sender: fromUser,
-        receiver: currentUser,
-        text: msgText,
-        timestamp: new Date().toLocaleTimeString()
-    };
-
-    const transaction = db.transaction(["messages"], "readwrite");
-    transaction.objectStore("messages").add(incoming);
-    
-    transaction.oncomplete = () => {
-        if (activeChatPartner === fromUser) {
-            loadFriendMessages();
-        } else {
-            // Чатыг нээж уншаагүй тул !!! тэмдэг тавина
-            unseenMessagesFrom[fromUser] = true;
-            localStorage.setItem('iknow_unseen_msgs', JSON.stringify(unseenMessagesFrom));
-            loadOnlineCitizens();
+// ========================================================
+// 8. 🔒 MASTER CALENDAR VAULT (Strict Multi-User Privacy)
+// ========================================================
+function handleVaultImageSelect(event) {
+    const file = event.target.files;
+    if (!file || file.length === 0) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        vaultSelectedImageBase64 = e.target.result;
+        const previewBox = document.getElementById('vault-image-preview-box');
+        const previewImg = document.getElementById('vault-img-preview-tag');
+        if (previewBox && previewImg) {
+            previewImg.src = e.target.result;
+            previewBox.style.display = 'block';
         }
     };
+    reader.readAsDataURL(file);
 }
-// ========================================================
-// 9. 🔒 MASTER CALENDAR VAULT (Strict Multi-User Privacy)
-// ========================================================
+
+function clearVaultImageSelect() {
+    vaultSelectedImageBase64 = null;
+    const previewBox = document.getElementById('vault-image-preview-box');
+    const fileInput = document.getElementById('vault-image-file');
+    if (previewBox) previewBox.style.display = 'none';
+    if (fileInput) fileInput.value = "";
+}
+
 function saveVaultCalendar() {
     const dateIn = document.getElementById('vault-date-input');
     const textIn = document.getElementById('vault-calendar-text');
     if (!dateIn || !textIn || !dateIn.value || !textIn.value.trim() || !db) return;
 
-    // Бүх тэмдэглэл, зүүд, зураг хэрэглэгчийн нэрээр хамгаалагдаж хадгалагдана
     const item = {
         id: "cal_" + currentUser + "_" + Date.now(),
         user: currentUser,
@@ -596,14 +657,11 @@ function loadVaultCalendarFromDB() {
         const list = document.getElementById('vault-calendar-list');
         if (!list) return;
         list.innerHTML = "";
-        
-        // 🔒 АЮУЛГҮЙ БАЙДЛЫН ХАМГААЛАЛТ: Өөр хэрэглэгчдийн өгөгдлийг харуулахгүй, зөвхөн өөрийнхийг шүүнэ
         const myData = request.result.filter(item => item.user === currentUser);
-        
         myData.forEach(item => {
             let imgHtml = "";
             if (item.image) {
-                imgHtml = `<div style="margin-top:8px;"><img src="${item.image}" style="max-width:100%; max-height:120px; border-radius:6px; border:1px dashed var(--neon-pink);"></div>`;
+                imgHtml = `<div style="margin-top:8px;"><img src="${item.image}" style="max-width:100%; max-height:140px; border-radius:6px; border:1px dashed var(--neon-pink);"></div>`;
             }
             list.innerHTML += `
                 <div class="vault-item-node">
@@ -614,7 +672,6 @@ function loadVaultCalendarFromDB() {
         });
     };
 }
-
 function saveVaultNote() {
     const textIn = document.getElementById('vault-note-text');
     if (!textIn || !textIn.value.trim() || !db) return;
@@ -640,10 +697,7 @@ function loadVaultNotesFromDB() {
         const list = document.getElementById('vault-notes-list');
         if (!list) return;
         list.innerHTML = "";
-        
-        // 🔒 Зөвхөн нэвтэрсэн хэрэглэгчийн өөрийнх нь чөлөөт тэмдэглэлүүд уншигдана
         const myData = request.result.filter(item => item.user === currentUser);
-        
         myData.forEach(item => {
             list.innerHTML += `
                 <div class="vault-item-node">
@@ -661,14 +715,14 @@ function deleteVaultItem(storeName, id, callback) {
 }
 
 // ========================================================
-// 10. 🎨 NEURAL FUTURE IMAGE ARTIST ENGINE (100% Fixed)
+// 9. 🎨 NEURAL FUTURE IMAGE ARTIST ENGINE (Artist AI Engine)
 // ========================================================
 function generateAiImage() {
-    const inputEl = document.getElementById('bot-input');
+    const inputEl = document.getElementById('ai-bot-input');
     const prompt = inputEl ? inputEl.value.trim() : "";
     if (!prompt) return;
 
-    const chatContainer = document.getElementById('chat-container');
+    const chatContainer = document.getElementById('ai-chat-container');
     if (!chatContainer) return;
 
     chatContainer.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${prompt}</div>`;
@@ -686,11 +740,9 @@ function generateAiImage() {
         const aiMsgBox = document.getElementById(aiMsgId);
         if (!aiMsgBox) return;
 
-        // Киберпанк ирээдүйн зургийг үүсгэх үнэгүй тогтвортой API
         const cleanPrompt = encodeURIComponent(prompt + " cyberpunk futuristic cyberpunk aesthetic highly detailed digital art 8k");
         const generatedImageUrl = `https://pollinations.ai{cleanPrompt}?width=512&height=512&seed=${Math.floor(Math.random() * 1000)}`;
 
-        // Тэнэг англи үгсийг бүр мөсөн устгаж, зөвхөн цэвэрхэн зураг болгон буулгана (Зургийн хэмжээг хязгаарласан)
         aiMsgBox.innerHTML = `
             <strong>AI Artist:</strong> Visualized your future projection for <em>"${prompt}"</em> into reality:
             <div class="ai-generated-frame">
@@ -702,63 +754,78 @@ function generateAiImage() {
 }
 
 // ========================================================
-// 11. IDENTITY UPDATE INTERFACE MODALS & AVATAR RE-RENDER
+// 10. IDENTITY UPDATE MODALS (Commit To Save Framework)
 // ========================================================
 function openProfileModal() {
     const modal = document.getElementById('profile-modal');
     if (modal) modal.style.display = 'flex';
+    
     const userIn = document.getElementById('modal-username');
     if (userIn) userIn.value = currentUser;
+
+    modalSelectedAvatarBase64 = null;
+    const previewBox = document.getElementById('modal-avatar-preview-box');
+    if (previewBox) previewBox.style.display = 'none';
 }
 
 function closeProfileModal() {
     const modal = document.getElementById('profile-modal');
     if (modal) modal.style.display = 'none';
+    const previewBox = document.getElementById('modal-avatar-preview-box');
+    if (previewBox) previewBox.style.display = 'none';
+    modalSelectedAvatarBase64 = null;
+}
+
+function handleAvatarFileChange(event) {
+    const file = event.target.files;
+    if (!file || file.length === 0) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        modalSelectedAvatarBase64 = e.target.result;
+        const previewBox = document.getElementById('modal-avatar-preview-box');
+        const previewImg = document.getElementById('modal-avatar-preview-img');
+        if (previewBox && previewImg) {
+            previewImg.src = e.target.result;
+            previewBox.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
 function saveProfileModal() {
     const userIn = document.getElementById('modal-username');
-    if (userIn && userIn.value.trim()) {
-        const oldName = currentUser;
-        const newName = userIn.value.trim();
-        localStorage.setItem('iknow_session', newName);
-        currentUser = newName;
-        document.getElementById('profile-name').textContent = newName;
+    if (!userIn) return;
+
+    const newName = userIn.value.trim();
+    if (!newName) return;
+
+    const oldName = currentUser;
+
+    if (newName !== oldName) {
         const pass = localStorage.getItem(`user_${oldName}`);
         if (pass) {
             localStorage.setItem(`user_${newName}`, pass);
             localStorage.removeItem(`user_${oldName}`);
         }
+        const currentAv = localStorage.getItem(`avatar_${oldName}`);
+        if (currentAv) {
+            localStorage.setItem(`avatar_${newName}`, currentAv);
+            localStorage.removeItem(`avatar_${oldName}`);
+        }
+        
+        localStorage.setItem('iknow_session', newName);
+        currentUser = newName;
     }
+
+    if (modalSelectedAvatarBase64) {
+        localStorage.setItem(`avatar_${currentUser}`, modalSelectedAvatarBase64);
+    }
+
     closeProfileModal();
-    loadPostsFromDB();
-    loadVaultCalendarFromDB();
-    loadVaultNotesFromDB();
+    showMainApp();
 }
 
 function handleAvatarFile(event) {
-    const file = event.target.files;
-    if (!file || file.length === 0) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        // 🖼️ АВАТАР ШУУД СОЛИГДДОГ БОЛГОЖ ЗАССАН ЛОГИК
-        const headerAvatar = document.getElementById('profile-avatar');
-        if (headerAvatar) headerAvatar.src = e.target.result;
-        
-        // Хэрэглэгчийн өөрийнх нь аватарийг локал санах ойд түр хадгалах
-        localStorage.setItem(`avatar_${currentUser}`, e.target.result);
-        alert("Neural Profile Avatar successfully updated!");
-    };
-    reader.readAsDataURL(file[0]); // Сонгосон эхний файлыг зөв уншина
+    handleAvatarFileChange(event);
 }
-
-// Апп ачаалагдах үед хадгалсан аватар байвал шууд зурах тохиргоог showMainApp дотор залгаж өгөв
-const originalShowMainApp = showMainApp;
-showMainApp = function() {
-    originalShowMainApp();
-    const customAvatar = localStorage.getItem(`avatar_${currentUser}`);
-    if (customAvatar) {
-        const headerAvatar = document.getElementById('profile-avatar');
-        if (headerAvatar) headerAvatar.src = customAvatar;
-    }
-};
