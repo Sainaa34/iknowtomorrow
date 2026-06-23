@@ -1,5 +1,5 @@
 /* ========================================================
-   1. GLOBAL SYSTEM VARIABLES & MODERN INTERFACE CODES (2026)
+   1. GLOBAL REPOS AND THEME VARIABLE CHANNELS (2026)
    ======================================================== */
 :root {
     --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -59,7 +59,7 @@ body.theme-cyber {
 }
 
 /* ========================================================
-   2. GLOBAL CORE RESET & CALENDAR ICON VISIBILITY PATCH
+   2. CORE BASE RESET & CALENDAR VISIBILITY NORMALIZER
    ======================================================== */
 * {
     margin: 0;
@@ -76,8 +76,7 @@ body {
     overflow-x: hidden;
 }
 
-/* 🛠 Patched: Makes HTML5 calendar indicator perfectly visible based on selected theme.
-   Light theme remains native dark, while dark themes invert to white for ultimate contrast */
+/* 🛠 Patched Calendar Visibility: High contrast logic per theme context */
 body.theme-dark input[type="date"]::-webkit-calendar-picker-indicator,
 body.theme-matrix input[type="date"]::-webkit-calendar-picker-indicator,
 body.theme-cyber input[type="date"]::-webkit-calendar-picker-indicator {
@@ -86,7 +85,7 @@ body.theme-cyber input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 body.theme-light input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: none; /* Restores default crisp dark look on light environments */
+    filter: none; /* Keeps default contrast look in light environments */
     cursor: pointer;
 }
 
@@ -108,7 +107,7 @@ body.theme-light input[type="date"] {
     background: radial-gradient(circle at center, var(--bg-card) 0%, var(--bg-main) 100%);
     background-size: cover;
     background-position: center;
-    transition: background-image 1.2s ease-in-out; /* Smooth transition for dynamic screens */
+    transition: background-image 1.2s ease-in-out; /* Зураг зөөлөн уусаж солигдох шилжилт */
 }
 
 .auth-card {
@@ -193,27 +192,6 @@ body.theme-cyber .neon-btn-primary {
 .neon-btn-primary:hover {
     opacity: 0.92;
     transform: translateY(-1px);
-}
-
-.neon-btn-google {
-    width: 100%;
-    padding: 12px;
-    background-color: transparent;
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    margin-top: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    transition: var(--transition-smooth);
-}
-
-.neon-btn-google:hover {
-    background-color: var(--hover-color);
 }
 
 .auth-card p {
@@ -391,7 +369,7 @@ body.theme-cyber .disconnect-btn:hover {
 }
 
 /* ========================================================
-   6. LEFT SIDEBAR NAVIGATION & THEME SWITCH COUPLING
+   6. LEFT SIDEBAR NAVIGATION & THEME COUPLING
    ======================================================== */
 .sidebar-left {
     background-color: var(--bg-card);
@@ -589,7 +567,7 @@ body.theme-cyber .publish-btn {
 }
 
 /* ========================================================
-   8. TIMELINE POST CARDS & PURE SUBTLE LIKE RENDERING 
+   8. TIMELINE POST CARDS & PURE SUBTLE LIKE MECHANICS
    ======================================================== */
 .post-card {
     background-color: var(--bg-card);
@@ -598,7 +576,7 @@ body.theme-cyber .publish-btn {
     padding: 24px;
     margin-bottom: 20px;
     box-shadow: var(--shadow-sm);
-    max-width: 100%; /* Prevents horizontal overflowing */
+    max-width: 100%;
 }
 
 .post-header-row {
@@ -638,7 +616,7 @@ body.theme-cyber .publish-btn {
     gap: 10px;
 }
 
-/* Minimalist, emoji-only; hover text handled via native title prompt strings */
+/* Minimalist emoji-only button; hover title reveals verification text string */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--border-color);
@@ -689,7 +667,7 @@ body.theme-cyber .publish-btn {
     white-space: pre-wrap;
 }
 
-/* 🛠 Patched Image Dimensions Boundary Container */
+/* 🛠 Patched: Strictly bound to prevent timeline media blowout distortion */
 .post-media-content {
     border-radius: 12px;
     overflow: hidden;
@@ -702,7 +680,6 @@ body.theme-cyber .publish-btn {
     max-width: 100%;
 }
 
-/* 🛠 Patched: Guarantees uploaded visual content never breaks screens or overflows */
 .post-media-content img,
 .post-media-content video {
     width: auto;
@@ -997,7 +974,6 @@ body.theme-matrix .msg-row.user, body.theme-cyber .msg-row.user {
     cursor: pointer;
 }
 
-/* 🛠 Patched: Safe image constraint boundary setup for private vault records layout stream */
 .vault-item-node {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -1057,6 +1033,7 @@ body.theme-matrix .ai-generate-btn, body.theme-cyber .ai-generate-btn {
     max-width: 100%;
 }
 
+/* 🛠 Patched Boundary: AI Output constraints keep layout rigid */
 .ai-output-container img {
     max-width: 100%;
     max-height: 400px;
