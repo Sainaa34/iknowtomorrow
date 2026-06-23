@@ -92,11 +92,10 @@ function handleRegister(e) {
 
     localStorage.setItem(`user_${user}`, pass);
     
-    // 🧠 АВТОМАТ АВАТАР ОНООХ СИСТЕМ: Хэрэглэгчийн нэр дээр суурилсан робот аватар
-    const autoAvatarUrl = `https://robohash.org{user}.png?set=set4`;
-    localStorage.setItem(`avatar_${user}`, autoAvatarUrl);
+    // 🧠 ЦОО ШИНЭ АВТОМАТ АВАТАР: Хүмүүс бүртгүүлэхэд чиний оруулсан avatar.png-ийг шууд онооно
+    localStorage.setItem(`avatar_${user}`, "avatar.png");
 
-    alert("Neural Identity Created Successfully! Auto-Avatar assigned.");
+    alert("Neural Identity Created Successfully! System Avatar assigned.");
     showAuthPage('login');
 }
 
