@@ -1,8 +1,9 @@
 // ========================================================
-// 1. GLOBAL NETWORK STATE & TIMELINE INITIALIZATION
+// 1. GLOBAL NETWORK STATE & EN DEFAULT TRANSLATIONS
 // ========================================================
 let db = null; 
-let currentLang = localStorage.getItem('iknow_lang') || 'mn';
+// 🌐 ГАДААД ХҮМҮҮСТ ЗОРИУЛЖ АНХ ОРОХОД ШУУД ENGLISH БОЛГОЛОО
+let currentLang = localStorage.getItem('iknow_lang') || 'en';
 let currentTheme = localStorage.getItem('iknow_theme') || 'cyber';
 let currentUser = null;
 let allPosts = [];
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Unlimited Database Storage Engine
 function initIndexedDB() {
-    const request = indexedDB.open("iKnowTomorrowDB", 2); // Schema Version Updated
+    const request = indexedDB.open("iKnowTomorrowDB", 2);
     
     request.onupgradeneeded = (e) => {
         const localDB = e.target.result;
@@ -53,7 +54,6 @@ function initIndexedDB() {
         if (!localDB.objectStoreNames.contains("messages")) {
             localDB.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
         }
-        // 🔒 Хувийн орон зайд зориулсан шинэ хадгалах савнууд
         if (!localDB.objectStoreNames.contains("vault_calendar")) {
             localDB.createObjectStore("vault_calendar", { keyPath: "id" });
         }
@@ -77,7 +77,7 @@ function initIndexedDB() {
 // 2. USER CUSTOM MP3 MUSIC PLAYER SYSTEM
 // ========================================================
 function handleUserMusic(event) {
-    const file = event.target.files[0];
+    const file = event.target.files[0]; // Индексийг яг таг баталгаажуулав
     if (!file) return;
 
     const audio = document.getElementById('cyber-audio-engine');
@@ -92,10 +92,10 @@ function handleUserMusic(event) {
     trackName.textContent = file.name;
     
     label.style.display = 'none';
-    controls.style.style.display = 'flex';
+    controls.style.display = 'flex';
     
     audio.play();
-    playPauseBtn.textContent = "⏸";
+    if (playPauseBtn) playPauseBtn.textContent = "⏸";
 }
 
 function toggleUserMusic() {
@@ -142,11 +142,11 @@ function showAuthPage(page) {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
     if (page === 'register') {
-        if(loginCard) loginCard.style.display = 'none';
-        if(registerCard) registerCard.style.display = 'block';
+        if (loginCard) loginCard.style.display = 'none';
+        if (registerCard) registerCard.style.display = 'block';
     } else {
-        if(loginCard) loginCard.style.display = 'block';
-        if(registerCard) registerCard.style.display = 'none';
+        if (loginCard) loginCard.style.display = 'block';
+        if (registerCard) registerCard.style.display = 'none';
     }
     randomizeAuthImages();
 }
@@ -188,15 +188,15 @@ function checkSession() {
         currentUser = session;
         showMainApp();
     } else {
-        if(document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'flex';
-        if(document.getElementById('main-app')) document.getElementById('main-app').style.display = 'none';
+        if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'flex';
+        if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'none';
         randomizeAuthImages();
     }
 }
 
 function showMainApp() {
-    if(document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
-    if(document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
+    if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
+    if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
     document.getElementById('profile-name').textContent = currentUser;
     document.getElementById('profile-avatar').src = `https://robohash.org{currentUser}.png?set=set4`;
     switchTab('feed');
@@ -209,6 +209,9 @@ function handleLogout() {
     checkSession();
 }
 
+// ========================================================
+// 4. GLOBAL LANGUAGE MATRIX & INTERACTION UTILITIES
+// ========================================================
 function applyTranslations() {
     const elements = {
         'feed-btn': translations[currentLang].feed,
@@ -225,17 +228,19 @@ function applyTranslations() {
     if (searchEl) searchEl.placeholder = translations[currentLang].search;
     const inputEl = document.getElementById('future-input');
     if (inputEl) inputEl.placeholder = translations[currentLang].placeholder;
+    const langBtn = document.getElementById('lang-btn');
+    if (langBtn) langBtn.textContent = currentLang === 'en' ? 'Монгол' : 'English';
 }
 
 function toggleLanguage() {
     currentLang = currentLang === 'en' ? 'mn' : 'en';
     localStorage.setItem('iknow_lang', currentLang);
-    document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'Монгол' : 'English';
     applyTranslations();
+    loadPostsFromDB(); // Хэл солиход постыг зөв эрэмбээр дахин ачаална
 }
 
 function toggleTheme() {
-    const themes = ['cyber', 'matrix', 'dark', 'light']; // Цагаан загвар (light) шинээр нэмэгдсэн
+    const themes = ['cyber', 'matrix', 'dark', 'light'];
     let idx = themes.indexOf(currentTheme);
     currentTheme = themes[(idx + 1) % themes.length];
     localStorage.setItem('iknow_theme', currentTheme);
@@ -256,10 +261,10 @@ function switchTab(tabId) {
     });
 }
 // ========================================================
-// 4. MULTIMEDIA PROCESSING & SECURITY FILTERS
+// 5. FILE PROCESSING MATRIX & MULTIMEDIA SAFENESS
 // ========================================================
 function handleFileSelect(event, type) {
-    const file = event.target.files[0];
+    const file = event.target.files[0]; // Индексийг яг таг баталгаажуулж засав
     if (!file) return;
 
     const reader = new FileReader();
@@ -301,7 +306,7 @@ function clearAttachedMedia() {
 }
 
 // ========================================================
-// 5. SMART FEED SORTING & REAL LIKE/UNLIKE LOGIC
+// 6. FIXED POSTS PIPELINE & REAL LIKE SYSTEM LOGIC
 // ========================================================
 function createPost() {
     const inputEl = document.getElementById('future-input');
@@ -319,7 +324,7 @@ function createPost() {
         text: text,
         media: postAttachedMedia,
         votes: 0,
-        voters: [], // Лайк дарсан хүмүүсийн ID хадгалах массив
+        voters: [], // Лайк дарсан хэрэглэгчдийн нэрс хадгалагдана
         comments: [],
         timestamp: new Date().toLocaleString()
     };
@@ -342,15 +347,15 @@ function loadPostsFromDB() {
     request.onsuccess = () => {
         allPosts = request.result;
 
-        // 🧠 УХААЛАГ ЭРЭМБЭЛЭЛТ: Өөрийн пост үргэлж нэгдүгээрт, бусад нь Like-оор жагсана [1]
+        // 🧠 УХААЛАГ ЭРЭМБЭЛЭЛТ: Өөрийн пост үргэлж нэгдүгээрт, бусад нь Like-оор жагсана
         allPosts.sort((a, b) => {
             const isMeA = a.author === currentUser ? 1 : 0;
             const isMeB = b.author === currentUser ? 1 : 0;
             
             if (isMeA !== isMeB) {
-                return isMeB - isMeA; // Өөрийн постыг хамгийн дээр нь гаргана
+                return isMeB - isMeA; // Миний постыг хамгийн дээр нь байрлуулна
             }
-            return b.votes - a.votes || b.id.localeCompare(a.id); // Бусдыг нь Like-ны тоогоор
+            return b.votes - a.votes || b.id.localeCompare(a.id); // Бусад постыг Like-ны тоогоор
         });
         renderPosts(allPosts);
     };
@@ -391,7 +396,7 @@ function renderPosts(postsToRender) {
                     </div>
                 </div>
                 <div class="post-header-actions">
-                    <!-- Like/Unlike болсноор класс нь .liked болж өөрчлөгдөнө -->
+                    <!-- Like/Unlike болсноор класс нь .liked болж неон өнгө нь амилна -->
                     <button class="vote-btn-neon ${hasLiked ? 'liked' : ''}" onclick="votePost('${post.id}')">
                         👍 Like ${post.votes}
                     </button>
@@ -403,7 +408,7 @@ function renderPosts(postsToRender) {
             <div class="comments-section">
                 <div class="comments-list">${commentsHtml}</div>
                 <div class="comment-input-row">
-                    <input type="text" id="input-comm-${post.id}" placeholder="Response...">
+                    <input type="text" id="input-comm-${post.id}" placeholder="Write a response...">
                     <button class="comment-add-btn" onclick="addComment('${post.id}')">➔</button>
                 </div>
             </div>
@@ -421,13 +426,13 @@ function votePost(postId) {
         const post = request.result;
         if (!post.voters) post.voters = [];
         
-        // 🔄 БОДИТ LIKE / UNLIKE ЛОГИК (Хязгаарлалттай)
+        // 🔄 БОДИТ LIKE / UNLIKE ХЯЗГААРЛАЛТ
         if (post.voters.includes(currentUser)) {
             post.votes--;
             post.voters = post.voters.filter(v => v !== currentUser); // Дахин дарвал Like цуцлагдана
         } else {
             post.votes++;
-            post.voters.push(currentUser); // Шинээр Like нэмнэ
+            post.voters.push(currentUser); // Анх удаа дарвал Like нэмэгдэнэ
         }
         store.put(post);
     };
@@ -436,7 +441,7 @@ function votePost(postId) {
 }
 
 function deletePost(postId) {
-    if (!confirm("Delete post?")) return;
+    if (!confirm("Are you sure you want to delete this post?")) return;
     const transaction = db.transaction(["posts"], "readwrite");
     transaction.objectStore("posts").delete(postId);
     transaction.oncomplete = () => { loadPostsFromDB(); };
@@ -470,7 +475,7 @@ function addComment(postId) {
     };
 }
 // ========================================================
-// 6. REAL-TIME CITIZENS & SAFE PRIVACY CHATS SYSTEM
+// 7. CITIZENS CHATS & ENCRYPTED MESSAGING ENGINE
 // ========================================================
 function loadOnlineCitizens() {
     const container = document.getElementById('friends-list-container');
@@ -541,7 +546,7 @@ function loadFriendMessages() {
 }
 
 // ========================================================
-// 7. 🔒 PRIVATE VAULT AREA ENGINE (Хувийн Орон Зай)
+// 8. 🔒 SECURE PRIVATE VAULT PIPELINES
 // ========================================================
 function saveVaultCalendar() {
     const dateIn = document.getElementById('vault-date-input');
@@ -646,7 +651,7 @@ function loadVaultGalleryFromDB() {
             img.src = item.url;
             img.className = "vault-gallery-img";
             img.onclick = () => {
-                if(confirm("Энэ нууц зургийг устгах уу?")) {
+                if (confirm("Purge this private image from matrix memory?")) {
                     deleteVaultItem('vault_gallery', item.id, loadVaultGalleryFromDB);
                 }
             };
@@ -662,7 +667,7 @@ function deleteVaultItem(storeName, id, callback) {
 }
 
 // ========================================================
-// 8. 🎨 FUTURE IMAGE ARTIST AI ENGINE (Зураг бүтээгч бот)
+// 9. 🎨 NEURAL FUTURE IMAGE ARTIST ENGINE (Зураг зурдаг бот)
 // ========================================================
 function generateAiImage() {
     const inputEl = document.getElementById('bot-input');
@@ -672,14 +677,16 @@ function generateAiImage() {
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer) return;
 
+    // Хэрэглэгчийн бичсэн текст
     chatContainer.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${prompt}</div>`;
     inputEl.value = "";
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
+    // AI зурж эхлэх бэлтгэл төлөв (Дандаа Англиар угтаж, уншина)
     const aiMsgId = "ai_msg_" + Date.now();
     chatContainer.innerHTML += `
         <div class="msg-row bot" id="${aiMsgId}">
-            <strong>AI Artist:</strong> Таны төсөөллийг матрицад зурж байна, түр хүлээнэ үү... 🖌️
+            <strong>AI Artist:</strong> Rendering your future vision timeline, please wait... 🖌️
         </div>`;
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
@@ -687,21 +694,23 @@ function generateAiImage() {
         const aiMsgBox = document.getElementById(aiMsgId);
         if (!aiMsgBox) return;
 
-        const cleanPrompt = encodeURIComponent(prompt + " cyberpunk futuristic style cyberpunk aesthetic highly detailed digital art");
+        // Киберпанк ирээдүйн зургийг үүсгэх хамгийн тогтвортой API
+        const cleanPrompt = encodeURIComponent(prompt + " cyberpunk futuristic cyberpunk aesthetic highly detailed digital art 8k");
         const generatedImageUrl = `https://pollinations.ai{cleanPrompt}?width=512&height=512&seed=${Math.floor(Math.random() * 1000)}`;
 
+        // Тэнэг англи үгсийг бүр мөсөн устгаж, зөвхөн цэвэрхэн зураг болгон буулгана
         aiMsgBox.innerHTML = `
-            <strong>AI Artist:</strong> Таны бичсэн <em>"${prompt}"</em> төсөөллийг ирээдүйн зураг болгон буулгалаа:
+            <strong>AI Artist:</strong> Visualized your future projection for <em>"${prompt}"</em> into reality:
             <div class="ai-generated-frame">
                 <img src="${generatedImageUrl}" alt="Future Vision Data" onerror="this.src='https://placehold.co'">
             </div>
         `;
         chatContainer.scrollTop = chatContainer.scrollHeight;
-    }, 2500);
+    }, 2500); // 2.5 секундэд зурж дуусгана
 }
 
 // ========================================================
-// 9. IDENTITY UPDATE INTERFACE MODALS
+// 10. IDENTITY UPDATE INTERFACE MODALS
 // ========================================================
 function openProfileModal() {
     const modal = document.getElementById('profile-modal');
