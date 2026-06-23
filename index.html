@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="mn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iKnowTomorrow - Cyber Timeline</title>
+    <title>iKnowTomorrow - Future Network</title>
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
     <link href="https://googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="theme-cyber">
+<!-- 🌐 АНХ ОРОХОД ШУУД ЦЭВЭРХЭН ЦАГААН (LIGHT) ЗАГВАРААР ЭХЭЛНЭ -->
+<body class="theme-light">
 
-    <!-- 🌌 AUTHENTICATION CONTAINER (LOGIN / REGISTER) -->
+    <!-- 🌌 HIGH-CONTRAST NEURAL AUTHENTICATION CONTAINER -->
     <div id="auth-container" class="auth-screen">
         
-        <!-- LOGIN CARD -->
+        <!-- LOGIN INTERFACE -->
         <div id="login-card" class="auth-card">
             <h1 class="auth-title">iKnowTomorrow</h1>
             <p class="auth-subtitle">Connect to the Future Network</p>
@@ -32,10 +33,10 @@
                 </div>
                 <button type="submit" class="btn-neon-submit">INITIALIZE LOGIN</button>
             </form>
-            <p class="auth-switch">New neural entity? <span onclick="showAuthPage('register')">Register here</span></p>
+            <p class="auth-switch">New entity? <span onclick="showAuthPage('register')">Register identity</span></p>
         </div>
 
-        <!-- REGISTER CARD -->
+        <!-- REGISTER INTERFACE -->
         <div id="register-card" class="auth-card" style="display: none;">
             <h1 class="auth-title">REGISTER</h1>
             <p class="auth-subtitle">Create New Timeline Identity</p>
@@ -58,70 +59,50 @@
 
     </div>
 
-    <!-- 🌐 MAIN APPLICATION CORE -->
+    <!-- 🌐 MAIN CORE APPLICATION INTERFACE -->
     <div id="main-app" style="display: none;">
         
-        <!-- 🛰️ CYBER NAVIGATION & CONTROL HEADER WITH MP3 PLAYER -->
+        <!-- CONTROL HEADER (100% CLEAN ENGLISH & THEME SWITCHER) -->
         <header class="main-header">
             <div class="header-left">
                 <span class="logo-neon">iKnowTomorrow</span>
             </div>
-
-            <!-- 🎵 USER CUSTOM MUSIC PLAYER -->
-            <div id="cyber-audio-player" class="custom-player-widget">
-                <label class="music-upload-btn" id="music-label">
-                    🎵 Дуу сонсох
-                    <input type="file" id="user-mp3-file" accept="audio/*" onchange="handleUserMusic(event)" style="display: none;">
-                </label>
-                <audio id="cyber-audio-engine" loop></audio>
-                <div id="player-controls" style="display: none; align-items: center; gap: 8px;">
-                    <button onclick="toggleUserMusic()" id="play-pause-btn" class="player-btn-small">▶</button>
-                    <span id="track-name-display" class="track-text">Track</span>
-                    <button onclick="closeUserMusic()" class="player-btn-close">✕</button>
-                </div>
-            </div>
             
             <div class="header-right">
-                <button id="lang-btn" class="header-btn" onclick="toggleLanguage()">English</button>
-                <button id="theme-btn" class="header-btn" onclick="toggleTheme()">🎨 Theme: CYBER</button>
+                <button id="theme-btn" class="header-btn" onclick="toggleTheme()">🎨 Theme: LIGHT</button>
                 
                 <div class="profile-widget" onclick="openProfileModal()">
                     <img id="profile-avatar" src="https://robohash.org" alt="Avatar" class="avatar-header">
-                    <span id="profile-name">Loading Citizen...</span>
+                    <span id="profile-name">Citizen ID</span>
                 </div>
                 
-                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                <button class="logout-btn" onclick="handleLogout()">Disconnect</button>
             </div>
         </header>
-        <!-- 🎛️ SIDEBAR MENU TABS WITH PRIVATE VAULT -->
+        <!-- APPLICATION LAYOUT MATRIX -->
         <div class="app-layout-container">
             <nav class="side-navigation">
-                <button id="feed-btn" class="menu-tab active" onclick="switchTab('feed')">Ирээдүйн урсгал</button>
-                <button id="friends-btn" class="menu-tab" onclick="switchTab('friends')">🤝 Найзууд & Чат</button>
-                <button id="vault-btn" class="menu-tab private-tab" onclick="switchTab('vault')">🔒 Хувийн орон зай</button>
-                <button id="chats-btn" class="menu-tab" onclick="switchTab('chats')">🎨 Ирээдүйг Зурах AI</button>
+                <button id="feed-btn" class="menu-tab active" onclick="switchTab('feed')">Future Feed</button>
+                <button id="friends-btn" class="menu-tab" onclick="switchTab('friends')">Encrypted Chat</button>
+                <button id="vault-btn" class="menu-tab private-tab" onclick="switchTab('vault')">Private Vault</button>
+                <button id="chats-btn" class="menu-tab" onclick="switchTab('chats')">Artist AI</button>
             </nav>
 
-            <!-- 🖥️ MAIN VIEW DISPLAY -->
             <main class="main-content-display">
 
-                <!-- 🔮 TAB: FUTURE TIMELINE FEED -->
+                <!-- 🔮 TAB: FUTURE FEED -->
                 <div id="tab-feed" class="tab-content">
-                    
-                    <!-- SEARCH MATRIX -->
                     <div class="search-wrapper-box">
                         <input type="text" id="search-input" placeholder="Search Global Network Timeline..." oninput="searchPosts()">
                     </div>
 
-                    <!-- POST CREATOR CARD -->
                     <div class="creator-card">
-                        <textarea id="future-input" placeholder="Ирээдүйд юу болох вэ? Энд хуваалц..."></textarea>
+                        <textarea id="future-input" placeholder="What will happen tomorrow? Share your vision..."></textarea>
                         
-                        <!-- Multimedia Preview Box -->
                         <div id="post-media-preview-box" class="media-preview-zone" style="display: none;">
-                            <img id="post-image-preview-img" src="" alt="Image Preview" style="display: none;" class="preview-asset">
+                            <img id="post-image-preview-img" src="" alt="Preview" style="display: none;" class="preview-asset">
                             <video id="post-video-preview-vid" src="" controls style="display: none;" class="preview-asset"></video>
-                            <button class="clear-media-btn" onclick="clearAttachedMedia()">Remove Media ✕</button>
+                            <button class="clear-media-btn" onclick="clearAttachedMedia()">Purge Media ✕</button>
                         </div>
 
                         <div class="creator-actions-row">
@@ -135,81 +116,84 @@
                                     <input type="file" id="post-video-file" accept="video/*" onchange="handleFileSelect(event, 'video')" style="display: none;">
                                 </label>
                             </div>
-                            <button id="post-btn" class="btn-neon-post" onclick="createPost()">Нийтлэх</button>
+                            <button id="post-btn" class="btn-neon-post" onclick="createPost()">Publish Vision</button>
                         </div>
                     </div>
 
-                    <!-- TIMELINE FEED CONTAINER -->
                     <div id="feed-container"></div>
                 </div>
-                <!-- 🤝 TAB: FRIENDS & PRIVATE CHATS -->
+                <!-- 🤝 TAB: ENCRYPTED PRIVATE CHATS -->
                 <div id="tab-friends" class="tab-content" style="display: none;">
                     <div class="friends-layout">
                         <div class="friends-list-panel">
-                            <h3 class="panel-title">Online Citizens</h3>
+                            <h3 class="panel-title">Online Network Citizens</h3>
                             <div id="friends-list-container"></div>
                         </div>
                         <div class="friends-chat-panel">
-                            <h3 id="active-chat-partner" class="panel-title">💬 Select a citizen to start chat</h3>
+                            <h3 id="active-chat-partner" class="panel-title">💬 Select a neural citizen to initiate chat</h3>
                             <div id="friends-chat-messages" class="chat-messages-box"></div>
                             <div class="chat-input-row">
-                                <input type="text" id="friends-chat-input" placeholder="Type a secure message..." onkeypress="if(event.key === 'Enter') sendFriendMessage()">
+                                <input type="text" id="friends-chat-input" placeholder="Type an encrypted message..." onkeypress="if(event.key === 'Enter') sendFriendMessage()">
                                 <button class="chat-send-btn" onclick="sendFriendMessage()">Send</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (Хувийн орон зай) -->
+                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (🔒 Зөвхөн 2 том карттай, цэгцтэй бүтэц) -->
                 <div id="tab-vault" class="tab-content" style="display: none;">
-                    <div class="vault-layout">
-                        <!-- Дэд цэснүүд -->
-                        <div class="vault-grid">
-                            <!-- Календарь -->
-                            <div class="vault-card">
-                                <h3 class="vault-card-title">📅 Ирээдүйн Календарь</h3>
+                    <div class="vault-grid">
+                        
+                        <!-- 📅 CARD 1: MASTER FUTURE CALENDAR (Календарь, зүүд, зураг бүгд нэг дор) -->
+                        <div class="vault-card">
+                            <h3 class="vault-card-title">📅 Master Future Calendar</h3>
+                            <div class="calendar-inputs-row">
                                 <input type="date" id="vault-date-input" class="cyber-date-picker">
-                                <textarea id="vault-calendar-text" placeholder="Энэ өдөр хийх ирээдүйн төлөвлөгөө..."></textarea>
-                                <button class="btn-vault-action" onclick="saveVaultCalendar()">Төлөвлөгөө хадгалах</button>
-                                <div id="vault-calendar-list" class="vault-list-preview"></div>
-                            </div>
-
-                            <!-- Тэмдэглэл -->
-                            <div class="vault-card">
-                                <h3 class="vault-card-title">📝 Зүүд & Төсөөллийн тэмдэглэл</h3>
-                                <textarea id="vault-note-text" placeholder="Шөнө зүүдэлсэн зүйлс эсвэл урт хугацааны зөгнөлөө бичээрэй..."></textarea>
-                                <button class="btn-vault-action" onclick="saveVaultNote()">Тэмдэглэл хадгалах</button>
-                                <div id="vault-notes-list" class="vault-list-preview"></div>
-                            </div>
-
-                            <!-- Зургийн цомог -->
-                            <div class="vault-card">
-                                <h3 class="vault-card-title">🖼️ Нууц зургийн цомог</h3>
-                                <label class="vault-file-label">
-                                    📁 Зураг нэмэх
-                                    <input type="file" id="vault-image-file" accept="image/*" onchange="handleVaultImage(event)" style="display: none;">
+                                <label class="vault-file-label-small">
+                                    📁 Attach File
+                                    <input type="file" id="vault-image-file" accept="image/*" onchange="handleVaultImageSelect(event)" style="display: none;">
                                 </label>
-                                <div id="vault-gallery-container" class="vault-gallery-grid"></div>
                             </div>
+                            
+                            <!-- Image preview inside calendar picker -->
+                            <div id="vault-image-preview-box" style="display:none; text-align:center; margin-top:5px;">
+                                <img id="vault-img-preview-tag" src="" style="max-height:80px; border-radius:4px; border:1px solid var(--neon-pink);">
+                                <button type="button" onclick="clearVaultImageSelect()" style="background:none; border:none; color:var(--neon-pink); cursor:pointer; font-size:0.8rem; margin-left:5px;">Remove ✕</button>
+                            </div>
+
+                            <textarea id="vault-calendar-text" placeholder="Write logs, dreams, schedules, or targets for this specific date..."></textarea>
+                            <button class="btn-vault-action" onclick="saveVaultCalendar()">Commit to Calendar Log</button>
+                            
+                            <div id="vault-calendar-list" class="vault-list-preview"></div>
                         </div>
+
+                        <!-- 📝 CARD 2: PERSONAL NOTES -->
+                        <div class="vault-card">
+                            <h3 class="vault-card-title">📝 Personal Vision Notes</h3>
+                            <textarea id="vault-note-text" placeholder="Free-form drafting, long-term manifestos, or unscheduled thoughts..."></textarea>
+                            <button class="btn-vault-action" onclick="saveVaultNote()">Commit to Personal Logs</button>
+                            
+                            <div id="vault-notes-list" class="vault-list-preview"></div>
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- 🤖 TAB: FUTURE SMART AI BOT (Ирээдүйг Зурах AI) -->
+                <!-- 🎨 TAB: ARTIST AI IMAGE GENERATOR -->
                 <div id="tab-chats" class="tab-content" style="display: none;">
                     <div class="bot-chat-layout">
                         <div class="bot-header-zone">
-                            <h3 id="bot-title">Ирээдүйг Зурах AI 🎨</h3>
-                            <p class="bot-status">● Neural Image Engine Ready</p>
+                            <h3 id="bot-title">Artist AI Neural Engine 🎨</h3>
+                            <p class="bot-status">● Image Core Streaming Enabled</p>
                         </div>
                         <div id="chat-container" class="bot-messages-box">
                             <div class="msg-row bot">
-                                <strong>AI Artist:</strong> Надад төсөөллөө бичээрэй. Би түүнийг чинь ирээдүйн зураг болгон буулгах болно! (Жишээ нь: "2050 оны Улаанбаатар хот", "Киберпанк машин")
+                                <strong>AI Artist:</strong> Describe any future scenario, concept art, or dream timeline. I will synthesize it into visual art instantly! Try: "Cyberpunk metropolis 2050", "Futuristic vehicle grid"
                             </div>
                         </div>
                         <div class="bot-input-row">
-                            <input type="text" id="bot-input" placeholder="Төсөөллөө энд бичээд зураг болго..." onkeypress="if(event.key === 'Enter') generateAiImage()">
-                            <button id="send-btn" class="bot-send-btn" onclick="generateAiImage()">Зураг болгох</button>
+                            <input type="text" id="bot-input" placeholder="Prompt the AI Artist..." onkeypress="if(event.key === 'Enter') generateAiImage()">
+                            <button id="send-btn" class="bot-send-btn" onclick="generateAiImage()">Synthesize</button>
                         </div>
                     </div>
                 </div>
@@ -221,29 +205,27 @@
     <!-- ⚙️ USER PROFILE EDIT MODAL POPUP -->
     <div id="profile-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
-            <h2 class="modal-title">Edit Timeline Identity</h2>
+            <h2 class="modal-title">Edit Neural Identity</h2>
             <div class="modal-input-group">
                 <label>Cyber Identity Name</label>
                 <input type="text" id="modal-username">
             </div>
             <div class="modal-input-group">
-                <label>Avatar Photo Data URL</label>
-                <input type="text" id="modal-avatar" placeholder="Paste image base64 or URL...">
+                <label>Avatar File Data</label>
                 <div class="file-upload-wrapper">
                     <label class="modal-file-label">
-                        📁 Upload Avatar File
+                        📁 Choose Avatar File
                         <input type="file" id="modal-avatar-file" accept="image/*" onchange="handleAvatarFile(event)" style="display: none;">
                     </label>
                 </div>
             </div>
             <div class="modal-actions">
                 <button class="modal-btn cancel" onclick="closeProfileModal()">Cancel</button>
-                <button class="modal-btn save" onclick="saveProfileModal()">Save Identity</button>
+                <button class="modal-btn save" onclick="saveProfileModal()">Commit Identity</button>
             </div>
         </div>
     </div>
 
-    <!-- 🛰️ SYSTEM LOADER SCRIPT -->
     <script src="script.js"></script>
 </body>
 </html>
