@@ -1,16 +1,16 @@
 /* ==========================================
-   1. GLOBAL RESET & MULTI-THEME ENGINE
+   1. GLOBAL RESET & MULTI-THEME CONFIGS
    ========================================== */
 :root {
-    --bg-cyber: #0a0a12;
-    --card-cyber: rgba(16, 16, 28, 0.75);
-    --border-cyber: #00ffcc;
-    --neon-pink: #ff007f;
-    --neon-blue: #00f0ff;
-    --neon-green: #39ff14;
-    --text-white: #ffffff;
-    --text-gray: #8a8a9e;
-    --glass-blur: blur(10px);
+    --bg-cyber: #f0f2f5;
+    --card-cyber: #ffffff;
+    --border-cyber: #002244;
+    --neon-blue: #0055ff;
+    --neon-pink: #ff0055;
+    --neon-green: #00aa55;
+    --text-white: #111122;
+    --text-gray: #555566;
+    --glass-blur: blur(12px);
 }
 
 * {
@@ -28,14 +28,36 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Global Theme Variations */
+/* 🎨 THEME CONFIGURATIONS (Нийтээрээ солигддог систем) */
+body.theme-light {
+    --bg-cyber: #f0f2f5;
+    --card-cyber: #ffffff;
+    --border-cyber: #002244;
+    --neon-blue: #0055ff;
+    --neon-pink: #ff0055;
+    --text-white: #111122;
+    --text-gray: #555566;
+}
+
+body.theme-cyber {
+    --bg-cyber: #0a0a12;
+    --card-cyber: rgba(16, 16, 28, 0.85);
+    --border-cyber: #00ffcc;
+    --neon-pink: #ff007f;
+    --neon-blue: #00f0ff;
+    --neon-green: #39ff14;
+    --text-white: #ffffff;
+    --text-gray: #8a8a9e;
+}
+
 body.theme-matrix {
     --bg-cyber: #020204;
-    --card-cyber: rgba(5, 12, 5, 0.85);
+    --card-cyber: rgba(5, 12, 5, 0.9);
     --border-cyber: #00ff33;
     --neon-blue: #00ff33;
     --neon-pink: #008811;
     --text-white: #33ff33;
+    --text-gray: #00aa22;
 }
 
 body.theme-dark {
@@ -48,18 +70,8 @@ body.theme-dark {
     --text-gray: #777777;
 }
 
-body.theme-light {
-    --bg-cyber: #f0f2f5;
-    --card-cyber: #ffffff;
-    --border-cyber: #002244;
-    --neon-blue: #0055ff;
-    --neon-pink: #ff0055;
-    --text-white: #111122;
-    --text-gray: #555566;
-}
-
 /* ==========================================
-   2. HIGH-CONTRAST SECURE LOGIN SCREEN
+   2. SECURE AUTHENTICATION SCREEN DESIGN
    ========================================== */
 .auth-screen {
     width: 100vw;
@@ -74,10 +86,10 @@ body.theme-light {
 }
 
 .auth-card {
-    background-color: rgba(10, 10, 20, 0.95) !important;
+    background-color: rgba(12, 12, 24, 0.96) !important;
     border: 2px solid var(--border-cyber);
     box-shadow: 0 0 25px var(--border-cyber);
-    backdrop-filter: blur(12px);
+    backdrop-filter: var(--glass-blur);
     padding: 40px;
     border-radius: 12px;
     width: 100%;
@@ -137,6 +149,7 @@ body.theme-light {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .eye-btn {
@@ -183,12 +196,12 @@ body.theme-light {
 }
 
 /* ==========================================
-   3. MAIN HEADER & AUDIO PLAYER ALIGNMENT
+   3. MAIN CONTROL HEADER ALIGNMENT
    ========================================== */
 .main-header {
     background: var(--card-cyber);
     border-bottom: 2px solid var(--border-cyber);
-    box-shadow: 0 2px 15px rgba(0, 255, 204, 0.2);
+    box-shadow: 0 2px 15px rgba(0, 85, 255, 0.1);
     backdrop-filter: var(--glass-blur);
     padding: 15px 30px;
     display: flex;
@@ -206,59 +219,8 @@ body.theme-light {
     font-size: 1.8rem;
     font-weight: bold;
     letter-spacing: 2px;
-    color: #fff;
-    text-shadow: 0 0 8px var(--border-cyber);
-}
-
-/* 🎵 Custom Music Player Header Alignment */
-.custom-player-widget {
-    display: flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--neon-blue);
-    padding: 6px 14px;
-    border-radius: 20px;
-    gap: 12px;
-}
-
-.music-upload-btn {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--neon-blue);
-    cursor: pointer;
-    text-transform: uppercase;
-}
-
-.track-text {
-    font-size: 0.9rem;
     color: var(--text-white);
-    max-width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.player-btn-small {
-    background: transparent;
-    border: 1px solid var(--border-cyber);
-    color: var(--border-cyber);
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.player-btn-close {
-    background: none;
-    border: none;
-    color: var(--neon-pink);
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.9rem;
+    text-shadow: 0 0 8px var(--border-cyber);
 }
 
 .header-right {
@@ -275,11 +237,12 @@ body.theme-light {
     border-radius: 4px;
     font-family: 'Orbitron', sans-serif;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .header-btn:hover {
     background: var(--neon-blue);
-    color: #000;
+    color: #fff;
     box-shadow: 0 0 10px var(--neon-blue);
 }
 
@@ -288,7 +251,7 @@ body.theme-light {
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     padding: 6px 12px;
     border-radius: 20px;
     border: 1px solid transparent;
@@ -317,7 +280,7 @@ body.theme-light {
 }
 
 /* ==========================================
-   4. LAYOUT CORE (Fixing Sidebar Collapse)
+   4. APPLICATION MAIN LAYOUT CONTAINER
    ========================================== */
 .app-layout-container {
     display: flex;
@@ -329,8 +292,8 @@ body.theme-light {
 .side-navigation {
     width: 250px;
     min-width: 250px;
-    background: rgba(16, 16, 28, 0.6);
-    border-right: 1px solid rgba(0, 255, 204, 0.2);
+    background: var(--card-cyber);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
     padding: 30px 15px;
     display: flex;
     flex-direction: column;
@@ -353,9 +316,9 @@ body.theme-light {
 }
 
 .menu-tab.active {
-    color: #fff;
+    color: var(--text-white);
     border-color: var(--border-cyber);
-    background: rgba(0, 255, 204, 0.1);
+    background: rgba(0, 85, 255, 0.08);
     text-shadow: 0 0 5px var(--border-cyber);
 }
 
@@ -365,7 +328,7 @@ body.theme-light {
     overflow-y: auto;
 }
 /* ==========================================
-   5. TIMELINE FEED & FIXED LIKE SYSTEM CARD
+   5. TIMELINE FEED & FIXED CRYSTAL VOTE CARD
    ========================================== */
 .search-wrapper-box {
     margin-bottom: 25px;
@@ -376,9 +339,9 @@ body.theme-light {
     width: 100%;
     padding: 14px 20px;
     background: var(--card-cyber);
-    border: 1px solid rgba(0, 240, 255, 0.3);
+    border: 1px solid rgba(0, 85, 255, 0.2);
     border-radius: 8px;
-    color: #fff;
+    color: var(--text-white);
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.1rem;
     outline: none;
@@ -386,21 +349,21 @@ body.theme-light {
 
 .creator-card, .post-card {
     background: var(--card-cyber);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
     padding: 25px;
     margin-bottom: 30px;
     width: 100%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .creator-card textarea {
     width: 100%;
     height: 100px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    color: #fff;
+    color: var(--text-white);
     padding: 15px;
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.1rem;
@@ -415,23 +378,24 @@ body.theme-light {
     align-items: center;
 }
 
-/* Шинэ цэвэрхэн Like Товчлуур */
-.vote-btn-neon {
+.upload-label {
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-neon-post {
     background: transparent;
     border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
+    padding: 10px 25px;
     font-family: 'Orbitron', sans-serif;
     font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-.vote-btn-neon.liked {
-    background: var(--neon-blue) !important;
-    color: #000 !important;
-    box-shadow: 0 0 15px var(--neon-blue);
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .post-header-row {
@@ -451,17 +415,54 @@ body.theme-light {
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    border: 2px solid var(--border-cyber);
+    border: 1px solid var(--border-cyber);
+}
+
+/* 🔮 ХУУЧИН ДУРТАЙ КРИСТАЛ БӨМБӨЛӨГ БАРУУН ДЭЭД БУЛАНД */
+.vote-btn-neon {
+    background: transparent;
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 6px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.vote-btn-neon.liked {
+    background: var(--neon-pink) !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px var(--neon-pink);
 }
 
 .post-main-text {
     font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 20px;
-    color: #f5f5fa;
+    color: var(--text-white);
 }
 
-/* Comments section reset */
+/* 🖼️ ЗУРГИЙГ КАРТНААС ИЛҮҮ ГАРАХГҮЙ БОЛГОЖ ХЯЗГААРЛАСАН ХЭСЭГ */
+.post-media-content, .media-preview-zone {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+}
+
+.post-media-content img, .post-media-content video, .preview-asset {
+    width: 100%;
+    max-width: 100%; /* Картын өргөнөөс хэзээ ч хэтрэхгүй */
+    max-height: 450px; /* Өндрийг ухаалгаар хязгаарлав */
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Comments Box Inside Card */
 .comment-input-row {
     display: flex;
     gap: 12px;
@@ -471,102 +472,171 @@ body.theme-light {
 
 .comment-input-row input {
     flex: 1;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
-    color: #fff;
+    color: var(--text-white);
     padding: 10px 15px;
     outline: none;
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1rem;
 }
 
 .comment-add-btn {
-    background: rgba(0, 240, 255, 0.1);
+    background: transparent;
     border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
     width: 40px;
     height: 40px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1.2rem;
 }
 
 /* ==========================================
-   6. 🔒 PRIVATE VAULT AREA (Хувийн Орон Зай)
+   6. 🔒 PRIVATE VAULT AREA (2 Карт Дэлгэц Дүүрэн)
    ========================================== */
 .vault-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(2, 1fr); /* 2 том картыг тэнцүү өргөн хуваана */
+    gap: 30px;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .vault-grid { grid-template-columns: 1fr; } /* Жижиг дэлгэц дээр доошоо цуврах */
 }
 
 .vault-card {
-    background: rgba(12, 12, 24, 0.85);
+    background: var(--card-cyber);
     border: 1px dashed var(--neon-pink);
     border-radius: 12px;
-    padding: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.vault-card-title {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-pink);
+    font-size: 1.3rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding-bottom: 10px;
+}
+
+.calendar-inputs-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
 }
 
 .cyber-date-picker {
-    width: 100%;
+    flex: 1;
     padding: 10px;
-    background: #000;
-    border: 1px solid var(--neon-pink);
-    color: #fff;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--text-white);
     border-radius: 6px;
-    margin-bottom: 12px;
+    font-family: 'Rajdhani', sans-serif;
 }
 
-.vault-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+.vault-file-label-small {
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px dashed var(--neon-pink);
+    color: var(--neon-pink);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.vault-card textarea {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    color: var(--text-white);
+    padding: 15px;
+    font-family: 'Rajdhani', sans-serif;
+    resize: none;
+    outline: none;
+}
+
+.btn-vault-action {
+    background: transparent;
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.vault-list-preview {
+    max-height: 250px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.vault-gallery-img {
-    width: 100%;
-    height: 80px;
-    object-fit: cover;
+.vault-item-node {
+    background: rgba(0, 0, 0, 0.02);
+    padding: 12px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 0, 127, 0.3);
+    border-left: 3px solid var(--neon-pink);
+    position: relative;
 }
 
-/* AI Generated frame inside chat */
+.delete-vault-btn {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    background: none;
+    border: none;
+    color: var(--text-gray);
+    cursor: pointer;
+}
+
+/* ==========================================
+   7. ARTIST AI GENERATED FRAMES
+   ========================================== */
 .ai-generated-frame {
     margin-top: 15px;
     border: 2px solid var(--border-cyber);
     border-radius: 8px;
-    max-width: 400px;
+    max-width: 100%; /* Чатны хайрцагнаас хэтрэхгүй */
+    overflow: hidden;
+    background: #000;
 }
 
 .ai-generated-frame img {
     width: 100%;
+    max-width: 100%;
+    max-height: 380px; /* Зургийн өндрийг хязгаарлав */
+    object-fit: contain;
     display: block;
-    border-radius: 6px;
 }
 
-/* Chat & Bots baseline */
+/* Base Chats Components */
 .chat-messages-box, .bot-messages-box {
-    flex: 1;
-    min-height: 350px;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    flex: 1; min-height: 350px; background: rgba(0,0,0,0.02);
+    padding: 20px; border-radius: 8px; margin-bottom: 15px;
+    display: flex; flex-direction: column; gap: 12px;
 }
-
 .msg-row { padding: 12px 18px; border-radius: 8px; max-width: 75%; }
-.msg-row.user { background: rgba(0, 240, 255, 0.15); border: 1px solid var(--neon-blue); align-self: flex-end; }
-.msg-row.bot { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); align-self: flex-start; }
+.msg-row.user { background: rgba(0, 85, 255, 0.08); border: 1px solid var(--neon-blue); align-self: flex-end; }
+.msg-row.bot { background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.05); align-self: flex-start; }
+.bot-input-row { display: flex; gap: 12px; }
+.bot-input-row input { flex: 1; padding: 12px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; color: var(--text-white); }
+.bot-send-btn { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 0 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; }
+.bot-status { font-size: 0.85rem; color: var(--neon-green); margin-top: 4px; }
 
-/* Profile modal popups */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
-    display: flex; justify-content: center; align-items: center; z-index: 200;
-}
-.modal-card { background: #0d0d16; border: 2px solid var(--border-cyber); padding: 30px; border-radius: 12px; width: 100%; max-width: 440px; }
+/* Modal overlays */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: center; z-index: 200; }
+.modal-card { background: var(--card-cyber); border: 2px solid var(--border-cyber); padding: 30px; border-radius: 12px; width: 100%; max-width: 440px; }
