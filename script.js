@@ -216,9 +216,11 @@ function stopAuthBackgroundCycle() {
 // ========================================================
 // 2.2 IDENTITY MANAGEMENT & AUTHENTICATION PORTALS
 // ========================================================
+// 🛠 Бүртгүүлэх болон Нэвтрэх хуудсыг алдаагүй, төгс сольж харуулдаг засалт
 function showAuthPage(page) {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
+    
     if (page === 'register') {
         if (loginCard) loginCard.style.display = 'none';
         if (registerCard) registerCard.style.display = 'block';
