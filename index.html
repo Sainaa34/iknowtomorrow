@@ -12,7 +12,7 @@
 <!-- 🌐 АНХ ОРОХОД ШУУД ЦЭВЭРХЭН ЦАГААН (LIGHT) ЗАГВАРААР ЭХЭЛНЭ -->
 <body class="theme-light">
 
-    <!-- 🌌 HIGH-CONTRAST NEURAL AUTHENTICATION CONTAINER -->
+    <!-- 🌌 HIGH-CONTRAST SECURE AUTHENTICATION CONTAINER -->
     <div id="auth-container" class="auth-screen">
         
         <!-- LOGIN INTERFACE -->
@@ -36,7 +36,7 @@
             <p class="auth-switch">New entity? <span onclick="showAuthPage('register')">Register identity</span></p>
         </div>
 
-        <!-- REGISTER INTERFACE -->
+        <!-- REGISTER INTERFACE (Шинэ хэрэглэгчид систем автоматаар аватар онооно) -->
         <div id="register-card" class="auth-card" style="display: none;">
             <h1 class="auth-title">REGISTER</h1>
             <p class="auth-subtitle">Create New Timeline Identity</p>
@@ -62,7 +62,7 @@
     <!-- 🌐 MAIN CORE APPLICATION INTERFACE -->
     <div id="main-app" style="display: none;">
         
-        <!-- CONTROL HEADER (100% CLEAN ENGLISH & THEME SWITCHER) -->
+        <!-- CONTROL HEADER -->
         <header class="main-header">
             <div class="header-left">
                 <span class="logo-neon">iKnowTomorrow</span>
@@ -97,7 +97,7 @@
                     </div>
 
                     <div class="creator-card">
-                        <!-- Enter товчлуурын event-ийг script.js дээр ухаалгаар барина -->
+                        <!-- Текст бичээд шууд Enter дарахад постлогдоно, Shift+Enter шинэ мөр авна -->
                         <textarea id="future-input" placeholder="What will happen tomorrow? Share your vision..."></textarea>
                         
                         <div id="post-media-preview-box" class="media-preview-zone" style="display: none;">
@@ -123,10 +123,10 @@
 
                     <div id="feed-container"></div>
                 </div>
-                <!-- 🤝 TAB: ENCRYPTED PRIVATE CHATS (Ухаалаг Мессенжер Бүтэц) -->
+                <!-- 🤝 TAB: ENCRYPTED PRIVATE CHATS -->
                 <div id="tab-friends" class="tab-content" style="display: none;">
                     <div class="friends-layout">
-                        <!-- Left/Center Side: Active Chat Window (Хардаг хэсэг цэгцтэй, бичих хэсэг том) -->
+                        <!-- Left/Center Side: Chat Box Framework -->
                         <div class="friends-chat-panel">
                             <h3 id="active-chat-partner" class="panel-title">💬 Select a neural citizen to initiate chat</h3>
                             <div id="friends-chat-messages" class="chat-messages-box"></div>
@@ -136,7 +136,7 @@
                             </div>
                         </div>
 
-                        <!-- Right Side: Citizens List Panel (Баруун талд, уншаагүй чат !!! харах, Block товчлууртай) -->
+                        <!-- Right Side Panel: Messenger Citizens List -->
                         <div class="friends-list-panel">
                             <h3 class="panel-title">Network Citizens</h3>
                             <div id="friends-list-container"></div>
@@ -144,29 +144,27 @@
                     </div>
                 </div>
 
-                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (🔒 Зөвхөн ганцхан том карттай, дэлгэц дүүрэн бүтэц) -->
+                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (🔒 Combined Single Master Vault UI) -->
                 <div id="tab-vault" class="tab-content" style="display: none;">
                     <div class="vault-grid-single">
                         
-                        <!-- 📅 MASTER FUTURE CALENDAR (Календарь, зүүд, зураг бүгд нэг дор) -->
+                        <!-- 📅 MASTER FUTURE CALENDAR CARD -->
                         <div class="vault-card-full">
                             <h3 class="vault-card-title">📅 Master Future Calendar</h3>
                             <div class="calendar-inputs-row">
-                                <!-- type="date" болгож хөтөчийн бэлэн унждаг гоё хуанли уншуулна -->
                                 <input type="date" id="vault-date-input" class="cyber-date-picker">
                                 <label class="vault-file-label-small" id="vault-upload-label">
-                                    📁 Attach File
+                                    📁 Attach Log Photo
                                     <input type="file" id="vault-image-file" accept="image/*" onchange="handleVaultImageSelect(event)" style="display: none;">
                                 </label>
                             </div>
                             
-                            <!-- Image preview inside calendar picker -->
                             <div id="vault-image-preview-box" style="display:none; text-align:center; margin-top:5px;">
-                                <img id="vault-img-preview-tag" src="" style="max-height:100px; border-radius:6px; border:1px solid var(--neon-pink);">
+                                <img id="vault-img-preview-tag" src="" style="max-height:140px; border-radius:6px; border:1px solid var(--neon-pink);">
                                 <button type="button" onclick="clearVaultImageSelect()" style="background:none; border:none; color:var(--neon-pink); cursor:pointer; font-size:0.9rem; margin-left:10px; font-weight:bold;">Remove ✕</button>
                             </div>
 
-                            <textarea id="vault-calendar-text" placeholder="Write your calendar logs, targets, schedules, or dream journals for this specific date..."></textarea>
+                            <textarea id="vault-calendar-text" placeholder="Transcribe logs, raw targets, schedules, or precise dream journals for this designated date parameter..."></textarea>
                             <button class="btn-vault-action" onclick="saveVaultCalendar()">Commit to Master Calendar Log</button>
                             
                             <div id="vault-calendar-list" class="vault-list-preview"></div>
@@ -182,14 +180,15 @@
                             <h3 id="bot-title">Artist AI Neural Engine 🎨</h3>
                             <p class="bot-status">● Image Core Streaming Enabled</p>
                         </div>
-                        <div id="chat-container" class="bot-messages-box">
+                        <!-- Fixed Chat Container ID for perfect rendering -->
+                        <div id="ai-chat-container" class="bot-messages-box">
                             <div class="msg-row bot">
                                 <strong>AI Artist:</strong> Describe any future scenario, concept art, or dream timeline. I will synthesize it into visual art instantly! Try: "Cyberpunk metropolis 2050", "Futuristic vehicle grid"
                             </div>
                         </div>
                         <div class="bot-input-row">
-                            <input type="text" id="bot-input" placeholder="Prompt the AI Artist..." onkeypress="if(event.key === 'Enter') generateAiImage()">
-                            <button id="send-btn" class="bot-send-btn" onclick="generateAiImage()">Synthesize</button>
+                            <input type="text" id="ai-bot-input" placeholder="Prompt the AI Artist..." onkeypress="if(event.key === 'Enter') generateAiImage()">
+                            <button id="ai-send-btn" class="bot-send-btn" onclick="generateAiImage()">Synthesize</button>
                         </div>
                     </div>
                 </div>
@@ -198,7 +197,7 @@
         </div>
     </div>
 
-    <!-- ⚙️ USER PROFILE EDIT MODAL POPUP -->
+    <!-- ⚙️ USER PROFILE EDIT MODAL POPUP (Fixed ID Conflict) -->
     <div id="profile-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
             <h2 class="modal-title">Edit Neural Identity</h2>
@@ -209,10 +208,13 @@
             <div class="modal-input-group">
                 <label style="font-weight:bold; color:var(--text-white); margin-bottom:8px; display:block;">Profile Avatar File</label>
                 <div class="file-upload-wrapper">
-                    <!-- Цагаан загварт маш тод харагдах, гарж ирдэг товчлуур -->
+                    <!-- Temporary visual feedback before commit -->
+                    <div id="modal-avatar-preview-box" style="text-align:center; margin-bottom:10px; display:none;">
+                        <img id="modal-avatar-preview-img" src="" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--border-cyber);">
+                    </div>
                     <label class="modal-file-label" id="modal-upload-btn-label">
                         📁 Choose Profile Image File
-                        <input type="file" id="modal-avatar-file" accept="image/*" onchange="handleAvatarFile(event)" style="display: none;">
+                        <input type="file" id="modal-avatar-file" accept="image/*" onchange="handleAvatarFileChange(event)" style="display: none;">
                     </label>
                 </div>
             </div>
