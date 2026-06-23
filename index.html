@@ -97,6 +97,7 @@
                     </div>
 
                     <div class="creator-card">
+                        <!-- Enter товчлуурын event-ийг script.js дээр ухаалгаар барина -->
                         <textarea id="future-input" placeholder="What will happen tomorrow? Share your vision..."></textarea>
                         
                         <div id="post-media-preview-box" class="media-preview-zone" style="display: none;">
@@ -122,34 +123,38 @@
 
                     <div id="feed-container"></div>
                 </div>
-                <!-- 🤝 TAB: ENCRYPTED PRIVATE CHATS -->
+                <!-- 🤝 TAB: ENCRYPTED PRIVATE CHATS (Ухаалаг Мессенжер Бүтэц) -->
                 <div id="tab-friends" class="tab-content" style="display: none;">
                     <div class="friends-layout">
-                        <div class="friends-list-panel">
-                            <h3 class="panel-title">Online Network Citizens</h3>
-                            <div id="friends-list-container"></div>
-                        </div>
+                        <!-- Left/Center Side: Active Chat Window (Хардаг хэсэг цэгцтэй, бичих хэсэг том) -->
                         <div class="friends-chat-panel">
                             <h3 id="active-chat-partner" class="panel-title">💬 Select a neural citizen to initiate chat</h3>
                             <div id="friends-chat-messages" class="chat-messages-box"></div>
-                            <div class="chat-input-row">
+                            <div class="chat-input-row-large">
                                 <input type="text" id="friends-chat-input" placeholder="Type an encrypted message..." onkeypress="if(event.key === 'Enter') sendFriendMessage()">
-                                <button class="chat-send-btn" onclick="sendFriendMessage()">Send</button>
+                                <button class="chat-send-btn-large" onclick="sendFriendMessage()">Send Message</button>
                             </div>
+                        </div>
+
+                        <!-- Right Side: Citizens List Panel (Баруун талд, уншаагүй чат !!! харах, Block товчлууртай) -->
+                        <div class="friends-list-panel">
+                            <h3 class="panel-title">Network Citizens</h3>
+                            <div id="friends-list-container"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (🔒 Зөвхөн 2 том карттай, цэгцтэй бүтэц) -->
+                <!-- 🔒 TAB: PRIVATE CYBER-VAULT (🔒 Зөвхөн ганцхан том карттай, дэлгэц дүүрэн бүтэц) -->
                 <div id="tab-vault" class="tab-content" style="display: none;">
-                    <div class="vault-grid">
+                    <div class="vault-grid-single">
                         
-                        <!-- 📅 CARD 1: MASTER FUTURE CALENDAR (Календарь, зүүд, зураг бүгд нэг дор) -->
-                        <div class="vault-card">
+                        <!-- 📅 MASTER FUTURE CALENDAR (Календарь, зүүд, зураг бүгд нэг дор) -->
+                        <div class="vault-card-full">
                             <h3 class="vault-card-title">📅 Master Future Calendar</h3>
                             <div class="calendar-inputs-row">
+                                <!-- type="date" болгож хөтөчийн бэлэн унждаг гоё хуанли уншуулна -->
                                 <input type="date" id="vault-date-input" class="cyber-date-picker">
-                                <label class="vault-file-label-small">
+                                <label class="vault-file-label-small" id="vault-upload-label">
                                     📁 Attach File
                                     <input type="file" id="vault-image-file" accept="image/*" onchange="handleVaultImageSelect(event)" style="display: none;">
                                 </label>
@@ -157,23 +162,14 @@
                             
                             <!-- Image preview inside calendar picker -->
                             <div id="vault-image-preview-box" style="display:none; text-align:center; margin-top:5px;">
-                                <img id="vault-img-preview-tag" src="" style="max-height:80px; border-radius:4px; border:1px solid var(--neon-pink);">
-                                <button type="button" onclick="clearVaultImageSelect()" style="background:none; border:none; color:var(--neon-pink); cursor:pointer; font-size:0.8rem; margin-left:5px;">Remove ✕</button>
+                                <img id="vault-img-preview-tag" src="" style="max-height:100px; border-radius:6px; border:1px solid var(--neon-pink);">
+                                <button type="button" onclick="clearVaultImageSelect()" style="background:none; border:none; color:var(--neon-pink); cursor:pointer; font-size:0.9rem; margin-left:10px; font-weight:bold;">Remove ✕</button>
                             </div>
 
-                            <textarea id="vault-calendar-text" placeholder="Write logs, dreams, schedules, or targets for this specific date..."></textarea>
-                            <button class="btn-vault-action" onclick="saveVaultCalendar()">Commit to Calendar Log</button>
+                            <textarea id="vault-calendar-text" placeholder="Write your calendar logs, targets, schedules, or dream journals for this specific date..."></textarea>
+                            <button class="btn-vault-action" onclick="saveVaultCalendar()">Commit to Master Calendar Log</button>
                             
                             <div id="vault-calendar-list" class="vault-list-preview"></div>
-                        </div>
-
-                        <!-- 📝 CARD 2: PERSONAL NOTES -->
-                        <div class="vault-card">
-                            <h3 class="vault-card-title">📝 Personal Vision Notes</h3>
-                            <textarea id="vault-note-text" placeholder="Free-form drafting, long-term manifestos, or unscheduled thoughts..."></textarea>
-                            <button class="btn-vault-action" onclick="saveVaultNote()">Commit to Personal Logs</button>
-                            
-                            <div id="vault-notes-list" class="vault-list-preview"></div>
                         </div>
 
                     </div>
@@ -207,14 +203,15 @@
         <div class="modal-card">
             <h2 class="modal-title">Edit Neural Identity</h2>
             <div class="modal-input-group">
-                <label>Cyber Identity Name</label>
+                <label style="font-weight:bold; color:var(--text-white);">Cyber Identity Name</label>
                 <input type="text" id="modal-username">
             </div>
             <div class="modal-input-group">
-                <label>Avatar File Data</label>
+                <label style="font-weight:bold; color:var(--text-white); margin-bottom:8px; display:block;">Profile Avatar File</label>
                 <div class="file-upload-wrapper">
-                    <label class="modal-file-label">
-                        📁 Choose Avatar File
+                    <!-- Цагаан загварт маш тод харагдах, гарж ирдэг товчлуур -->
+                    <label class="modal-file-label" id="modal-upload-btn-label">
+                        📁 Choose Profile Image File
                         <input type="file" id="modal-avatar-file" accept="image/*" onchange="handleAvatarFile(event)" style="display: none;">
                     </label>
                 </div>
