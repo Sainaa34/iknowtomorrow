@@ -8,11 +8,11 @@ let allPosts = [];
 let postAttachedMedia = null;
 let activeChatPartner = null;
 
-// Temporary staging variables for modal commits
+// Календарь болон профайл зураг түр хадгалах хувьсагчид
 let vaultSelectedImageBase64 = null;
 let modalSelectedAvatarBase64 = null;
 
-// Local storage mesh structures
+// Блок жагсаалт болон уншаагүй чатны тэмдэглэгээ
 let blockedUsers = JSON.parse(localStorage.getItem('iknow_blocked_users')) || {};
 let unseenMessagesFrom = JSON.parse(localStorage.getItem('iknow_unseen_msgs')) || {};
 
@@ -20,13 +20,21 @@ const bannedKeywords = ["crypto scam", "hack", "leak", "cheat"];
 
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
+    
+    // 🌐 HOME LOGO RESET ACTION BOUNDING
+    const logoElement = document.querySelector('.logo-neon');
+    if (logoElement) {
+        logoElement.style.cursor = 'pointer';
+        logoElement.addEventListener('click', resetAppToHome);
+    }
+
     initIndexedDB();
-    checkSession();
+    checkSession(); // F5 refresh-ийг гацаахгүйгээр сессийг шууд түгжинэ
 });
 
 // Unlimited Database Storage Connection Matrix
 function initIndexedDB() {
-    const request = indexedDB.open("iKnowTomorrowDB", 5); // v5 integration for Neural Comment Engine
+    const request = indexedDB.open("iKnowTomorrowDB", 5); // v5 хувилбар
     
     request.onupgradeneeded = (e) => {
         const localDB = e.target.result;
@@ -48,19 +56,13 @@ function initIndexedDB() {
         db = e.target.result;
         loadPostsFromDB();
         loadVaultCalendarFromDB();
-        loadVaultNotesFromDB();
     };
 }
 // ========================================================
-// 2. IDENTITY BACKDROP MANAGEMENT (LOGIN CORES)
+// 2. IDENTITY BACKDROP MANAGEMENT & AUTHENTICATION INFRA
 // ========================================================
 function randomizeAuthImages() {
-    const authScreen = document.getElementById('auth-container');
-    if (!authScreen) return;
-    const availablePool = ['r1.webp', 'r2.jpg', 'r3.jpg', 'r4.jpg', 'r6.jpg', 'r7.jpg', 'r8.jpg', 'r9.jpg'];
-    let shuffled = [...availablePool].sort(() => 0.5 - Math.random());
-    let selected = shuffled.slice(0, 4);
-    authScreen.style.backgroundImage = `url('${selected}'), url('${selected}'), url('${selected}'), url('${selected}')`;
+    // index.html дээр арын зургийг CSS-ээр шууд уншуулдаг болсон тул энд ачаалал өгөхгүй цэвэр үлдээв
 }
 
 function showAuthPage(page) {
@@ -73,7 +75,6 @@ function showAuthPage(page) {
         if (loginCard) loginCard.style.display = 'block';
         if (registerCard) registerCard.style.display = 'none';
     }
-    randomizeAuthImages();
 }
 
 function togglePasswordVisibility(inputId) {
@@ -82,7 +83,7 @@ function togglePasswordVisibility(inputId) {
 }
 
 // ========================================================
-// 3. SECURE AUTHENTICATION MATRIX (1-CLICK DIRECT FIX)
+// 3. SECURE AUTHENTICATION MATRIX (1-CLICK & CLEAN DISCONNECT)
 // ========================================================
 function handleRegister(e) {
     e.preventDefault();
@@ -91,11 +92,9 @@ function handleRegister(e) {
     if (!user || !pass) return;
 
     localStorage.setItem(`user_${user}`, pass);
-    
-    // 🧠 ЦОО ШИНЭ АВТОМАТ АВАТАР: Хүмүүс бүртгүүлэхэд чиний оруулсан avatar.png-ийг шууд онооно
-    localStorage.setItem(`avatar_${user}`, "avatar.png");
+    localStorage.setItem(`avatar_${user}`, "avatar.png"); // Автоматаар үндсэн avatar.png-ийг онооно
 
-    alert("Neural Identity Created Successfully! System Avatar assigned.");
+    alert("Neural Identity Created Successfully!");
     showAuthPage('login');
 }
 
@@ -109,9 +108,9 @@ function handleLogin(e) {
         currentUser = user;
         localStorage.setItem('iknow_session', user);
         
-        // direct redirect fix: Баазын ачаалал давхцахаас сэргийлж 1 удаа дараад шууд оруулна
-        if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
-        if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
+        // 🔄 ИНПУТ ЦЭВЭРЛЭГЭЭ: Нэвтэрмэгц талбаруудыг шууд хоосон болгоно
+        document.getElementById('login-username').value = "";
+        document.getElementById('login-password').value = "";
         
         showMainApp();
     } else {
@@ -119,45 +118,65 @@ function handleLogin(e) {
     }
 }
 
+// Google Neural Gateway - Google-ээр шууд нэвтрэх урсгал
+function handleGoogleAuth() {
+    const googleUser = "Google_Citizen_" + Math.floor(1000 + Math.random() * 9000);
+    currentUser = googleUser;
+    localStorage.setItem('iknow_session', googleUser);
+    if (!localStorage.getItem(`avatar_${googleUser}`)) {
+        localStorage.setItem(`avatar_${googleUser}`, "avatar.png");
+    }
+    alert("Authenticated via Google Neural Gateway network node!");
+    showMainApp();
+}
+
 function checkSession() {
     const session = localStorage.getItem('iknow_session');
     if (session) {
         currentUser = session;
+        // F5 дарахад хуудас гацаж гарахаас сэргийлж, бүтцийг шууд амилуулна
+        if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
+        if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
         showMainApp();
     } else {
         if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'flex';
         if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'none';
-        randomizeAuthImages();
     }
 }
 
 function showMainApp() {
-    const nameTag = document.getElementById('profile-name');
-    const avatarTag = document.getElementById('profile-avatar');
+    if (document.getElementById('auth-container')) document.getElementById('auth-container').style.display = 'none';
+    if (document.getElementById('main-app')) document.getElementById('main-app').style.display = 'block';
     
-    if (nameTag) nameTag.textContent = currentUser;
+    document.getElementById('profile-name').textContent = currentUser;
     
-    if (avatarTag) {
-        const storedAvatar = localStorage.getItem(`avatar_${currentUser}`);
-        avatarTag.src = storedAvatar || `https://robohash.org{currentUser}.png?set=set4`;
-    }
+    const storedAvatar = localStorage.getItem(`avatar_${currentUser}`);
+    document.getElementById('profile-avatar').src = storedAvatar || "avatar.png";
     
     switchTab('feed');
     loadOnlineCitizens();
-    loadPostsFromDB();
-    loadVaultCalendarFromDB();
-    loadVaultNotesFromDB();
+    if (db) {
+        loadPostsFromDB();
+        loadVaultCalendarFromDB();
+    }
 }
 
 function handleLogout() {
     localStorage.removeItem('iknow_session');
     currentUser = null;
     activeChatPartner = null;
+
+    // 🔒 НЭР НУУЦ ҮГИЙГ БҮРМӨСӨН АРЧИЖ ЦЭВЭРЛЭХ ХЭСЭГ
+    const inputIds = ['login-username', 'login-password', 'reg-username', 'reg-password'];
+    inputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
+
     checkSession();
 }
-
 // ========================================================
-// 4. THEME SWITCHER LOGIC
+// 4. INTERACTIVE UTILITIES & CORE NAVIGATION
 // ========================================================
 function toggleTheme() {
     const themes = ['light', 'cyber', 'matrix', 'dark'];
@@ -180,6 +199,17 @@ function switchTab(tabId) {
         }
     });
 }
+
+// 🌐 Үндсэн сайт руу буцах үед бүх зүйлийг анхны байдалд нь оруулж эхлүүлнэ
+function resetAppToHome() {
+    const searchBox = document.getElementById('search-input');
+    const feedArea = document.getElementById('future-input');
+    if (searchBox) searchBox.value = "";
+    if (feedArea) feedArea.value = "";
+    switchTab('feed');
+    loadPostsFromDB();
+}
+
 // ========================================================
 // 5. TIMELINE MULTIMEDIA CAPTURE INTERFACES
 // ========================================================
@@ -206,7 +236,7 @@ function handleFileSelect(event, type) {
             if (previewImg) previewImg.style.display = 'none';
         }
     };
-    reader.readAsDataURL(file[0]);
+    reader.readAsDataURL(file[0]); // Индексийг яг таг баталгаажуулав
 }
 
 function clearAttachedMedia() {
@@ -227,15 +257,6 @@ function clearAttachedMedia() {
 // ========================================================
 // 6. MASTER TIMELINE ENGINE & VERIFIED CRYSTAL SYSTEM
 // ========================================================
-document.addEventListener('keydown', (e) => {
-    if (e.target && e.target.id === 'future-input') {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            createPost();
-        }
-    }
-});
-
 function createPost() {
     const inputEl = document.getElementById('future-input');
     const text = inputEl ? inputEl.value.trim() : "";
@@ -254,7 +275,7 @@ function createPost() {
         votes: 0,
         voters: [],
         comments: [],
-        timestamp: Date.now()
+        timestamp: Date.now() // "Just now"-ыг зөв тооцоолох суурь огноо
     };
 
     const transaction = db.transaction(["posts"], "readwrite");
@@ -275,7 +296,7 @@ function loadPostsFromDB() {
     request.onsuccess = () => {
         allPosts = request.result;
 
-        // 🧠 ШИНЭ ОН ЦАГИЙН ЭРЭМБЭ: Өөрийн пост дээрээ, он цагаар хамгийн шинэ нь хамгийн дээрээ харагдана
+        // 🧠 ОН ЦАГИЙН ДАРААЛАЛ: Өөрийн пост дээрээ, он цагаар хамгийн шинэ нь хамгийн дээрээ харагдана
         allPosts.sort((a, b) => {
             const isMeA = a.author === currentUser ? 1 : 0;
             const isMeB = b.author === currentUser ? 1 : 0;
@@ -295,15 +316,15 @@ function renderPosts(postsToRender) {
         if (!post.voters) post.voters = [];
         const hasVerified = post.voters.includes(currentUser);
 
-        // ⏱️ Огноо засалт ("Just now" эффект)
+        // ⏱️ Постын хугацаа тооцоологч ("Just now" эффект)
         let timeDisplay = "Just now";
         const diffSec = Math.floor((Date.now() - post.timestamp) / 1000);
         if (diffSec > 59) {
             timeDisplay = new Date(post.timestamp).toLocaleString();
         }
 
-        // 🖼️ Аватар зураг шууд солигддог логик (Хуучин постын зургуудыг санах ойноос зэрэг шинэчилнэ)
-        const currentPostUserAvatar = localStorage.getItem(`avatar_${post.author}`) || `https://robohash.org{post.author}.png?set=set4`;
+        // 🖼️ Хуучин постуудын аватар солигдохгүй байхыг зассан хэсэг (Локал санах ойноос шууд уншина)
+        const currentPostUserAvatar = localStorage.getItem(`avatar_${post.author}`) || "avatar.png";
 
         let mediaHtml = "";
         if (post.media) {
@@ -326,12 +347,12 @@ function renderPosts(postsToRender) {
                     if (cDiff > 59) commentTimeDisplay = new Date(c.timestamp).toLocaleTimeString();
                 }
 
-                const currentCommentUserAvatar = localStorage.getItem(`avatar_${c.user}`) || `https://robohash.org{c.user}.png?set=set4`;
+                const currentCommentUserAvatar = localStorage.getItem(`avatar_${c.user}`) || "avatar.png";
 
                 commentsHtml += `
                     <div class="comment-node">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
-                            <img src="${currentCommentUserAvatar}" style="width:20px; height:20px; border-radius:50%;">
+                            <img src="${currentCommentUserAvatar}" style="width:20px; height:20px; border-radius:50%; object-fit:cover;">
                             <strong>${c.user}:</strong>
                         </div>
                         <div>${c.text}</div>
@@ -396,8 +417,18 @@ function votePost(postId) {
     };
     transaction.oncomplete = () => { loadPostsFromDB(); };
 }
-// Сэтгэгдэл бичих талбарт Enter дарахад явах ухаалаг event
+// ========================================================
+// 6.2 POST & COMMENT TEXT INTERFACE EVENT BINDINGS
+// ========================================================
 document.addEventListener('keydown', (e) => {
+    // Постын талбарт Enter дарахад нийтлэх (Shift+Enter шинэ мөр авна)
+    if (e.target && e.target.id === 'future-input') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            createPost();
+        }
+    }
+    // Сэтгэгдэл (Comment) бичих талбарт Enter дарахад шууд илгээнэ
     if (e.target && e.target.className === 'neural-comment-input-tag') {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -459,7 +490,6 @@ function voteComment(postId, commentIdx) {
     };
     transaction.oncomplete = () => { loadPostsFromDB(); };
 }
-
 function deletePost(postId) {
     if (!confirm("Purge post from matrix timeline?")) return;
     const transaction = db.transaction(["posts"], "readwrite");
@@ -467,10 +497,23 @@ function deletePost(postId) {
     transaction.oncomplete = () => { loadPostsFromDB(); };
 }
 
+// ========================================================
+// 6.3 PATChED SEARCH PROCESSOR (Preserves Comments Context)
+// ========================================================
 function searchPosts() {
     const query = document.getElementById('search-input').value.toLowerCase().trim();
-    if (!query) { renderPosts(allPosts); return; }
-    const filtered = allPosts.filter(p => p.text.toLowerCase().includes(query) || p.author.toLowerCase().includes(query));
+    if (!query) { 
+        renderPosts(allPosts); 
+        return; 
+    }
+    
+    // 🧠 УХААЛАГ ХАЙЛТ: Сэтгэгдлийг хасахгүйгээр постын доторх өгөгдлийг зөв шүүнэ
+    const filtered = allPosts.filter(p => {
+        const textMatch = p.text.toLowerCase().includes(query);
+        const authorMatch = p.author.toLowerCase().includes(query);
+        const commentMatch = p.comments && p.comments.some(c => c.text.toLowerCase().includes(query));
+        return textMatch || authorMatch || commentMatch;
+    });
     renderPosts(filtered);
 }
 // ========================================================
@@ -482,6 +525,8 @@ function loadOnlineCitizens() {
     container.innerHTML = "";
 
     let systemCitizens = ["Neo_2050", "Trinity_X", "Morph_Quantum"];
+    if (!blockedUsers) blockedUsers = {};
+    if (!unseenMessagesFrom) unseenMessagesFrom = {};
     
     // 🧠 УХААЛАГ ЭРЭМБЭЛЭЛТ: Шинэ мессежтэй хүмүүс үргэлж хамгийн эхэнд гарна
     systemCitizens.sort((a, b) => {
@@ -501,9 +546,9 @@ function loadOnlineCitizens() {
         row.className = `friend-item-row ${activeChatPartner === citizen ? 'active' : ''}`;
         
         row.innerHTML = `
-            <div class="friend-user-meta-block" onclick="selectChatPartner('${citizen}')">
+            <div class="friend-user-meta-block" style="flex:1;" onclick="selectChatPartner('${citizen}')">
                 ${hasUnseen ? `<span class="unseen-mark">!!!</span>` : ""}
-                <img src="${localStorage.getItem(`avatar_${citizen}`) || `https://robohash.org{citizen}.png?set=set4`}" class="friend-avatar-mini">
+                <img src="${localStorage.getItem(`avatar_${citizen}`) || "avatar.png"}" class="friend-avatar-mini">
                 <span style="font-weight: ${hasUnseen ? 'bold' : 'normal'};">${citizen} ${isBlocked ? '(Blocked)' : ''}</span>
             </div>
             <button class="friend-block-btn ${isBlocked ? 'blocked' : ''}" onclick="toggleBlockUser(event, '${citizen}')">
@@ -516,6 +561,8 @@ function loadOnlineCitizens() {
 
 function toggleBlockUser(event, citizenName) {
     event.stopPropagation();
+    if (!blockedUsers) blockedUsers = {};
+    
     if (blockedUsers[citizenName]) {
         delete blockedUsers[citizenName];
         alert(`${citizenName} has been unblocked.`);
@@ -533,12 +580,12 @@ function toggleBlockUser(event, citizenName) {
 }
 
 function selectChatPartner(citizenName) {
-    if (blockedUsers[citizenName]) {
+    if (blockedUsers && blockedUsers[citizenName]) {
         alert("This entity is blocked. Unblock them first.");
         return;
     }
     activeChatPartner = citizenName;
-    if (unseenMessagesFrom[citizenName]) {
+    if (unseenMessagesFrom && unseenMessagesFrom[citizenName]) {
         delete unseenMessagesFrom[citizenName];
         localStorage.setItem('iknow_unseen_msgs', JSON.stringify(unseenMessagesFrom));
     }
@@ -553,13 +600,12 @@ function sendFriendMessage() {
     const text = input ? input.value.trim() : "";
     if (!text || !activeChatPartner || !db) return;
 
-    if (blockedUsers[activeChatPartner]) {
+    if (blockedUsers && blockedUsers[activeChatPartner]) {
         alert("Action Aborted: Blocked entity.");
         return;
     }
 
     const newMsg = {
-        id: "msg_" + Date.now(),
         sender: currentUser,
         receiver: activeChatPartner,
         text: text,
@@ -660,7 +706,7 @@ function loadVaultCalendarFromDB() {
         myData.forEach(item => {
             let imgHtml = "";
             if (item.image) {
-                imgHtml = `<div style="margin-top:8px;"><img src="${item.image}" style="max-width:100%; max-height:140px; border-radius:6px; border:1px dashed var(--neon-pink);"></div>`;
+                imgHtml = `<div style="margin-top:8px;"><img src="${item.image}"></div>`;
             }
             list.innerHTML += `
                 <div class="vault-item-node">
@@ -670,161 +716,4 @@ function loadVaultCalendarFromDB() {
                 </div>`;
         });
     };
-}
-function saveVaultNote() {
-    const textIn = document.getElementById('vault-note-text');
-    if (!textIn || !textIn.value.trim() || !db) return;
-
-    const item = {
-        id: "note_" + currentUser + "_" + Date.now(),
-        user: currentUser,
-        text: textIn.value.trim(),
-        timestamp: new Date().toLocaleDateString()
-    };
-    const tx = db.transaction(["vault_notes"], "readwrite");
-    tx.objectStore("vault_notes").add(item);
-    tx.oncomplete = () => {
-        textIn.value = "";
-        loadVaultNotesFromDB();
-    };
-}
-
-function loadVaultNotesFromDB() {
-    if (!db) return;
-    const request = db.transaction(["vault_notes"], "readonly").objectStore("vault_notes").getAll();
-    request.onsuccess = () => {
-        const list = document.getElementById('vault-notes-list');
-        if (!list) return;
-        list.innerHTML = "";
-        const myData = request.result.filter(item => item.user === currentUser);
-        myData.forEach(item => {
-            list.innerHTML += `
-                <div class="vault-item-node">
-                    <strong>[${item.timestamp}]:</strong> ${item.text}
-                    <button class="delete-vault-btn" onclick="deleteVaultItem('vault_notes', '${item.id}', loadVaultNotesFromDB)">✕</button>
-                </div>`;
-        });
-    };
-}
-
-function deleteVaultItem(storeName, id, callback) {
-    const tx = db.transaction([storeName], "readwrite");
-    tx.objectStore(storeName).delete(id);
-    tx.oncomplete = () => { callback(); };
-}
-
-// ========================================================
-// 9. 🎨 NEURAL FUTURE IMAGE ARTIST ENGINE (Artist AI Engine)
-// ========================================================
-function generateAiImage() {
-    const inputEl = document.getElementById('ai-bot-input');
-    const prompt = inputEl ? inputEl.value.trim() : "";
-    if (!prompt) return;
-
-    const chatContainer = document.getElementById('ai-chat-container');
-    if (!chatContainer) return;
-
-    chatContainer.innerHTML += `<div class="msg-row user"><strong>You:</strong> ${prompt}</div>`;
-    inputEl.value = "";
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-
-    const aiMsgId = "ai_msg_" + Date.now();
-    chatContainer.innerHTML += `
-        <div class="msg-row bot" id="${aiMsgId}">
-            <strong>AI Artist:</strong> Rendering your future vision timeline, please wait... 🖌️
-        </div>`;
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-
-    setTimeout(() => {
-        const aiMsgBox = document.getElementById(aiMsgId);
-        if (!aiMsgBox) return;
-
-        const cleanPrompt = encodeURIComponent(prompt + " cyberpunk futuristic cyberpunk aesthetic highly detailed digital art 8k");
-        const generatedImageUrl = `https://pollinations.ai{cleanPrompt}?width=512&height=512&seed=${Math.floor(Math.random() * 1000)}`;
-
-        aiMsgBox.innerHTML = `
-            <strong>AI Artist:</strong> Visualized your future projection for <em>"${prompt}"</em> into reality:
-            <div class="ai-generated-frame">
-                <img src="${generatedImageUrl}" alt="Future Vision Data" onerror="this.src='https://placehold.co'">
-            </div>
-        `;
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }, 2500);
-}
-
-// ========================================================
-// 10. IDENTITY UPDATE MODALS (Commit To Save Framework)
-// ========================================================
-function openProfileModal() {
-    const modal = document.getElementById('profile-modal');
-    if (modal) modal.style.display = 'flex';
-    
-    const userIn = document.getElementById('modal-username');
-    if (userIn) userIn.value = currentUser;
-
-    modalSelectedAvatarBase64 = null;
-    const previewBox = document.getElementById('modal-avatar-preview-box');
-    if (previewBox) previewBox.style.display = 'none';
-}
-
-function closeProfileModal() {
-    const modal = document.getElementById('profile-modal');
-    if (modal) modal.style.display = 'none';
-    const previewBox = document.getElementById('modal-avatar-preview-box');
-    if (previewBox) previewBox.style.display = 'none';
-    modalSelectedAvatarBase64 = null;
-}
-
-function handleAvatarFileChange(event) {
-    const file = event.target.files;
-    if (!file || file.length === 0) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        modalSelectedAvatarBase64 = e.target.result;
-        const previewBox = document.getElementById('modal-avatar-preview-box');
-        const previewImg = document.getElementById('modal-avatar-preview-img');
-        if (previewBox && previewImg) {
-            previewImg.src = e.target.result;
-            previewBox.style.display = 'block';
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-function saveProfileModal() {
-    const userIn = document.getElementById('modal-username');
-    if (!userIn) return;
-
-    const newName = userIn.value.trim();
-    if (!newName) return;
-
-    const oldName = currentUser;
-
-    if (newName !== oldName) {
-        const pass = localStorage.getItem(`user_${oldName}`);
-        if (pass) {
-            localStorage.setItem(`user_${newName}`, pass);
-            localStorage.removeItem(`user_${oldName}`);
-        }
-        const currentAv = localStorage.getItem(`avatar_${oldName}`);
-        if (currentAv) {
-            localStorage.setItem(`avatar_${newName}`, currentAv);
-            localStorage.removeItem(`avatar_${oldName}`);
-        }
-        
-        localStorage.setItem('iknow_session', newName);
-        currentUser = newName;
-    }
-
-    if (modalSelectedAvatarBase64) {
-        localStorage.setItem(`avatar_${currentUser}`, modalSelectedAvatarBase64);
-    }
-
-    closeProfileModal();
-    showMainApp();
-}
-
-function handleAvatarFile(event) {
-    handleAvatarFileChange(event);
 }
