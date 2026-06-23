@@ -3,17 +3,29 @@
 // ========================================================
 let db = null;
 let currentTheme = localStorage.getItem('iknow_theme') || 'light';
-let currentLanguage = localStorage.getItem('iknow_lang') || 'en'; // Default entry language set to English
+let currentLanguage = localStorage.getItem('iknow_lang') || 'en'; // Үндсэн хэл шууд Англи (EN)
 let currentUser = null;
 let allPosts = [];
 let blockedUsers = JSON.parse(localStorage.getItem('iknow_blocked_users')) || {};
 let unseenMessagesFrom = JSON.parse(localStorage.getItem('iknow_unseen_msgs')) || {};
 const bannedKeywords = ["crypto scam", "hack", "leak", "cheat", "скам", "хакердах"];
 
+// Media attachment memory addresses
 let postAttachedMedia = null; 
 let vaultAttachedImage = null;
 let modalSelectedAvatarBase64 = null;
 let activeChatPartnerName = null;
+
+// 🌌 RESTORED: Authentication backgrounds asset registry (2026 high-resolution streams)
+const authImages = [
+    "https://unsplash.com",
+    "https://unsplash.com",
+    "https://unsplash.com",
+    "https://unsplash.com",
+    "https://unsplash.com"
+];
+let currentAuthImgIdx = 0;
+let authCycleInterval = null;
 
 // 🌐 MASTER INTERNATIONALIZATION LANGUAGE DICTIONARY
 const translations = {
@@ -45,7 +57,7 @@ const translations = {
         ai_header: "What is your vision for the future?",
         ai_input_placeholder: "Describe the future world you see in your mind (e.g., Flying neon cars through cyber canyons)...",
         ai_btn: "Paint Future Vision",
-        modal_title: "Update Neural Avatar",
+        modal_title: "Update Neural Identity",
         modal_save: "Save Changes",
         prophecy_text: "Prophecy Verified"
     },
@@ -83,7 +95,7 @@ const translations = {
     }
 };
 
-// Application Global Orchestrator
+// Orchestrated Bootstrapper Loader
 document.addEventListener('DOMContentLoaded', () => {
     document.body.className = "theme-" + currentTheme;
     const themeBtn = document.getElementById('theme-btn');
@@ -94,10 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
     applyLanguage(currentLanguage);
 });
 // ========================================================
-// 1.2 INDEXEDDB STORAGE CAPABILITY CAPTURE
+// 1.2 INDEXEDDB STORAGE CAPABILITY ARCHITECTURE
 // ========================================================
 function initIndexedDB() {
-    // Structural connection to continuous memory pools
     const request = indexedDB.open("iKnowTomorrowDB", 5);
 
     request.onupgradeneeded = (e) => {
@@ -150,13 +161,12 @@ function changeLanguage(langCode) {
         langBtn.textContent = `🌐 Language: ${langCode.toUpperCase()}`;
     }
     
-    // Dynamically re-render components to push interface-level translations
+    // Dynamically re-render dynamic components to push translations
     loadPostsFromDB();
     loadOnlineCitizens();
 }
 
 function applyLanguage(lang) {
-    // 1. Translate elements holding text markers
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -165,7 +175,6 @@ function applyLanguage(lang) {
         }
     });
 
-    // 2. Translate text input element placeholders
     const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
     placeholders.forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
@@ -175,17 +184,44 @@ function applyLanguage(lang) {
     });
 }
 // ========================================================
-// 2. IDENTITY MANAGEMENT & AUTHENTICATION PORTALS
+// 2. 🌌 SECURE AUTH BACKGROUND CYCLER ENGINE (RESTORED)
+// ========================================================
+function startAuthBackgroundCycle() {
+    const authContainer = document.getElementById('auth-container');
+    if (!authContainer) return;
+
+    // Шинэ дата хуучин дата зөрчилдөхөөс сэргийлж, зөвхөн нэвтрэх цонх нээлттэй үед ажиллуулна
+    if (authContainer.style.display !== 'none') {
+        authContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('${authImages[currentAuthImgIdx]}')`;
+        
+        if (!authCycleInterval) {
+            authCycleInterval = setInterval(() => {
+                currentAuthImgIdx = (currentAuthImgIdx + 1) % authImages.length;
+                authContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('${authImages[currentAuthImgIdx]}')`;
+            }, 5000);
+        }
+    }
+}
+
+function stopAuthBackgroundCycle() {
+    if (authCycleInterval) {
+        clearInterval(authCycleInterval);
+        authCycleInterval = null;
+    }
+}
+
+// ========================================================
+// 2.2 IDENTITY MANAGEMENT & AUTHENTICATION PORTALS
 // ========================================================
 function showAuthPage(page) {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
     if (page === 'register') {
-        if(loginCard) loginCard.style.display = 'none';
-        if(registerCard) registerCard.style.display = 'block';
+        if (loginCard) loginCard.style.display = 'none';
+        if (registerCard) registerCard.style.display = 'block';
     } else {
-        if(loginCard) loginCard.style.display = 'block';
-        if(registerCard) registerCard.style.display = 'none';
+        if (loginCard) loginCard.style.display = 'block';
+        if (registerCard) registerCard.style.display = 'none';
     }
 }
 
@@ -209,12 +245,12 @@ function handleRegister(e) {
     const password = passField.value;
 
     if (localStorage.getItem(`user_${username}`)) {
-        alert("This neural identity already exists within the timeline!");
+        alert("This identity already exists within the timeline!");
         return;
     }
 
     localStorage.setItem(`user_${username}`, password);
-    alert("Neural Identity registered successfully! Please sign in.");
+    alert("Identity registered successfully! Please sign in.");
     showAuthPage('login');
 }
 
@@ -237,17 +273,12 @@ function handleLogin(e) {
     }
 }
 
-// 🛠 Patched: Authentic simulated Google Sign-In with dynamic input handling
 function handleGoogleAuth() {
     const googleEmail = prompt("Enter your Google Account email address to link:", "citizen@gmail.com");
-    
-    if (!googleEmail) {
-        alert("Google authentication pathway cancelled!");
-        return;
-    }
+    if (!googleEmail) return;
     
     if (!googleEmail.includes("@") || !googleEmail.includes(".")) {
-        alert("Invalid neural transmission coordinates (Email structure error)!");
+        alert("Invalid email structure coordinates!");
         return;
     }
 
@@ -261,26 +292,33 @@ function handleGoogleAuth() {
         localStorage.setItem(`user_${googleUser}`, "GOOGLE_FEDERATED_CLEARANCE_2026");
     }
     
-    alert(`Successfully authenticated via Google Gateway: ${googleEmail}`);
+    alert(`Successfully authenticated via Google: ${googleEmail}`);
     showMainApp();
 }
 
 function checkSession() {
     const activeSession = localStorage.getItem('iknow_session');
+    const mainApp = document.getElementById('main-app');
+    const authContainer = document.getElementById('auth-container');
+
     if (activeSession) {
         currentUser = activeSession;
+        stopAuthBackgroundCycle();
+        if (mainApp) mainApp.style.display = 'block';
+        if (authContainer) authContainer.style.display = 'none';
         showMainApp();
     } else {
-        const mainApp = document.getElementById('main-app');
-        const authContainer = document.getElementById('auth-container');
         if (mainApp) mainApp.style.display = 'none';
         if (authContainer) authContainer.style.display = 'flex';
+        startAuthBackgroundCycle();
     }
 }
 
 function showMainApp() {
+    stopAuthBackgroundCycle();
     const mainApp = document.getElementById('main-app');
     const authContainer = document.getElementById('auth-container');
+    
     if (mainApp) mainApp.style.display = 'block';
     if (authContainer) authContainer.style.display = 'none';
 
@@ -296,7 +334,6 @@ function showMainApp() {
     loadPostsFromDB();
     loadOnlineCitizens();
     loadVaultCalendarFromDB();
-    switchTab('feed');
 }
 
 function handleLogout() {
@@ -305,7 +342,7 @@ function handleLogout() {
     checkSession();
 }
 // ========================================================
-// 4. INTERACTIVE NAVIGATION FRAMEWORK & DYNAMIC THEMES
+// 4. INTERACTIVE UTILITIES & NAVIGATION ENGINE
 // ========================================================
 function toggleTheme() {
     const themes = ['light', 'dark', 'matrix', 'cyber'];
@@ -334,7 +371,6 @@ function switchTab(tabId) {
         }
     });
     
-    // Trigger localized sync on target interfaces
     if (tabId === 'chats') {
         loadOnlineCitizens();
     } else if (tabId === 'vault') {
@@ -342,8 +378,7 @@ function switchTab(tabId) {
     }
 }
 
-// 🌐 Dynamic Core State Reset Mechanism
-// Safely flushes view filters, search terms, and resets focus to the top feed
+// 🌐 Safely resets search terms and focuses view back to the main timeline feed
 function resetAppToHome() {
     const searchField = document.getElementById('search-input');
     const inputField = document.getElementById('future-input');
@@ -363,7 +398,8 @@ function handleFileSelect(event, type) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     
-    const targetFile = files[0]; // 🛠 Real Array index patch - guarantees file reading stability
+    // 🛠 Fixed: Isolated file variable to prevent global array scoping collision issues
+    const currentUploadFile = files[0];
     const reader = new FileReader();
     
     reader.onload = (e) => {
@@ -387,7 +423,7 @@ function handleFileSelect(event, type) {
         }
     };
     
-    reader.readAsDataURL(targetFile);
+    reader.readAsDataURL(currentUploadFile);
 }
 
 function clearAttachedMedia() {
@@ -519,7 +555,6 @@ function renderPosts(postsToRender) {
                 const commentLiked = comment.votes && comment.votes[currentUser] ? 'liked' : '';
                 const commentLikesCount = comment.voteCount || 0;
                 
-                // Pure humble setup: Text-free layout for comments, metadata loaded via HTML titles natively
                 commentsHtml += `
                     <div class="comment-node">
                         <strong>${comment.author}:</strong> <span class="comment-main-text">${comment.text}</span>
@@ -538,8 +573,7 @@ function renderPosts(postsToRender) {
         const postCard = document.createElement('div');
         postCard.className = 'post-card';
         
-        // Pure humble setup: Removes text string 'Prophecy Verified' from button to keep dark/matrix design elegant.
-        // Hover text reveals validation credentials via title parameter smoothly.
+        // Pure humble setup: Text-free layout for buttons, hover tooltip contains verification metadata
         postCard.innerHTML = `
             <div class="post-header-row">
                 <div class="post-user-info">
@@ -569,7 +603,7 @@ function renderPosts(postsToRender) {
         container.appendChild(postCard);
     });
     
-    applyLanguage(currentLanguage); // Runs translations check for dynamically injected tokens
+    applyLanguage(currentLanguage); // Localized sync update cascade
 }
 
 function votePost(postId) {
@@ -599,7 +633,6 @@ function votePost(postId) {
 // ========================================================
 // 6.3 INTERACTIVE SUBTLE COMMENTS, TIMELINE DELETION & SEARCH
 // ========================================================
-// Handles text submission intercepts across interactive view nodes
 document.addEventListener('keydown', (e) => {
     if (e.target && e.target.id === 'future-input' && e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -671,7 +704,7 @@ function voteComment(postId, commentIdx) {
 }
 
 function deletePost(postId) {
-    if (!confirm("Are you certain you wish to eliminate this vision from the public timeline?")) return;
+    if (!confirm("Are you certain you wish to eliminate this vision?")) return;
     
     const transaction = db.transaction(["posts"], "readwrite");
     const store = transaction.objectStore("posts");
@@ -713,7 +746,6 @@ function loadOnlineCitizens() {
     if (!container) return;
     container.innerHTML = "";
 
-    // Simulated network nodes list excluding current authenticated user
     const networkNodes = ["Alpha_Predictor", "Cyber_Seer", "Matrix_Dreamer", "Nexus_Citizen", "Sainaa34_G"];
     
     networkNodes.forEach(citizen => {
@@ -742,7 +774,7 @@ function loadOnlineCitizens() {
 }
 
 function toggleBlockUser(event, citizenName) {
-    event.stopPropagation(); // Prevents selection firing triggers accidentally
+    event.stopPropagation();
     
     if (blockedUsers[citizenName]) {
         delete blockedUsers[citizenName];
@@ -811,7 +843,6 @@ function loadFriendMessages() {
         const msgs = e.target.result || [];
         
         msgs.forEach(m => {
-            // Filter stream matrix to matching dialogue coordinates exclusively
             const matchA = (m.sender === currentUser && m.receiver === activeChatPartnerName);
             const matchB = (m.sender === activeChatPartnerName && m.receiver === currentUser);
             
@@ -823,7 +854,7 @@ function loadFriendMessages() {
             }
         });
         
-        stream.scrollTop = stream.scrollHeight; // Autoscroll focus to active bottom line
+        stream.scrollTop = stream.scrollHeight;
     };
 }
 // ========================================================
@@ -833,7 +864,7 @@ function handleVaultImageSelect(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const file = files[0];
+    const vaultTargetFile = files[0];
     const reader = new FileReader();
     reader.onload = (e) => {
         vaultAttachedImage = e.target.result;
@@ -843,7 +874,7 @@ function handleVaultImageSelect(event) {
         if (previewBox) previewBox.style.display = 'block';
         if (imgTag) imgTag.src = e.target.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(vaultTargetFile);
 }
 
 function clearVaultImageSelect() {
@@ -898,8 +929,6 @@ function loadVaultCalendarFromDB() {
     
     store.getAll().onsuccess = (e) => {
         const records = e.target.result || [];
-        
-        // Filter vault logs to show only those belonging to the logged-in user
         const userRecords = records.filter(r => r.user === currentUser);
         userRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -912,12 +941,12 @@ function loadVaultCalendarFromDB() {
             const node = document.createElement('div');
             node.className = 'vault-item-node';
             
-            let imageHtml = item.image ? `<div class="post-media-content" style="margin-top:10px;"><img src="${item.image}" style="max-height:200px;"></div>` : "";
+            let imageHtml = item.image ? `<div><img src="${item.image}"></div>` : "";
             
             node.innerHTML = `
-                <div style="display:flex; justify-content:between; align-items:center; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <strong style="color:var(--accent-color);">${item.date}</strong>
-                    <button class="post-more-btn" onclick="deleteVaultItem('${item.id}')" style="margin-left:auto;">✕</button>
+                    <button class="post-more-btn" onclick="deleteVaultItem('${item.id}')">✕</button>
                 </div>
                 <div style="font-size:0.95rem; white-space:pre-wrap;">${item.text}</div>
                 ${imageHtml}
@@ -952,17 +981,19 @@ function generateAIImage() {
     
     const aiResultContainer = document.getElementById('ai-image-result');
     if (aiResultContainer) {
-        aiResultContainer.innerHTML = `<div style="color:var(--text-muted); margin-bottom:10px;">Neural network painting: "${promptText}"</div>
-                                       <img src="https://picsum.photos{Date.now()}" style="border-radius:12px; border: 2px solid var(--border-color); max-width:100%; box-shadow:var(--shadow-md);">`;
+        aiResultContainer.innerHTML = `
+            <div style="color:var(--text-muted); margin-bottom:10px;">Neural network painting: "${promptText}"</div>
+            <img src="https://picsum.photos{Date.now()}" style="border-radius:12px; border: 2px solid var(--border-color); max-width:100%; box-shadow:var(--shadow-md);">`;
     }
 }
 
 // ========================================================
-// 10. 👤 PROFILE AVATAR MODAL MANAGEMENT (FIXED IDENTITY CRASH)
+// 10. 👤 PROFILE IDENTITY UPDATER MODAL (🛠 COMBINED AVATAR & USERNAME PATCH)
 // ========================================================
 function triggerAvatarModal() {
     const modal = document.getElementById('avatar-modal');
     const previewImg = document.getElementById('modal-avatar-preview-tag');
+    const usernameInput = document.getElementById('modal-username-input');
     
     if (!modal) return;
     
@@ -970,6 +1001,8 @@ function triggerAvatarModal() {
     const savedAvatar = localStorage.getItem(`avatar_${currentUser}`);
     
     if (previewImg) previewImg.src = savedAvatar || "avatar.png";
+    if (usernameInput) usernameInput.value = currentUser; // Pulls active profile name automatically
+    
     modal.style.display = 'flex';
 }
 
@@ -982,30 +1015,55 @@ function handleModalAvatarSelect(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const file = files[0]; // 🛠 Safely extracts file array index elements directly
+    const modalTargetFile = files[0]; // 🛠 Solves global scope collision leaks 
     const reader = new FileReader();
     reader.onload = (e) => {
         modalSelectedAvatarBase64 = e.target.result;
         const previewImg = document.getElementById('modal-avatar-preview-tag');
         if (previewImg) previewImg.src = e.target.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(modalTargetFile);
 }
 
 function saveModalAvatar() {
-    // If no new image was selected, just dismiss the modal cleanly without overwriting data
-    if (!modalSelectedAvatarBase64) {
-        closeAvatarModal();
+    const usernameInput = document.getElementById('modal-username-input');
+    const newUsername = usernameInput ? usernameInput.value.trim() : "";
+    
+    if (!newUsername) {
+        alert("Username matrix cannot be blank!");
         return;
     }
-    
-    localStorage.setItem(`avatar_${currentUser}`, modalSelectedAvatarBase64);
-    
-    // Dynamically patch the main header session avatar view node right away
+
+    const oldUserKey = currentUser;
+
+    // 🛠 1. Username Rewrite Node Migration Handler
+    if (newUsername !== oldUserKey) {
+        const passwordClearance = localStorage.getItem(`user_${oldUserKey}`);
+        const avatarAssetClearance = localStorage.getItem(`avatar_${oldUserKey}`);
+        
+        // Write new ledger address blocks
+        localStorage.setItem(`user_${newUsername}`, passwordClearance || "2026_DEFAULT_MATRIX");
+        localStorage.setItem(`avatar_${newUsername}`, modalSelectedAvatarBase64 || avatarAssetClearance || "avatar.png");
+        
+        // Wipe deprecated legacy identities safely
+        localStorage.removeItem(`user_${oldUserKey}`);
+        localStorage.removeItem(`avatar_${oldUserKey}`);
+        
+        currentUser = newUsername;
+        localStorage.setItem('iknow_session', newUsername);
+    } else if (modalSelectedAvatarBase64) {
+        // If username stays identical, update target file raw metadata bytes only
+        localStorage.setItem(`avatar_${currentUser}`, modalSelectedAvatarBase64);
+    }
+
+    // Update global visual node assets in real time
     const headerAvatar = document.getElementById('profile-avatar');
-    if (headerAvatar) headerAvatar.src = modalSelectedAvatarBase64;
+    if (headerAvatar) headerAvatar.src = localStorage.getItem(`avatar_${currentUser}`) || "avatar.png";
     
-    alert("Neural identity profile avatar updated successfully!");
+    const profileNameDisplay = document.getElementById('profile-name');
+    if (profileNameDisplay) profileNameDisplay.textContent = currentUser;
+    
+    alert("Identity network records synchronized successfully!");
     closeAvatarModal();
-    loadPostsFromDB(); // Re-renders timeline stream posts to map updated avatar icons everywhere
+    loadPostsFromDB(); // Mass cascade data stream sync update
 }
