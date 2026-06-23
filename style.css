@@ -92,14 +92,13 @@ body.theme-dark {
     justify-content: center;
     align-items: center;
     background-color: #000;
-    /* Найдвартай онлайн зургийн урсгал - Хав хар болохоос бүрэн хамгаалсан */
     background-image: url('https://unsplash.com'), 
                       url('https://unsplash.com'), 
                       url('https://unsplash.com'), 
                       url('https://unsplash.com');
     background-position: left top, right top, left bottom, right bottom;
-    background-repeat: no-repeat;
-    background-size: 50% 50%;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 50% 50%, 50% 50%, 50% 50%, 50% 50%;
 }
 
 .auth-card {
