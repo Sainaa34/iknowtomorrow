@@ -1,23 +1,25 @@
 /* ========================================================
-   1. GLOBAL VARIABLES & LIGHT/DARK/MATRIX/CYBER THEMES
+   1. GLOBAL ARCHITECTURE & MODERN COLOR CHANNELS (2026)
    ======================================================== */
 :root {
-    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Theme */
 body.theme-light {
-    --bg-main: #f4f6f9;
+    --bg-main: #f8fafc;
     --bg-card: #ffffff;
-    --text-main: #2d3748;
-    --text-muted: #718096;
-    --accent-color: #3182ce;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --accent-color: #3b82f6;
     --border-color: #e2e8f0;
-    --hover-color: #ebf8ff;
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
+    --hover-color: #f1f5f9;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
 }
 
+/* Dark Theme */
 body.theme-dark {
     --bg-main: #0f172a;
     --bg-card: #1e293b;
@@ -27,9 +29,10 @@ body.theme-dark {
     --border-color: #334155;
     --hover-color: #1e293b;
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+    --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.3);
 }
 
+/* Matrix Theme */
 body.theme-matrix {
     --bg-main: #000000;
     --bg-card: #050d05;
@@ -38,24 +41,25 @@ body.theme-matrix {
     --accent-color: #00ff41;
     --border-color: #003b00;
     --hover-color: #0d1f0d;
-    --shadow-sm: 0 0 5px rgba(0, 255, 65, 0.2);
-    --shadow-md: 0 0 15px rgba(0, 255, 65, 0.4);
+    --shadow-sm: 0 0 4px rgba(0, 255, 65, 0.2);
+    --shadow-md: 0 0 12px rgba(0, 255, 65, 0.3);
 }
 
+/* Cyberpunk Theme */
 body.theme-cyber {
-    --bg-main: #0d0116;
-    --bg-card: #1a022d;
+    --bg-main: #0c0014;
+    --bg-card: #190129;
     --text-main: #00ffff;
     --text-muted: #ff00ff;
     --accent-color: #ff00ff;
-    --border-color: #3d0066;
-    --hover-color: #2b0047;
-    --shadow-sm: 0 0 8px rgba(0, 255, 255, 0.3);
-    --shadow-md: 0 0 20px rgba(255, 0, 255, 0.5);
+    --border-color: #3a005c;
+    --hover-color: #27003d;
+    --shadow-sm: 0 0 6px rgba(0, 255, 255, 0.2);
+    --shadow-md: 0 0 18px rgba(255, 0, 255, 0.4);
 }
 
 /* ========================================================
-   2. CORE RESET & BASE STYLES
+   2. CORE BASE RESET & CALENDAR VISIBILITY PATCH
    ======================================================== */
 * {
     margin: 0;
@@ -72,7 +76,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Fix calendar icon color visibility for dark/matrix/cyber themes */
+/* 🛠 Patched: Makes HTML5 calendar indicator perfectly visible on dark backgrounds */
 body:not(.theme-light) input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1) brightness(100%);
     cursor: pointer;
@@ -80,7 +84,6 @@ body:not(.theme-light) input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"] {
     color-scheme: dark;
 }
-
 /* ========================================================
    3. SECURE IDENTITY PORTAL (AUTH STYLES)
    ======================================================== */
@@ -102,11 +105,11 @@ input[type="date"] {
     max-width: 420px;
     box-shadow: var(--shadow-md);
     text-align: center;
-    animation: fadeIn 0.5s ease;
+    animation: fadeIn 0.4s ease-out;
 }
 
 .auth-card h2 {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     margin-bottom: 24px;
     font-weight: 600;
     letter-spacing: -0.5px;
@@ -118,7 +121,7 @@ input[type="date"] {
     padding: 14px;
     margin-bottom: 16px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 10px;
     background-color: var(--bg-main);
     color: var(--text-main);
     font-size: 1rem;
@@ -128,8 +131,11 @@ input[type="date"] {
 
 .auth-card input:focus {
     border-color: var(--accent-color);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
+
+body.theme-matrix .auth-card input:focus { box-shadow: 0 0 8px var(--accent-color); }
+body.theme-cyber .auth-card input:focus { box-shadow: 0 0 8px var(--accent-color); }
 
 .password-wrapper {
     position: relative;
@@ -138,7 +144,7 @@ input[type="date"] {
 
 .password-wrapper button {
     position: absolute;
-    right: 12px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -155,7 +161,7 @@ input[type="date"] {
     background-color: var(--accent-color);
     color: #ffffff;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -170,7 +176,7 @@ body.theme-cyber .neon-btn-primary {
 }
 
 .neon-btn-primary:hover {
-    opacity: 0.9;
+    opacity: 0.92;
     transform: translateY(-1px);
 }
 
@@ -180,8 +186,8 @@ body.theme-cyber .neon-btn-primary {
     background-color: transparent;
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
     cursor: pointer;
     margin-top: 12px;
     display: flex;
@@ -211,12 +217,8 @@ body.theme-cyber .neon-btn-primary {
     text-decoration: underline;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 /* ========================================================
-   4. CORE HEADER ARCHITECTURE & REAL-TIME INTERACTION
+   4. CORE HEADER INTERFACE ARCHITECTURE
    ======================================================== */
 .main-header {
     height: 70px;
@@ -234,9 +236,9 @@ body.theme-cyber .neon-btn-primary {
 }
 
 .logo-neon {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    letter-spacing: -1px;
+    letter-spacing: -0.75px;
     color: var(--accent-color);
     text-transform: uppercase;
 }
@@ -265,10 +267,10 @@ body.theme-cyber .neon-btn-primary {
     border-color: var(--accent-color);
 }
 
-/* Patched Dynamic Language Gateway */
+/* Real-Time Language Dropdown Engine Box */
 .lang-dropdown-box {
     position: absolute;
-    top: 55px;
+    top: 52px;
     left: 0;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -276,8 +278,8 @@ body.theme-cyber .neon-btn-primary {
     box-shadow: var(--shadow-md);
     width: 140px;
     overflow: hidden;
-    z-index: 105;
-    animation: fadeIn 0.2s ease-out;
+    z-index: 110;
+    animation: fadeIn 0.15s ease-out;
 }
 
 .lang-dropdown-box div {
@@ -293,36 +295,41 @@ body.theme-cyber .neon-btn-primary {
     color: var(--accent-color);
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ========================================================
+   5. USER SESSION CONTROL NODE & BASE LAYOUT CHANNELS
+   ======================================================== */
 .user-session-node {
     display: flex;
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 6px 14px;
+    border-radius: 24px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
     transition: var(--transition-smooth);
 }
 
 .user-session-node:hover {
     background-color: var(--hover-color);
+    border-color: var(--accent-color);
 }
 
 .header-avatar {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--border-color);
-    transition: var(--transition-smooth);
-}
-
-.user-session-node:hover .header-avatar {
-    border-color: var(--accent-color);
+    border: 1.5px solid var(--border-color);
 }
 
 #profile-name {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-main);
 }
 
@@ -350,9 +357,7 @@ body:not(.theme-light) .disconnect-btn:hover {
     border-color: #742a2a;
 }
 
-/* ========================================================
-   5. MASTER GRID LAYOUT & GRID CHANNELS
-   ======================================================== */
+/* Master Layout Framework Construction */
 .app-layout-grid {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -362,13 +367,14 @@ body:not(.theme-light) .disconnect-btn:hover {
 
 .content-viewport {
     padding: 32px;
-    max-width: 900px;
+    max-width: 960px;
     width: 100%;
     margin: 0 auto;
     overflow-y: auto;
 }
+
 /* ========================================================
-   6. LEFT SIDEBAR NAVIGATION MATRIX
+   6. LEFT SIDEBAR NAVIGATION & THEME SWITCH COUPLING
    ======================================================== */
 .sidebar-left {
     background-color: var(--bg-card);
@@ -387,7 +393,7 @@ body:not(.theme-light) .disconnect-btn:hover {
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     width: 100%;
 }
 
@@ -396,12 +402,12 @@ body:not(.theme-light) .disconnect-btn:hover {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 16px;
+    padding: 12px 16px;
     background: transparent;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     color: var(--text-main);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
     text-align: left;
@@ -420,15 +426,13 @@ body:not(.theme-light) .disconnect-btn:hover {
 }
 
 .nav-icon {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     display: inline-block;
-    width: 24px;
+    width: 20px;
     text-align: center;
 }
 
-/* ========================================================
-   7. THEME SWITCHER - FIXED AT THE BOTTOM LEFT CORNER
-   ======================================================== */
+/* 🎨 Theme Switcher Layout - Anchored below the Artist AI item at sidebar bottom */
 .sidebar-footer-theme {
     width: 100%;
     padding-top: 16px;
@@ -441,7 +445,7 @@ body:not(.theme-light) .disconnect-btn:hover {
     background-color: var(--bg-main);
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -452,15 +456,18 @@ body:not(.theme-light) .disconnect-btn:hover {
 .sidebar-theme-btn:hover {
     background-color: var(--hover-color);
     border-color: var(--accent-color);
-    box-shadow: var(--shadow-sm);
 }
 
-/* Base style for general tab visibility toggle */
 .tab-content-panel {
-    animation: fadeIn 0.3s ease-in-out;
+    animation: tabFadeIn 0.25s ease-out-into;
+}
+
+@keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 /* ========================================================
-   8. FUTURE TIMELINE FEED & MODERATED LIKE INTERACTION
+   7. FUTURE TIMELINE FEED COMPOSER ARCHITECTURE
    ======================================================== */
 .feed-composer-card {
     background-color: var(--bg-card);
@@ -473,7 +480,7 @@ body:not(.theme-light) .disconnect-btn:hover {
 
 .neural-textarea-tag {
     width: 100%;
-    min-height: 100px;
+    min-height: 105px;
     background-color: var(--bg-main);
     color: var(--text-main);
     border: 1px solid var(--border-color);
@@ -503,7 +510,7 @@ body:not(.theme-light) .disconnect-btn:hover {
 }
 
 .attach-label {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-muted);
     cursor: pointer;
@@ -511,7 +518,7 @@ body:not(.theme-light) .disconnect-btn:hover {
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: var(--transition-smooth);
 }
 
@@ -538,6 +545,7 @@ body:not(.theme-light) .disconnect-btn:hover {
 body.theme-matrix .publish-btn,
 body.theme-cyber .publish-btn {
     color: #000000;
+    font-weight: 700;
 }
 
 .publish-btn:hover {
@@ -564,7 +572,7 @@ body.theme-cyber .publish-btn {
 }
 
 /* ========================================================
-   9. POST NODES & SUBTLE HOVER CRYPTIC BUTTONS
+   8. TIMELINE POST CARDS & SUBTLE HOVER CRYPTIC SYSTEM
    ======================================================== */
 .post-card {
     background-color: var(--bg-card);
@@ -589,15 +597,15 @@ body.theme-cyber .publish-btn {
 }
 
 .post-avatar-mini {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--border-color);
 }
 
 .post-meta-text h4 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 
@@ -612,19 +620,20 @@ body.theme-cyber .publish-btn {
     gap: 10px;
 }
 
-/* Patched: Pure Subtle Theme-safe Like interaction button */
+/* 🔮 Patched: Humble Theme-Safe Like Button Setup */
+/* Purely minimalist, emoji-only; hover text handled natively via 'title' attribute */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    font-size: 1.05rem;
-    padding: 8px 14px;
+    font-size: 1.1rem;
+    padding: 6px 14px;
     border-radius: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     transition: var(--transition-smooth);
 }
 
@@ -638,7 +647,6 @@ body.theme-cyber .publish-btn {
     background-color: var(--hover-color);
     border-color: var(--accent-color);
     color: var(--accent-color);
-    font-weight: 600;
 }
 
 .post-more-btn {
@@ -675,69 +683,413 @@ body.theme-cyber .publish-btn {
 .post-media-content img,
 .post-media-content video {
     width: 100%;
-    max-height: 450px;
+    max-height: 440px;
     display: block;
     object-fit: contain;
 }
 /* ========================================================
-   10. COMMENTS STREAM SYSTEM
+   9. COMMENTS STREAM SYSTEM
    ======================================================== */
-.comments-section { margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px; }
-.comment-node { background-color: var(--bg-main); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; border: 1px solid var(--border-color); }
-.comment-meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.8rem; }
-.comment-time { color: var(--text-muted); }
-.comment-vote-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 14px; cursor: pointer; transition: var(--transition-smooth); }
-.comment-vote-btn:hover, .comment-vote-btn.liked { background-color: var(--hover-color); border-color: var(--accent-color); color: var(--accent-color); }
-.comment-input-row { display: flex; gap: 10px; margin-top: 12px; }
-.neural-comment-input-tag { flex: 1; padding: 10px 14px; background-color: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; font-size: 0.9rem; outline: none; transition: var(--transition-smooth); }
-.neural-comment-input-tag:focus { border-color: var(--accent-color); }
-.comment-add-btn { background-color: var(--bg-main); border: 1px solid var(--border-color); color: var(--accent-color); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
-.comment-add-btn:hover { background-color: var(--accent-color); color: #ffffff; }
+.comments-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 16px;
+}
+
+.comment-node {
+    background-color: var(--bg-main);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.comment-main-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.comment-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 0.8rem;
+}
+
+.comment-time {
+    color: var(--text-muted);
+}
+
+/* Humble Comment Like Button Setup */
+.comment-vote-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+}
+
+.comment-vote-btn:hover, .comment-vote-btn.liked {
+    background-color: var(--hover-color);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.comment-input-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.neural-comment-input-tag {
+    flex: 1;
+    padding: 10px 14px;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.neural-comment-input-tag:focus {
+    border-color: var(--accent-color);
+}
+
+.comment-add-btn {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--accent-color);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.comment-add-btn:hover {
+    background-color: var(--accent-color);
+    color: #ffffff;
+}
 
 /* ========================================================
-   11. REAL-TIME CITIZENS MESSENGER
+   10. REAL-TIME CITIZENS MESSENGER
    ======================================================== */
-.chat-interface-grid { display: grid; grid-template-columns: 240px 1fr; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; height: 600px; overflow: hidden; box-shadow: var(--shadow-sm); }
-.chat-citizens-sidebar { border-right: 1px solid var(--border-color); background-color: var(--bg-main); padding: 16px; overflow-y: auto; }
-.chat-citizens-sidebar h3 { font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.5px; }
-.friend-item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-radius: 10px; cursor: pointer; margin-bottom: 6px; transition: var(--transition-smooth); }
-.friend-item-row:hover, .friend-item-row.active { background-color: var(--bg-card); }
-.friend-user-meta-block { display: flex; align-items: center; gap: 8px; }
-.friend-avatar-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-.unseen-mark { background-color: #e53e3e; color: #ffffff; font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; }
-.friend-block-btn { font-size: 0.75rem; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
-.friend-block-btn:hover { color: #e53e3e; border-color: #f5c6cb; }
-.chat-window-viewport { display: flex; flex-direction: column; height: 100%; }
-.chat-window-header { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-.chat-messages-stream { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-main); }
-.msg-row { max-width: 70%; padding: 10px 14px; border-radius: 14px; font-size: 0.95rem; line-height: 1.4; }
-.msg-row.user { align-self: flex-end; background-color: var(--accent-color); color: #ffffff; }
-body.theme-matrix .msg-row.user, body.theme-cyber .msg-row.user { color: #000000; font-weight: 600; }
-.msg-row.friend-msg { align-self: flex-start; background-color: var(--bg-card); border: 1px solid var(--border-color); }
-.chat-input-footer { padding: 16px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; }
-.chat-input-footer input { flex: 1; padding: 12px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main); border-radius: 8px; outline: none; }
-.chat-send-btn { background-color: var(--accent-color); color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; }
+.chat-interface-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    height: 600px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.chat-citizens-sidebar {
+    border-right: 1px solid var(--border-color);
+    background-color: var(--bg-main);
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.chat-citizens-sidebar h3 {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+}
+
+.friend-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    transition: var(--transition-smooth);
+}
+
+.friend-item-row:hover, .friend-item-row.active {
+    background-color: var(--bg-card);
+}
+
+.friend-user-meta-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.friend-avatar-mini {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.unseen-mark {
+    background-color: #e53e3e;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.friend-block-btn {
+    font-size: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.friend-block-btn:hover {
+    color: #e53e3e;
+    border-color: #f5c6cb;
+}
+
+.chat-window-viewport {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chat-window-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+.chat-messages-stream {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--bg-main);
+}
+
+.msg-row {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.msg-row.user {
+    align-self: flex-end;
+    background-color: var(--accent-color);
+    color: #ffffff;
+}
+
+body.theme-matrix .msg-row.user, body.theme-cyber .msg-row.user {
+    color: #000000;
+    font-weight: 600;
+}
+
+.msg-row.friend-msg {
+    align-self: flex-start;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+.chat-input-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+}
+
+.chat-input-footer input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    border-radius: 8px;
+    outline: none;
+}
+
+.chat-send-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
 
 /* ========================================================
-   12. PRIVATE CRYPTO VAULT & 13. PATCHED ARTIST AI
+   11. PRIVATE CRYPTO VAULT & 12. PATCHED ARTIST AI
    ======================================================== */
-.vault-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.vault-form-card, .ai-generator-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); height: fit-content; }
-.vault-form-card input[type="date"], .vault-form-card textarea { width: 100%; padding: 10px; margin-bottom: 14px; background-color: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; outline: none; resize: none; }
-.vault-save-btn { background-color: var(--text-main); color: var(--bg-main); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-.vault-item-node { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 12px; position: relative; }
-.ai-prompt-textarea-tag { width: 100%; height: 140px; background-color: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 20px; resize: vertical; }
-.ai-generate-btn { background-color: var(--accent-color); color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; }
-body.theme-matrix .ai-generate-btn, body.theme-cyber .ai-generate-btn { color: #000000; }
+.vault-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.vault-form-card, .ai-generator-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+}
+
+.vault-form-card input[type="date"], .vault-form-card textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 14px;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    outline: none;
+    resize: none;
+}
+
+.vault-save-btn {
+    background-color: var(--text-main);
+    color: var(--bg-main);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.vault-item-node {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+/* Patched Big Textarea Layout for AI Vision prompts */
+.ai-prompt-textarea-tag {
+    width: 100%;
+    height: 140px;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    resize: vertical;
+    outline: none;
+}
+
+.ai-prompt-textarea-tag:focus {
+    border-color: var(--accent-color);
+}
+
+.ai-generate-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+body.theme-matrix .ai-generate-btn, body.theme-cyber .ai-generate-btn {
+    color: #000000;
+}
+
+.ai-output-container {
+    margin-top: 20px;
+    text-align: center;
+}
 
 /* ========================================================
-   14. PROFILE UPDATER OVERLAYS (MODALS)
+   13. PROFILE UPDATER OVERLAYS (MODALS)
    ======================================================== */
-.modal-backdrop-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 500; }
-.modal-content-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; text-align: center; }
-.avatar-current-preview img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 20px 0; border: 3px solid var(--accent-color); }
-.modal-actions-row { display: flex; flex-direction: column; gap: 10px; }
-.modal-file-btn, .modal-save-btn, .modal-close-btn { width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; }
-.modal-file-btn { background-color: var(--bg-main); border: 1px solid var(--border-color); }
-.modal-save-btn { background-color: var(--accent-color); color: white; border: none; }
-.modal-close-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); }
+.modal-backdrop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+}
+
+.modal-content-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.avatar-current-preview img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 20px 0;
+    border: 3px solid var(--accent-color);
+}
+
+.modal-actions-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-file-btn, .modal-save-btn, .modal-close-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
+}
+
+.modal-file-btn {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    display: inline-block;
+}
+
+.modal-file-btn input[type="file"] {
+    display: none;
+}
+
+.modal-save-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
