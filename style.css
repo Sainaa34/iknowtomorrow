@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GLOBAL RESET & MULTI-THEME CONFIGS
+   1. GLOBAL RESET & CORE ANTI-SELECTION FIX
    ========================================== */
 :root {
     --bg-cyber: #f0f2f5;
@@ -17,6 +17,19 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    /* 🖱️ ХУЛГАНААР ГҮЙЛГЭХЭД ТЕКСТ ЦЭНХЭРТЭЖ ИДЭВХЖИХИЙГ 100% ДАРСАН ТОХИРГОО */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Оролтын талбарууд дээр хэрэглэгч текстээ чөлөөтэй бичих боломжтой хэвээр үлдээв */
+input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 body {
@@ -71,7 +84,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   2. SECURE AUTHENTICATION SCREEN DESIGN
+   2. AUTHENTICATION (LOGIN / REGISTER) CARD
    ========================================== */
 .auth-screen {
     width: 100vw;
@@ -196,7 +209,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   3. MAIN CONTROL HEADER ALIGNMENT
+   3. MAIN HEADER & MANAGEMENT NAVIGATION
    ========================================== */
 .main-header {
     background: var(--card-cyber);
@@ -280,7 +293,7 @@ body.theme-dark {
 }
 
 /* ==========================================
-   4. APPLICATION MAIN LAYOUT CONTAINER
+   4. APPLICATION GENERAL CONTAINER GRID
    ========================================== */
 .app-layout-container {
     display: flex;
@@ -328,7 +341,7 @@ body.theme-dark {
     overflow-y: auto;
 }
 /* ==========================================
-   5. TIMELINE FEED & FIXED CRYSTAL VOTE CARD
+   5. TIMELINE FEED, MEDIA MATRIX & CRYStAL
    ========================================== */
 .search-wrapper-box {
     margin-bottom: 25px;
@@ -418,7 +431,7 @@ body.theme-dark {
     border: 1px solid var(--border-cyber);
 }
 
-/* 🔮 ХУУЧИН ДУРТАЙ КРИСТАЛ БӨМБӨЛӨГ БАРУУН ДЭЭД БУЛАНД */
+/* 🔮 КРИСТАЛ БӨМБӨЛӨГ БУЦАЖ ИРСЭН */
 .vote-btn-neon {
     background: transparent;
     border: 1px solid var(--neon-pink);
@@ -428,7 +441,6 @@ body.theme-dark {
     cursor: pointer;
     font-family: 'Orbitron', sans-serif;
     font-weight: bold;
-    transition: all 0.2s ease;
 }
 
 .vote-btn-neon.liked {
@@ -449,20 +461,20 @@ body.theme-dark {
     margin-bottom: 20px;
     border-radius: 8px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.04);
     max-width: 100%;
 }
 
 .post-media-content img, .post-media-content video, .preview-asset {
     width: 100%;
-    max-width: 100%; /* Картын өргөнөөс хэзээ ч хэтрэхгүй */
-    max-height: 450px; /* Өндрийг ухаалгаар хязгаарлав */
+    max-width: 100%;
+    max-height: 450px;
     object-fit: contain;
     display: block;
     margin: 0 auto;
 }
 
-/* Comments Box Inside Card */
+/* Comments section input */
 .comment-input-row {
     display: flex;
     gap: 12px;
@@ -492,125 +504,187 @@ body.theme-dark {
 }
 
 /* ==========================================
-   6. 🔒 PRIVATE VAULT AREA (2 Карт Дэлгэц Дүүрэн)
+   6. MESSENGER SYSTEM (Жагсаалт баруун талдаа)
    ========================================== */
-.vault-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 том картыг тэнцүү өргөн хуваана */
-    gap: 30px;
+.friends-layout {
+    display: flex;
+    gap: 25px;
+    height: 100%;
     width: 100%;
 }
 
-@media (max-width: 900px) {
-    .vault-grid { grid-template-columns: 1fr; } /* Жижиг дэлгэц дээр доошоо цуврах */
+/* Мессеж хардаг хэсэг ухаалгаар хязгаарлагдсан */
+.friends-chat-panel {
+    flex: 1;
+    background: var(--card-cyber);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
-.vault-card {
+/* Мессеж бичих талбар маш өргөн, том, тод харагдана */
+.chat-input-row-large {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.chat-input-row-large input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.03);
+    border: 2px solid var(--neon-blue);
+    border-radius: 8px;
+    color: var(--text-white);
+    padding: 16px 20px;
+    outline: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.chat-send-btn-large {
+    background: var(--neon-blue);
+    border: 1px solid var(--neon-blue);
+    color: #fff;
+    padding: 0 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.chat-send-btn-large:hover {
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+/* Хүмүүсийн жагсаалт баруун талын нарийн самбарт */
+.friends-list-panel {
+    width: 280px;
+    min-width: 280px;
+    background: var(--card-cyber);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.friend-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    background: rgba(0,0,0,0.02);
+    border: 1px solid transparent;
+}
+
+.friend-item-row:hover, .friend-item-row.active {
+    background: rgba(0, 85, 255, 0.05);
+    border-color: var(--neon-blue);
+}
+
+.friend-user-meta-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.friend-avatar-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.friend-block-btn {
+    background: transparent;
+    border: 1px solid #ff3333;
+    color: #ff3333;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: bold;
+}
+
+.friend-block-btn.blocked {
+    background: #ff3333;
+    color: #fff;
+}
+
+/* Unseen Chat Alert (!!!) Mark */
+.unseen-mark {
+    color: #ff3333;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-right: 5px;
+    text-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
+}
+
+/* ==========================================
+   8. 🔒 PRIVATE VAULT (Ганцхан Том Карт)
+   ========================================== */
+.vault-grid-single {
+    width: 100%;
+}
+
+.vault-card-full {
     background: var(--card-cyber);
     border: 1px dashed var(--neon-pink);
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
     width: 100%;
 }
 
 .vault-card-title {
     font-family: 'Orbitron', sans-serif;
     color: var(--neon-pink);
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding-bottom: 10px;
-}
-
-.calendar-inputs-row {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    width: 100%;
+    padding-bottom: 12px;
 }
 
 .cyber-date-picker {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     background: rgba(0, 0, 0, 0.03);
     border: 1px solid rgba(0, 0, 0, 0.1);
     color: var(--text-white);
     border-radius: 6px;
     font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    outline: none;
 }
 
 .vault-file-label-small {
-    padding: 10px 15px;
+    padding: 12px 20px;
     background: rgba(0, 0, 0, 0.03);
     border: 1px dashed var(--neon-pink);
     color: var(--neon-pink);
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
     font-weight: bold;
-}
-
-.vault-card textarea {
-    width: 100%;
-    height: 120px;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
-    color: var(--text-white);
-    padding: 15px;
-    font-family: 'Rajdhani', sans-serif;
-    resize: none;
-    outline: none;
-}
-
-.btn-vault-action {
-    background: transparent;
-    border: 1px solid var(--neon-pink);
-    color: var(--neon-pink);
-    padding: 12px;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.vault-list-preview {
-    max-height: 250px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.vault-item-node {
-    background: rgba(0, 0, 0, 0.02);
-    padding: 12px;
-    border-radius: 6px;
-    border-left: 3px solid var(--neon-pink);
-    position: relative;
-}
-
-.delete-vault-btn {
-    position: absolute;
-    right: 12px;
-    top: 12px;
-    background: none;
-    border: none;
-    color: var(--text-gray);
-    cursor: pointer;
 }
 
 /* ==========================================
-   7. ARTIST AI GENERATED FRAMES
+   9. ARTIST AI GENERATED MEDIA IMAGES
    ========================================== */
 .ai-generated-frame {
     margin-top: 15px;
     border: 2px solid var(--border-cyber);
     border-radius: 8px;
-    max-width: 100%; /* Чатны хайрцагнаас хэтрэхгүй */
+    max-width: 100%;
     overflow: hidden;
     background: #000;
 }
@@ -618,12 +692,12 @@ body.theme-dark {
 .ai-generated-frame img {
     width: 100%;
     max-width: 100%;
-    max-height: 380px; /* Зургийн өндрийг хязгаарлав */
+    max-height: 380px;
     object-fit: contain;
     display: block;
 }
 
-/* Base Chats Components */
+/* Base messenger lines */
 .chat-messages-box, .bot-messages-box {
     flex: 1; min-height: 350px; background: rgba(0,0,0,0.02);
     padding: 20px; border-radius: 8px; margin-bottom: 15px;
@@ -632,11 +706,13 @@ body.theme-dark {
 .msg-row { padding: 12px 18px; border-radius: 8px; max-width: 75%; }
 .msg-row.user { background: rgba(0, 85, 255, 0.08); border: 1px solid var(--neon-blue); align-self: flex-end; }
 .msg-row.bot { background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.05); align-self: flex-start; }
-.bot-input-row { display: flex; gap: 12px; }
-.bot-input-row input { flex: 1; padding: 12px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; color: var(--text-white); }
-.bot-send-btn { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 0 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; }
-.bot-status { font-size: 0.85rem; color: var(--neon-green); margin-top: 4px; }
 
-/* Modal overlays */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: center; z-index: 200; }
-.modal-card { background: var(--card-cyber); border: 2px solid var(--border-cyber); padding: 30px; border-radius: 12px; width: 100%; max-width: 440px; }
+/* Modal layout fix for avatar upload button */
+.modal-file-label {
+    display: block; text-align: center; padding: 14px;
+    background: var(--neon-blue); color: #fff;
+    font-weight: bold; border-radius: 6px; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 85, 255, 0.2);
+    font-family: 'Orbitron', sans-serif; font-size: 0.9rem;
+}
+.modal-file-label:hover { box-shadow: 0 0 15px var(--neon-blue); }
